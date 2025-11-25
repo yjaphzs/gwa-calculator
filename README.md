@@ -1,73 +1,81 @@
-# React + TypeScript + Vite
+![Github_Banner - Repository](https://github.com/user-attachments/assets/83318741-b71d-47c8-89e0-2d3344118396)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# GWA Calculator
 
-Currently, two official plugins are available:
+A web application for calculating your General Weighted Average (GWA) and determining academic honors. Built with **ReactJS** and styled using **shadcn/ui** components.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+- Add, edit, and delete subjects with grades and units
+- Automatic GWA calculation
+- Academic honor detection (University Scholar, College Scholar)
+- Pagination and search for subjects
+- Responsive design with dark mode support
+- Data autosave to local storage
+- Deployable to GitHub Pages
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Technologies Used
 
-## Expanding the ESLint configuration
+- [ReactJS](https://react.dev/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [Vite](https://vitejs.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Getting Started
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. **Clone the repository:**
+   ```
+   git clone https://github.com/yjaphzs/gwa-calculator.git
+   cd gwa-calculator
+   ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+2. **Install dependencies:**
+   ```
+   npm install
+   ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+3. **Run the development server:**
+   ```
+   npm run dev
+   ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+4. **Build for production:**
+   ```
+   npm run build
+   ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+5. **Preview the production build:**
+   ```
+   npm run preview
+   ```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Deployment
+
+This app is ready to deploy to GitHub Pages.  
+See the [workflow file](.github/workflows/main.yml) for automated deployment instructions.
+
+## References
+
+- **Ko-fi Button:**  
+  [CostasAK/react-kofi-button](https://github.com/CostasAK/react-kofi-button)
+
+- **Copy Button:**  
+  [shadcn/ui](https://www.shadcn.io/)
+
+- **Theme Switcher:**  
+  [shadcnuikit](https://shadcnuikit.com/)
+
+## Screenshots
+
+<img width="1920" height="1045" alt="screencapture-yjaphzs-github-io-gwa-calculator-2025-11-26-01_03_34" src="https://github.com/user-attachments/assets/103e8ae1-a783-4f04-a8a7-e1bf067efc02" />
+<img width="1920" height="1045" alt="screencapture-yjaphzs-github-io-gwa-calculator-2025-11-26-01_03_48" src="https://github.com/user-attachments/assets/23152f10-5d1c-45b9-8d9f-ac2c19772d47" />
+<img width="957" height="539" alt="screencapture-yjaphzs-github-io-gwa-calculator-2025-11-25-22_25_45 - Copy" src="https://github.com/user-attachments/assets/3bb05322-12da-47b7-908f-694226766d4e" />
+
+## License
+
+MIT
+
+---
+
+Made with ❤️ using React and shadcn/ui.
