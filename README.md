@@ -71,12 +71,10 @@ See the [workflow file](.github/workflows/main.yml) for automated deployment ins
 
 <img width="1920" height="1045" alt="screencapture-yjaphzs-github-io-gwa-calculator-2025-11-26-01_03_34" src="https://github.com/user-attachments/assets/103e8ae1-a783-4f04-a8a7-e1bf067efc02" />
 <img width="1920" height="1045" alt="screencapture-yjaphzs-github-io-gwa-calculator-2025-11-26-01_03_48" src="https://github.com/user-attachments/assets/23152f10-5d1c-45b9-8d9f-ac2c19772d47" />
-<img width="957" height="539" alt="screencapture-yjaphzs-github-io-gwa-calculator-2025-11-25-22_25_45 - Copy" src="https://github.com/user-attachments/assets/3bb05322-12da-47b7-908f-694226766d4e" />
+<img width="1920" height="1273" alt="screencapture-yjaphzs-github-io-gwa-calculator-2025-11-25-22_25_45" src="https://github.com/user-attachments/assets/9bc70fe3-3840-4409-b4ca-6544adc660b6" />
 
 ## License
 
 MIT
-
----
 
 Made with ❤️ using React and shadcn/ui.
