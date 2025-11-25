@@ -61,7 +61,7 @@ See the [workflow file](.github/workflows/main.yml) for automated deployment ins
 - **Ko-fi Button:**  
   [CostasAK/react-kofi-button](https://github.com/CostasAK/react-kofi-button)
 
-- **Copy Button:**  
+- **Copy Button & Fireworks Background:**  
   [shadcn/ui](https://www.shadcn.io/)
 
 - **Theme Switcher:**  

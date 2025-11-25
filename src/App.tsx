@@ -10,6 +10,7 @@ import {
     PlusIcon,
     RotateCcw,
     Medal,
+    PartyPopper
 } from "lucide-react";
 import { CopyButton } from "@/components/ui/shadcn-io/copy-button";
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { FireworksBackground } from '@/components/ui/shadcn-io/fireworks-background';
 import { getAcademicHonor } from "@/lib/academic";
 
 import SubjectFormModal from "@/components/smart/subject-modal";
@@ -80,6 +82,7 @@ function App() {
     const [currentPage, setCurrentPage] = useState(1);
     const [modalOpen, setModalOpen] = useState(false);
     const [resetDialogOpen, setResetDialogOpen] = useState(false);
+    const [congratsDialogOpen, setCongratsDialogOpen] = useState(false);
 
     const formRef = useRef<HTMLFormElement | null>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
@@ -264,7 +267,7 @@ function App() {
                                 </EmptyContent>
                             </Empty>
                         ) : (
-                            <div className="flex flex-row gap-2 items-center justify-between w-full">
+                            <div className="flex flex-row flex-wrap-reverse gap-2 items-center justify-between w-full">
                                 <Select
                                     value={String(pageSize)}
                                     onValueChange={value => {
@@ -284,52 +287,85 @@ function App() {
                                     </SelectContent>
                                 </Select>
                                 <ButtonGroup>
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setModalOpen(true)}
-                                    >
-                                        <PlusIcon className="size-4" />
-                                        Add
-                                    </Button>
-                                    <AlertDialog
-                                        open={resetDialogOpen}
-                                        onOpenChange={setResetDialogOpen}
-                                    >
-                                        <AlertDialogTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                onClick={() =>
-                                                    setResetDialogOpen(true)
-                                                }
-                                            >
-                                                <RotateCcw className="size-4" />
-                                                Reset
-                                            </Button>
-                                        </AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>
-                                                    Are you absolutely sure?
-                                                </AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    This action cannot be undone.
-                                                    This will permanently delete all
-                                                    your subjects and reset your
-                                                    GWA.
-                                                </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>
-                                                    Cancel
-                                                </AlertDialogCancel>
-                                                <AlertDialogAction
-                                                    onClick={handleReset}
+                                    {honor && (
+                                        <ButtonGroup>
+                                            <AlertDialog open={congratsDialogOpen} onOpenChange={setCongratsDialogOpen}>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button
+                                                        variant="default"
+                                                        onClick={() => setCongratsDialogOpen(true)}
+                                                    >
+                                                        <PartyPopper className="size-4" />
+                                                        Congratulate
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader className="items-center">
+                                                        <div className="flex size-12 items-center justify-center rounded-xl bg-primary">
+                                                            <PartyPopper className="size-6 text-primary-foreground" />
+                                                        </div>
+                                                        <AlertDialogTitle className="text-2xl">Congratulations!</AlertDialogTitle>
+                                                        <AlertDialogDescription className="text-md text-center">
+                                                            You've achieved the academic honor of <strong>{honor}</strong> with a GWA of <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-xs font-semibold">{gwa?.toFixed(3)}</code>! Keep up the excellent work!
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel onClick={() => setCongratsDialogOpen(false)}>
+                                                            Close
+                                                        </AlertDialogCancel>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </ButtonGroup>
+                                    )}
+                                    <ButtonGroup>
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setModalOpen(true)}
+                                        >
+                                            <PlusIcon className="size-4" />
+                                            Add
+                                        </Button>
+                                        <AlertDialog
+                                            open={resetDialogOpen}
+                                            onOpenChange={setResetDialogOpen}
+                                        >
+                                            <AlertDialogTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() =>
+                                                        setResetDialogOpen(true)
+                                                    }
                                                 >
-                                                    Continue
-                                                </AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
+                                                    <RotateCcw className="size-4" />
+                                                    Reset
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>
+                                                        Are you absolutely sure?
+                                                    </AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        This action cannot be undone.
+                                                        This will permanently delete all
+                                                        your subjects and reset your
+                                                        GWA.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>
+                                                        Cancel
+                                                    </AlertDialogCancel>
+                                                    <AlertDialogAction
+                                                        onClick={handleReset}
+                                                    >
+                                                        Continue
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </ButtonGroup>
                                 </ButtonGroup>
                             </div>
                         )}
@@ -419,7 +455,7 @@ function App() {
                         )}
 
                         {paginatedSubjects.length > 0 && (
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-4">
+                            <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
                                 <div className="text-muted-foreground text-sm">
                                     Showing {(currentPage - 1) * pageSize + 1}
                                     {" - "}
@@ -460,6 +496,16 @@ function App() {
                     preset="no_background"
                 />
             </footer>
+
+            { congratsDialogOpen && (
+                <FireworksBackground
+                    className="absolute inset-0 flex items-center justify-center rounded-xl"
+                    fireworkSpeed={{ min: 8, max: 16 }}
+                    fireworkSize={{ min: 4, max: 10 }}
+                    particleSpeed={{ min: 4, max: 14 }}
+                    particleSize={{ min: 2, max: 10 }}
+                />
+            )}
 
             <SubjectFormModal
                 open={modalOpen}
