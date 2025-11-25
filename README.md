@@ -4,6 +4,15 @@
 
 A web application for calculating your General Weighted Average (GWA) and determining academic honors. Built with **ReactJS** and styled using **shadcn/ui** components.
 
+![React](https://img.shields.io/badge/Made%20with-React-61DAFB?style=flat&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/Made%20with-TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Made%20with-Vite-646CFF?style=flat&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Made%20with-TailwindCSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white)
+![shadcn/ui](https://img.shields.io/badge/Made%20with-shadcn/ui-111827?style=flat)
+
+**Live Demo:**  
+[https://yjaphzs.github.io/gwa-calculator/](https://yjaphzs.github.io/gwa-calculator/)
+
 ## Features
 
 - Add, edit, and delete subjects with grades and units
@@ -13,14 +22,6 @@ A web application for calculating your General Weighted Average (GWA) and determ
 - Responsive design with dark mode support
 - Data autosave to local storage
 - Deployable to GitHub Pages
-
-## Technologies Used
-
-- [ReactJS](https://react.dev/)
-- [shadcn/ui](https://ui.shadcn.com/)
-- [Vite](https://vitejs.dev/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
 
 ## Getting Started
 
