@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { useAppearance } from "@/hooks/use-appearance";
 import { Moon, Sun } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
