@@ -1,0 +1,182 @@
+@use "sass:math";
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@700&display=swap');
+
+.KofiContainer {
+    box-sizing: border-box;
+    display: inline;
+    padding: 0;
+    text-rendering: optimizeLegibility;
+    line-height: 0;
+    --background-color: #29abe0;
+    color-scheme: inherit;
+    .KofiButton {
+        box-sizing: inherit;
+        background: var(--background-color);
+        color: inherit;
+        font-size: inherit;
+        font-family: "Quicksand", Helvetica, Century Gothic, sans-serif;
+        font-weight: 700;
+        letter-spacing: math.div(0.15em, -14);
+        text-decoration: none;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-align: center;
+        white-space: nowrap;
+        overflow-wrap: break-word;
+        line-height: inherit;
+        min-height: math.div(40em, 14);
+        box-shadow: math.div(1em, 14) math.div(1em, 14) 0 rgba(0, 0, 0, 0.2);
+        margin: 0;
+        padding: math.div(2em, 14) math.div(12em, 14);
+        border-radius: math.div(7em, 14);
+        border: 0 none #fff;
+        cursor: pointer;
+        &:visited,
+        &:hover,
+        &:active {
+            color: inherit;
+            text-decoration: none;
+        }
+        &:hover {
+            opacity: 0.85;
+            .KofiImage.animation_on_hover {
+                animation: kofi-wiggle 3s infinite;
+            }
+        }
+        display: inline-flex;
+        flex-flow: row;
+        align-items: center;
+        gap: math.div(5em, 14);
+        .KofiImage,
+        .KofiText {
+            box-sizing: inherit;
+            color: inherit;
+            font-size: inherit;
+            font-family: inherit;
+            font-weight: inherit;
+            letter-spacing: inherit;
+            text-decoration: inherit;
+            text-align: inherit;
+            white-space: inherit;
+            overflow-wrap: inherit;
+            cursor: inherit;
+            line-height: inherit;
+            margin: auto;
+            padding: 0;
+            text-shadow: 0 math.div(1em, 14) math.div(1em, 14)
+                rgba(34, 34, 34, 0.05);
+        }
+        .KofiImageContainer {
+            max-height: fit-content;
+            line-height: 0;
+            margin: 0;
+            padding: 0;
+            display: inline-flex;
+            justify-items: safe center;
+            align-items: safe center;
+            .KofiImage {
+                display: initial;
+                height: math.div(15em, 14);
+                max-height: 228px;
+                width: math.div(22em, 14);
+                max-width: 353px;
+                vertical-align: middle;
+                border: none;
+                content: url("https://storage.ko-fi.com/cdn/cup-border.png");
+                &.animation_true {
+                    animation: kofi-wiggle 3s infinite 1.8s;
+                }
+            }
+        }
+        &.thin {
+            min-height: auto;
+            padding: 0 math.div(6em, 14);
+            border-radius: math.div(5em, 14);
+            line-height: 1;
+            .KofiText {
+                padding: math.div(8.5em, 14) math.div(6em, 14)
+                    math.div(8.5em, 14) math.div(4.5em, 14);
+            }
+            .KofiImage {
+                height: auto;
+                width: math.div(29em, 14);
+            }
+        }
+        &.skinny {
+            min-height: auto;
+            padding: math.div(4em, 15) math.div(10em, 15);
+            border-radius: math.div(4em, 15);
+            .KofiImage {
+                height: 1em;
+                width: auto;
+            }
+        }
+        &.circle {
+            min-height: auto;
+            padding: 0;
+            border-radius: 0;
+            background: none;
+            box-shadow: none;
+            color: black;
+            gap: math.div(3em, 14);
+            .KofiImageContainer {
+                background: var(--background-color);
+                height: 1.5em;
+                width: 1.5em;
+                border-radius: 50%;
+            }
+            .KofiImage {
+                height: 0.75em;
+                width: auto;
+                margin: auto;
+                padding-left: math.div(5 * 0.75em, 92.5);
+            }
+        }
+        &.no_background {
+            min-height: auto;
+            padding: 0;
+            border-radius: 0;
+            background: none;
+            box-shadow: none;
+            gap: math.div(5em, 14);
+            .KofiImageContainer {
+                .KofiImage {
+                    width: 1.5em;
+                    height: auto;
+                    margin: auto;
+                    padding-left: math.div(5 * 0.75em, 92.5);
+                }
+            }
+        }
+    }
+}
+
+@keyframes kofi-wiggle {
+    0% {
+        transform: rotate(0) scale(1);
+    }
+    15% {
+        transform: rotate(0) scale(1.12);
+    }
+    20% {
+        transform: rotate(0) scale(1.1);
+    }
+    24% {
+        transform: rotate(-10deg) scale(1.1);
+    }
+    28% {
+        transform: rotate(10deg) scale(1.1);
+    }
+    32% {
+        transform: rotate(-10deg) scale(1.1);
+    }
+    36% {
+        transform: rotate(10deg) scale(1.1);
+    }
+    40% {
+        transform: rotate(0) scale(1);
+    }
+    100% {
+        transform: rotate(0) scale(1);
+    }
+}

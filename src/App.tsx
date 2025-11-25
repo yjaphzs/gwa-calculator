@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import AppHeader from "@/components/dom/app-header";
-import ThemeSwitcher from "@/components/smart/theme-changer";
+import ThemeSwitcher from "@/components/ui/theme-switcher";
+import KofiButton from "@/components/dom/KofiButton";
 import { Pencil, Search, Album, Trash, PlusIcon, RotateCcw } from "lucide-react";
 import { CopyButton } from "@/components/ui/shadcn-io/copy-button";
 import { Button } from "@/components/ui/button";
@@ -168,175 +169,186 @@ function App() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-svh p-4">
-            <div className="w-full max-w-3xl">
-                <div className="flex flex-row items-center justify-between w-full">
-                    <AppHeader appName={appName} appVersion={appVersion} />
-                    <ThemeSwitcher />
-                </div>
-                <div className="flex items-center justify-between bg-muted rounded-lg w-full mt-8 py-12 px-8">
-                    <CopyButton
-                        size="lg"
-                        content={
-                            gwa !== null && gwa !== 0 ? gwa.toFixed(3) : "0"
-                        }
-                    />
-                    <div className="text-end text-6xl font-mono font-bold">
-                        {gwa !== null && gwa !== 0 ? gwa.toFixed(3) : "0"}
+            <main className="flex-1 flex flex-col items-center justify-center w-full">
+                <div className="w-full max-w-3xl">
+                    <div className="flex flex-row items-center justify-between w-full">
+                        <AppHeader appName={appName} appVersion={appVersion} />
+                        <ThemeSwitcher />
                     </div>
-                </div>
-
-                <div className="flex flex-col gap-4 mt-8">
-                    {subjects.length === 0 ? (
-                        <Empty className="border border-dashed">
-                            <EmptyHeader>
-                                <EmptyMedia variant="icon">
-                                    <Album />
-                                </EmptyMedia>
-                                <EmptyTitle>No Subjects Found</EmptyTitle>
-                                <EmptyDescription>
-                                    Add subjects to get started. Your subjects will appear here and you’ll be able to view, edit, and calculate your GWA as you go.
-                                </EmptyDescription>
-                            </EmptyHeader>
-                            <EmptyContent>
-                                <Button variant="outline" size="sm" onClick={() => setModalOpen(true)}>
-                                    Add Subject
-                                </Button>
-                            </EmptyContent>
-                        </Empty>
-                    ) : (
-                        <ButtonGroup>
-                            <Button
-                                variant="outline"
-                                onClick={() => setModalOpen(true)}
-                            >
-                                <PlusIcon className="size-4" />
-                                Add
-                            </Button>
-                            <AlertDialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
-                                <AlertDialogTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setResetDialogOpen(true)}
-                                    >
-                                        <RotateCcw className="size-4" />
-                                        Reset
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            This action cannot be undone. This will permanently delete all your subjects and reset your GWA.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction
-                                            onClick={handleReset}
-                                        >
-                                            Continue
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        </ButtonGroup>
-                    )}
-                    {subjects.length > 0 && (
-                        <div className="w-full flex justify-end">
-                            <InputGroup className="sm ml-auto">
-                                <InputGroupInput
-                                    placeholder="Search subjects..."
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                />
-                                <InputGroupAddon>
-                                    <Search className="size-4 text-muted-foreground" />
-                                </InputGroupAddon>
-                                <InputGroupAddon
-                                    align="inline-end"
-                                    className="text-muted-foreground"
-                                >
-                                    {filteredSubjects.length} results
-                                </InputGroupAddon>
-                            </InputGroup>
+                    <div className="flex items-center justify-between bg-muted rounded-lg w-full mt-8 py-12 px-8">
+                        <CopyButton
+                            variant="default"
+                            size="lg"
+                            content={
+                                gwa !== null && gwa !== 0 ? gwa.toFixed(3) : "0"
+                            }
+                        />
+                        <div className="text-end text-6xl font-mono font-bold">
+                            {gwa !== null && gwa !== 0 ? gwa.toFixed(3) : "0"}
                         </div>
-                    )}
-                    {paginatedSubjects.length > 0 && paginatedSubjects.map((subject) => (
-                        <div
-                            key={subject.id}
-                            className="flex flex-row items-center bg-muted rounded-lg p-4 gap-8"
-                        >
-                            <div className="flex flex-row items-center justify-between flex-grow">
-                                <div className="flex flex-col shrink"> 
-                                    <div className="text-sm text-muted-foreground">
-                                        {subject.code}
-                                    </div>
-                                    <div className="text-xl font-semibold truncate min-w-0"> 
-                                        {subject.title}
-                                    </div>
-                                </div>
-                                <div className="">
-                                    <div className="text-muted-foreground text-end">
-                                        {subject.units}
-                                    </div>
-                                    <div className="text-xl font-bold font-mono text-end">
-                                        {subject.grade.toFixed(2)}
-                                    </div>
-                                </div>
-                            </div>
-                            <ButtonGroup
-                                orientation="vertical"
-                                aria-label="Media controls"
-                                className="h-fit"
-                            >
+                    </div>
+
+                    <div className="flex flex-col gap-4 mt-8">
+                        {subjects.length === 0 ? (
+                            <Empty className="border border-dashed">
+                                <EmptyHeader>
+                                    <EmptyMedia variant="icon">
+                                        <Album />
+                                    </EmptyMedia>
+                                    <EmptyTitle>No Subjects Found</EmptyTitle>
+                                    <EmptyDescription>
+                                        Add subjects to get started. Your subjects will appear here and you’ll be able to view, edit, and calculate your GWA as you go.
+                                    </EmptyDescription>
+                                </EmptyHeader>
+                                <EmptyContent>
+                                    <Button variant="outline" size="sm" onClick={() => setModalOpen(true)}>
+                                        Add Subject
+                                    </Button>
+                                </EmptyContent>
+                            </Empty>
+                        ) : (
+                            <ButtonGroup>
                                 <Button
                                     variant="outline"
-                                    size="icon"
-                                    onClick={() => {
-                                        setEditingSubject(subject);
-                                        setModalOpen(true);
-                                    }}
+                                    onClick={() => setModalOpen(true)}
                                 >
-                                    <Pencil className="w-4 h-4" />
+                                    <PlusIcon className="size-4" />
+                                    Add
                                 </Button>
-                                <Button
-                                    variant="destructive"
-                                    size="icon"
-                                    onClick={() => handleDelete(subject)}
-                                >
-                                    <Trash className="w-4 h-4" />
-                                </Button>
+                                <AlertDialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setResetDialogOpen(true)}
+                                        >
+                                            <RotateCcw className="size-4" />
+                                            Reset
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                This action cannot be undone. This will permanently delete all your subjects and reset your GWA.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={handleReset}
+                                            >
+                                                Continue
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </ButtonGroup>
-                        </div>
-                    ))}
-
-                    {paginatedSubjects.length > 0 && (
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-4">
-                            <div className="text-muted-foreground text-sm">
-                                Showing {(currentPage - 1) * pageSize + 1}
-                                {" - "}
-                                {Math.min(currentPage * pageSize, filteredSubjects.length)}
-                                {" of "}
-                                {filteredSubjects.length} row(s)
+                        )}
+                        {subjects.length > 0 && (
+                            <div className="w-full flex justify-end">
+                                <InputGroup className="sm ml-auto">
+                                    <InputGroupInput
+                                        placeholder="Search subjects..."
+                                        value={search}
+                                        onChange={(e) => setSearch(e.target.value)}
+                                    />
+                                    <InputGroupAddon>
+                                        <Search className="size-4 text-muted-foreground" />
+                                    </InputGroupAddon>
+                                    <InputGroupAddon
+                                        align="inline-end"
+                                        className="text-muted-foreground"
+                                    >
+                                        {filteredSubjects.length} results
+                                    </InputGroupAddon>
+                                </InputGroup>
                             </div>
-                            <div className="flex justify-end">
-                                <Paginator
-                                    currentPage={currentPage}
-                                    totalPages={totalPages}
-                                    onPageChange={setCurrentPage}
-                                    showPreviousNext
-                                />
+                        )}
+                        {paginatedSubjects.length > 0 && paginatedSubjects.map((subject) => (
+                            <div
+                                key={subject.id}
+                                className="flex flex-row items-center bg-muted rounded-lg p-4 gap-8"
+                            >
+                                <div className="flex flex-row items-center justify-between flex-grow">
+                                    <div className="flex flex-col shrink"> 
+                                        <div className="text-sm text-muted-foreground">
+                                            {subject.code}
+                                        </div>
+                                        <div className="text-xl font-semibold truncate min-w-0"> 
+                                            {subject.title}
+                                        </div>
+                                    </div>
+                                    <div className="">
+                                        <div className="text-muted-foreground text-end">
+                                            {subject.units}
+                                        </div>
+                                        <div className="text-xl font-bold font-mono text-end">
+                                            {subject.grade.toFixed(2)}
+                                        </div>
+                                    </div>
+                                </div>
+                                <ButtonGroup
+                                    orientation="vertical"
+                                    aria-label="Media controls"
+                                    className="h-fit"
+                                >
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={() => {
+                                            setEditingSubject(subject);
+                                            setModalOpen(true);
+                                        }}
+                                    >
+                                        <Pencil className="w-4 h-4" />
+                                    </Button>
+                                    <Button
+                                        variant="destructive"
+                                        size="icon"
+                                        onClick={() => handleDelete(subject)}
+                                    >
+                                        <Trash className="w-4 h-4" />
+                                    </Button>
+                                </ButtonGroup>
                             </div>
-                        </div>
-                    )}
+                        ))}
 
-                    {filteredSubjects.length === 0 && subjects.length > 0 && (
-                        <div className="flex flex-row items-center justify-center bg-muted rounded-lg py-12 px-4 gap-4">
-                            <span className="text-muted-foreground">No subjects match your search.</span>
-                        </div>
-                    )}
+                        {paginatedSubjects.length > 0 && (
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-4">
+                                <div className="text-muted-foreground text-sm">
+                                    Showing {(currentPage - 1) * pageSize + 1}
+                                    {" - "}
+                                    {Math.min(currentPage * pageSize, filteredSubjects.length)}
+                                    {" of "}
+                                    {filteredSubjects.length} row(s)
+                                </div>
+                                <div className="flex justify-end">
+                                    <Paginator
+                                        currentPage={currentPage}
+                                        totalPages={totalPages}
+                                        onPageChange={setCurrentPage}
+                                        showPreviousNext
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {filteredSubjects.length === 0 && subjects.length > 0 && (
+                            <div className="flex flex-row items-center justify-center bg-muted rounded-lg py-12 px-4 gap-4">
+                                <span className="text-muted-foreground">No subjects match your search.</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
+            </main>
+
+            <footer className="w-full flex justify-center py-6 bg-transparent">
+                <KofiButton
+                    username="yjaphzs"
+                    label="Buy Me a Ko-fi"
+                    preset="no_background"
+                />
+            </footer>
 
             <SubjectFormModal
                 open={modalOpen}
