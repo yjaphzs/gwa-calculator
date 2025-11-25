@@ -7,6 +7,11 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Build output
+dist
+dist-ssr
+build
+
 .env
 .env.*
 !.env.example
