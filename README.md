@@ -1,4 +1,4 @@
-![Github_Banner - Repository](https://github.com/user-attachments/assets/83318741-b71d-47c8-89e0-2d3344118396)
+<img width="6336" height="1584" alt="Github_Banner - Repository" src="https://github.com/user-attachments/assets/2262b17d-78d0-40ec-b843-6d3116fd224d" />
 
 # GWA Calculator
 
