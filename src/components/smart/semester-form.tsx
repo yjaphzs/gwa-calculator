@@ -198,7 +198,7 @@ const SemesterForm = forwardRef<HTMLFormElement, SemesterFormProps>(
                         name="schoolYear"
                         render={({ field }) => (
                             <FormItem className="flex-1">
-                                <FormLabel>Units</FormLabel>
+                                <FormLabel>School Year</FormLabel>
                                 <FormControl>
                                     <Select
                                         value={field.value ?? ""}
@@ -210,7 +210,7 @@ const SemesterForm = forwardRef<HTMLFormElement, SemesterFormProps>(
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectLabel>
-                                                    School Year
+                                                    School Years
                                                 </SelectLabel>
                                                 {generateSchoolYears(5).map(year => (
                                                     <SelectItem
