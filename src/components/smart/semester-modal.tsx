@@ -55,8 +55,8 @@ const SemesterFormModal: React.FC<SemesterFormProps> = ({
     const modalDescription =
         description ??
         (isEdit
-            ? "Update the form below to edit your semester. Click save when you're done."
-            : "Fill out the form below to add your semester. Click add when you're done.");
+            ? "Update the form below to edit your semester. Click update when you're done."
+            : "Fill out the form below to save your semester. Click save when you're done.");
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
