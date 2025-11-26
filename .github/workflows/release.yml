@@ -14,6 +14,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Checkout main branch for changelog
+        run: git checkout main
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -74,3 +77,4 @@ jobs:
           files: |
             ${{ steps.archive.outputs.BUILD_ZIP }}
             ${{ steps.archive.outputs.SOURCE_ZIP }}
+          make_latest: true
