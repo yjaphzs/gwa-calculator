@@ -55,8 +55,8 @@ const SubjectFormModal: React.FC<SubjectFormProps> = ({
     const modalDescription =
         description ??
         (isEdit
-            ? "Update the form below to edit your subject. Click save when you're done."
-            : "Fill out the form below to add your subject. Click add when you're done.");
+            ? "Update the form below to edit your subject. Click update when you're done."
+            : "Fill out the form below to add your subject. Click save when you're done.");
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
