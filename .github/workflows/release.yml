@@ -36,26 +36,23 @@ jobs:
         run: |
           TAG_NAME=${GITHUB_REF_NAME}
           REPO_NAME=$(basename ${{ github.repository }})
-          
+
           echo "Archiving assets for ${TAG_NAME}..."
 
-          # 1. Archive the BUILD folder (e.g., my-repo-v1.0.0-build.zip)
-          # Note: We zip only the necessary output directory.
+          # Archive the BUILD folder
           BUILD_ZIP="${REPO_NAME}-${TAG_NAME}-build.zip"
           zip -r $BUILD_ZIP ./build
-          
-          # 2. Archive the SOURCE code (excluding large/unnecessary folders)
+
+          # Archive the SOURCE code (excluding .git, node_modules, build)
           SOURCE_PREFIX="${REPO_NAME}-${TAG_NAME}-source"
-          
-          # Create ZIP archive (Excluding .git, node_modules, build)
+
+          # Create ZIP archive
           zip -r ${SOURCE_PREFIX}.zip . \
             -x ".git/*" "node_modules/*" "build/*"
-            
-          # Create TAR.GZ archive (Excluding .git, node_modules, build)
-          tar -czvf ${SOURCE_PREFIX}.tar.gz . \
-            --exclude='node_modules' --exclude='.git' --exclude='build'
-            
-          # Export filenames for the next step
+
+          # Create TAR.GZ archive (options before positional arguments, use straight quotes)
+          tar --exclude='node_modules' --exclude='.git' --exclude='build' -czvf ${SOURCE_PREFIX}.tar.gz .
+          
           echo "BUILD_ZIP=$BUILD_ZIP" >> $GITHUB_OUTPUT
           echo "SOURCE_ZIP=${SOURCE_PREFIX}.zip" >> $GITHUB_OUTPUT
           echo "SOURCE_TARGZ=${SOURCE_PREFIX}.tar.gz" >> $GITHUB_OUTPUT
