@@ -31,7 +31,7 @@ jobs:
             VITE_APP_LOCAL_STORAGE_AUTOSAVE_KEY: ${{ vars.APP_LOCAL_STORAGE_AUTOSAVE_KEY }}
         run: npm run build
         
-      - name: Archive Release Assets (.zip, .tar.gz)
+      - name: Archive Release Assets (.zip)
         id: archive
         run: |
           TAG_NAME=${GITHUB_REF_NAME}
@@ -50,12 +50,8 @@ jobs:
           zip -r ${SOURCE_PREFIX}.zip . \
             -x ".git/*" "node_modules/*" "build/*"
 
-          # Create TAR.GZ archive (options before positional arguments, use straight quotes)
-          tar --exclude='node_modules' --exclude='.git' --exclude='build' -czvf ${SOURCE_PREFIX}.tar.gz .
-          
           echo "BUILD_ZIP=$BUILD_ZIP" >> $GITHUB_OUTPUT
           echo "SOURCE_ZIP=${SOURCE_PREFIX}.zip" >> $GITHUB_OUTPUT
-          echo "SOURCE_TARGZ=${SOURCE_PREFIX}.tar.gz" >> $GITHUB_OUTPUT
 
       - name: Generate Changelog
         id: changelog
@@ -71,11 +67,10 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           tag_name: ${{ github.ref }}
-          body: ${{ steps.changelog.outputs.changelog }}
+          body: ${{ steps.changelog.outputs.changelog || 'No release notes available.' }}
           prerelease: ${{ contains(github.ref, '-') }} 
           draft: false 
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
             ${{ steps.archive.outputs.BUILD_ZIP }}
             ${{ steps.archive.outputs.SOURCE_ZIP }}
-            ${{ steps.archive.outputs.SOURCE_TARGZ }}
