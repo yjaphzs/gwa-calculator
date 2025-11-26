@@ -5,3 +5,10 @@ export interface Subject {
     grade: number;
     units: number;
 }
+
+export interface Semester {
+    id: string;
+    schoolYear: string;
+    semester: string;
+    subjects: Subject[];
+}

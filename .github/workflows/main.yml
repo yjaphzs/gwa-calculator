@@ -26,8 +26,9 @@ jobs:
       - name: Build project
         env:
             VITE_APP_NAME: ${{ vars.APP_NAME }}
-            VITE_APP_VERSION: ${{ vars.APP_VERSION }}
-            VITE_APP_LOCAL_STORAGE_KEY: ${{ vars.APP_LOCAL_STORAGE_KEY }}
+            VITE_APP_LOCAL_STORAGE_SUBJECTS_KEY: ${{ vars.APP_LOCAL_STORAGE_SUBJECTS_KEY }}
+            VITE_APP_LOCAL_STORAGE_SEMESTERS_KEY: ${{ vars.APP_LOCAL_STORAGE_SEMESTERS_KEY }}
+            VITE_APP_LOCAL_STORAGE_AUTOSAVE_KEY: ${{ vars.APP_LOCAL_STORAGE_AUTOSAVE_KEY }}
         run: npm run build
 
       - name: Deploy to GitHub Pages

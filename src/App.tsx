@@ -1,88 +1,72 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, use } from "react";
 import AppHeader from "@/components/dom/app-header";
 import ThemeSwitcher from "@/components/ui/theme-switcher";
 import KofiButton from "@/components/dom/KofiButton";
 import {
-    Pencil,
-    Search,
-    Album,
-    Trash,
-    PlusIcon,
-    RotateCcw,
-    Medal,
-    PartyPopper
-} from "lucide-react";
-import { CopyButton } from "@/components/ui/shadcn-io/copy-button";
-import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
-import Paginator from "@/components/smart/paginator";
-import {
-    Select,
-    SelectTrigger,
-    SelectValue,
-    SelectContent,
-    SelectItem,
-} from "@/components/ui/select";
-import {
-    InputGroup,
-    InputGroupAddon,
-    InputGroupInput,
-} from "@/components/ui/input-group";
-import {
-    Empty,
-    EmptyContent,
-    EmptyDescription,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-} from "@/components/ui/empty";
-import {
-    Item,
-    ItemContent,
-    ItemDescription,
-    ItemGroup,
-    ItemTitle,
-    ItemActions,
-} from "@/components/ui/item";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
-import { FireworksBackground } from '@/components/ui/shadcn-io/fireworks-background';
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger
+} from "@/components/ui/tabs";
+import { FireworksBackground } from "@/components/ui/shadcn-io/fireworks-background";
 import { getAcademicHonor } from "@/lib/academic";
+import { useEventListener } from "@/hooks/use-event-listener";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+
+import GWASummary from "@/components/smart/gwa-summary";
+import SubjectsToolbar from "@/components/smart/subjects-toolbar";
+import SubjectList from "@/components/smart/subjects-list";
 
 import SubjectFormModal from "@/components/smart/subject-modal";
 import SubjectForm from "@/components/smart/subject-form";
 
-import { type Subject } from "@/types";
+import SemesterFormModal from "@/components/smart/semester-modal";
+import SemesterForm from "@/components/smart/semester-form";
+
+import SemesterList from "@/components/smart/semester-list";
+
+import { type Subject, type Semester } from "@/types";
+
+declare const __APP_VERSION__: string;
 
 function App() {
     const appName = import.meta.env.VITE_APP_NAME || "My App";
-    const appVersion = import.meta.env.VITE_APP_VERSION || "0.1.0";
-    const localStorageKey =
-        import.meta.env.VITE_APP_LOCAL_STORAGE_KEY || "gwa_subjects";
+    const appVersion = __APP_VERSION__;
+    const localStorageSubjectsKey =
+        import.meta.env.VITE_APP_LOCAL_STORAGE_SUBJECTS_KEY || "gwa_subjects";
+    const localStorageSemestersKey =
+        import.meta.env.VITE_APP_LOCAL_STORAGE_SEMESTERS_KEY || "gwa_semesters";
+    const localStorageAutosaveKey =
+        import.meta.env.VITE_APP_LOCAL_STORAGE_AUTOSAVE_KEY || "gwa_autosave";
+
+    const [tab, setTab] = useState("current");
 
     const [gwa, setGwa] = useState<number | null>(null);
     const [honor, setHonor] = useState<string | null>(null);
 
-    const [subjects, setSubjects] = useState<Subject[]>([]);
+    const [autosave, setAutosave] = useLocalStorage<boolean>(localStorageAutosaveKey, true);
+
+    const [subjects, setSubjects] = useLocalStorage<Subject[]>(localStorageSubjectsKey, []);
     const [editingSubject, setEditingSubject] = useState<null | Subject>(null);
+    const [semesters, setSemesters] = useLocalStorage<Semester[]>(localStorageSemestersKey, []);
+    const [editingSemester, setEditingSemester] = useState<null | Semester>(
+        null
+    );
 
     const pageSizeOptions = [5, 10, 20, 50];
     const [pageSize, setPageSize] = useState<number>(10);
+
     const [search, setSearch] = useState<string>("");
+    const searchInputRef = useRef<HTMLInputElement>(null);
+
     const [currentPage, setCurrentPage] = useState(1);
-    const [modalOpen, setModalOpen] = useState(false);
+    const [subjectModalOpen, setSubjectModalOpen] = useState(false);
+    const [semesterModalOpen, setSemesterModalOpen] = useState(false);
     const [resetDialogOpen, setResetDialogOpen] = useState(false);
     const [congratsDialogOpen, setCongratsDialogOpen] = useState(false);
+    const [saveSemesterDialogOpen, setSaveSemesterDialogOpen] = useState(false);
+
+    const [collapsedSemesters, setCollapsedSemesters] = useState<Record<string, boolean>>({});
 
     const formRef = useRef<HTMLFormElement | null>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
@@ -91,14 +75,21 @@ function App() {
     const [success, setSuccess] = useState(false);
     const [dirty, setDirty] = useState(true);
 
-    // Load subjects from localStorage on mount
-    useEffect(() => {
-        const storedSubjects = localStorage.getItem(localStorageKey);
-        if (storedSubjects) {
-            setSubjects(JSON.parse(storedSubjects));
+    // Handle Ctrl+F or Cmd+F to focus search input
+    const handleKeyDown = React.useCallback((event: KeyboardEvent) => {
+        if (
+            (event.ctrlKey || event.metaKey) &&
+            event.key.toLowerCase() === "f"
+        ) {
+            event.preventDefault();
+            searchInputRef.current?.focus();
         }
     }, []);
 
+    // Attach event listener to window
+    useEventListener("keydown", handleKeyDown);
+
+    // Recalculate GWA when subjects change
     useEffect(() => {
         if (subjects.length === 0) {
             setGwa(0);
@@ -125,63 +116,180 @@ function App() {
 
         setHonor(honor);
 
-        localStorage.setItem(localStorageKey, JSON.stringify(subjects));
-    }, [subjects, gwa, honor]);
+        // Only autosave if enabled
+        if (autosave) {
+            localStorage.setItem(
+                localStorageSubjectsKey,
+                JSON.stringify(subjects)
+            );
+        }
+    }, [subjects, gwa, honor, autosave]);
+
+    // Save semesters to localStorage when changed
+    useEffect(() => {
+        localStorage.setItem(
+            localStorageSemestersKey,
+            JSON.stringify(semesters)
+        );
+    }, [semesters]);
 
     const handleCreate = async (values: any) => {
+        if (processing) return;
+
         setProcessing(true);
 
-        const newSubject: Subject = {
-            id: crypto.randomUUID(),
-            code: values.code,
-            title: values.title,
-            grade: values.grade,
-            units: values.units,
-        };
+        try {
+            const newSubject: Subject = {
+                id: crypto.randomUUID(),
+                code: values.code,
+                title: values.title,
+                grade: values.grade,
+                units: values.units,
+            };
 
-        setSubjects((prev) => [...prev, newSubject]);
-
-        setProcessing(false);
+            await setSubjects((prev) => [...prev, newSubject]);
+        } finally {
+            setProcessing(false);
+        }
     };
 
     const handleUpdate = async (values: any) => {
         if (!editingSubject) return;
+        if (processing) return;
 
         setProcessing(true);
 
-        setSubjects((prev) =>
-            prev.map((subject) => {
-                if (subject.id === editingSubject.id) {
-                    return {
-                        id: editingSubject.id,
-                        code: values.code,
-                        title: values.title,
-                        grade: values.grade,
-                        units: values.units,
-                    };
-                }
-                return subject;
-            })
-        );
-
-        setProcessing(false);
-        setModalOpen(false);
+        try {
+            setSubjects((prev) =>
+                prev.map((subject) => {
+                    if (subject.id === editingSubject.id) {
+                        return {
+                            id: editingSubject.id,
+                            code: values.code,
+                            title: values.title,
+                            grade: values.grade,
+                            units: values.units,
+                        };
+                    }
+                    return subject;
+                })
+            );
+        } finally {
+            setSubjectModalOpen(false);
+            setProcessing(false);
+        }
+        
     };
 
     const handleDelete = (subject: Subject) => {
-        setSubjects((prev) => {
-            const updated = prev.filter((s) => s.id !== subject.id);
-            localStorage.setItem(localStorageKey, JSON.stringify(updated));
-            return updated;
-        });
+        if (processing) return;
+
+        setProcessing(true);
+
+        try {
+            setSubjects((prev) => {
+                const updated = prev.filter((s) => s.id !== subject.id);
+                localStorage.setItem(
+                    localStorageSubjectsKey,
+                    JSON.stringify(updated)
+                );
+                return updated;
+            });
+        } finally {
+            setProcessing(false);
+        }
     };
 
     const handleReset = () => {
         setSubjects([]);
         setGwa(0);
+        setHonor(null);
         setResetDialogOpen(false);
-        localStorage.removeItem(localStorageKey);
+        localStorage.removeItem(localStorageSubjectsKey);
     };
+
+    const handleCreateSemester = async (values: any) => {
+        if (processing) return;
+
+        setProcessing(true);
+
+        try {
+            const newSemester: Semester = {
+                id: crypto.randomUUID(),
+                semester: values.semester,
+                schoolYear: values.schoolYear,
+                subjects: subjects,
+            };
+
+            await setSemesters((prev) => [...prev, newSemester]);
+
+            // After saving semester, reset subjects
+            handleReset();
+        } finally {
+            setProcessing(false);
+        }
+    };
+
+    const handleUpdateSemester = async (values: any) => {
+        if (!editingSemester) return;
+        if (processing) return;
+
+        setProcessing(true);
+
+        try {
+            setSemesters((prev) =>
+                prev.map((semester) => {
+                    if (semester.id === editingSemester.id) {
+                        return {
+                            id: editingSemester.id,
+                            semester: values.semester,
+                            schoolYear: values.schoolYear,
+                            subjects: semester.subjects,
+                        };
+                    }
+                    return semester;
+                })
+            );
+        } finally {
+            setProcessing(false);
+            setSemesterModalOpen(false);
+        }
+    };
+
+    const handleDeleteSemester = (semester: Semester) => {
+        if (processing) return;
+        
+        setProcessing(true);
+
+        try {
+            setSemesters((prev) => {
+                const updated = prev.filter((s) => s.id !== semester.id);
+                localStorage.setItem(
+                    localStorageSemestersKey,
+                    JSON.stringify(updated)
+                );
+                // If the deleted semester was being viewed, switch to current tab
+                if (updated.length === 0) {
+                    setTab("current");
+                }
+                return updated;
+            });
+        } finally {
+            setProcessing(false);
+        }
+    };
+
+    const handleToggleSemester = (id: string) => {
+        setCollapsedSemesters(prev => ({
+            ...prev,
+            [id]: !prev[id],
+        }));
+    };
+
+    // Handle tab change
+    const onTabChange = (value: string) => {
+        setTab(value);
+    }
 
     // Filter subjects by code or title
     const filteredSubjects = subjects.filter(
@@ -214,278 +322,66 @@ function App() {
                         <AppHeader appName={appName} appVersion={appVersion} />
                         <ThemeSwitcher />
                     </div>
-                    <div className="flex flex-col gap-2 bg-muted/30 rounded-lg w-full mt-8 py-12 px-8">
-                        <div className="flex justify-end">
-                            {honor && (
-                                <Badge variant="secondary">
-                                    <Medal className="text-primary" />
-                                    {honor}
-                                </Badge>
-                            )}
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <CopyButton
-                                variant="default"
-                                size="lg"
-                                content={
-                                    gwa !== null && gwa !== 0
-                                        ? gwa.toFixed(3)
-                                        : "0"
-                                }
+                    <Tabs value={tab} onValueChange={onTabChange}>
+                        {semesters.length > 0 && (
+                            <TabsList className="mt-8">
+                                <TabsTrigger value="current">Current</TabsTrigger>
+                                <TabsTrigger value="semesters">Semesters</TabsTrigger>
+                            </TabsList>
+                        )}
+                        <TabsContent value="current">
+                            <GWASummary gwa={gwa} honor={honor} semestersCount={semesters.length} />
+                            <div className="flex flex-col gap-4 mt-8">
+                                <SubjectsToolbar
+                                    subjects={subjects}
+                                    semesters={semesters}
+                                    honor={honor}
+                                    gwa={gwa}
+                                    autosave={autosave}
+                                    setAutosave={setAutosave}
+                                    setSubjectModalOpen={setSubjectModalOpen}
+                                    resetDialogOpen={resetDialogOpen}
+                                    setResetDialogOpen={setResetDialogOpen}
+                                    handleReset={handleReset}
+                                    congratsDialogOpen={congratsDialogOpen}
+                                    setCongratsDialogOpen={setCongratsDialogOpen}
+                                    saveSemesterDialogOpen={saveSemesterDialogOpen}
+                                    setSaveSemesterDialogOpen={setSaveSemesterDialogOpen}
+                                    setSemesterModalOpen={setSemesterModalOpen}
+                                    pageSize={pageSize}
+                                    pageSizeOptions={pageSizeOptions}
+                                    setPageSize={setPageSize}
+                                    setCurrentPage={setCurrentPage}
+                                    search={search}
+                                    setSearch={setSearch}
+                                    searchInputRef={searchInputRef}
+                                    filteredSubjectsCount={filteredSubjects.length}
+                                />
+                                <SubjectList
+                                    paginatedSubjects={paginatedSubjects}
+                                    filteredSubjects={filteredSubjects}
+                                    subjects={subjects}
+                                    pageSize={pageSize}
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    setCurrentPage={setCurrentPage}
+                                    handleDelete={handleDelete}
+                                    setEditingSubject={setEditingSubject}
+                                    setSubjectModalOpen={setSubjectModalOpen}
+                                />
+                            </div>
+                        </TabsContent>
+                        <TabsContent value="semesters" className="pt-4">
+                            <SemesterList
+                                semesters={semesters}
+                                collapsedSemesters={collapsedSemesters}
+                                onToggleSemester={handleToggleSemester}
+                                onDeleteSemester={handleDeleteSemester}
+                                setSemesterModalOpen={setSemesterModalOpen}
+                                setEditingSemester={setEditingSemester}
                             />
-                            <div className="text-end text-6xl font-mono font-bold">
-                                {gwa !== null && gwa !== 0
-                                    ? gwa.toFixed(3)
-                                    : "0"}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col gap-4 mt-8">
-                        {subjects.length === 0 ? (
-                            <Empty className="border border-dashed">
-                                <EmptyHeader>
-                                    <EmptyMedia variant="icon">
-                                        <Album />
-                                    </EmptyMedia>
-                                    <EmptyTitle>No Subjects Found</EmptyTitle>
-                                    <EmptyDescription>
-                                        Add subjects to get started. Your
-                                        subjects will appear here and you’ll be
-                                        able to view, edit, and calculate your
-                                        GWA as you go.
-                                    </EmptyDescription>
-                                </EmptyHeader>
-                                <EmptyContent>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setModalOpen(true)}
-                                    >
-                                        Add Subject
-                                    </Button>
-                                </EmptyContent>
-                            </Empty>
-                        ) : (
-                            <div className="flex flex-row flex-wrap-reverse gap-2 items-center justify-between w-full">
-                                <Select
-                                    value={String(pageSize)}
-                                    onValueChange={value => {
-                                        setCurrentPage(1);
-                                        setPageSize(Number(value));
-                                    }}
-                                >
-                                    <SelectTrigger className="w-20">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {pageSizeOptions.map(size => (
-                                            <SelectItem key={size} value={String(size)}>
-                                                {size}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <ButtonGroup>
-                                    {honor && (
-                                        <ButtonGroup>
-                                            <AlertDialog open={congratsDialogOpen} onOpenChange={setCongratsDialogOpen}>
-                                                <AlertDialogTrigger asChild>
-                                                    <Button
-                                                        variant="default"
-                                                        onClick={() => setCongratsDialogOpen(true)}
-                                                    >
-                                                        <PartyPopper className="size-4" />
-                                                        Congratulate
-                                                    </Button>
-                                                </AlertDialogTrigger>
-                                                <AlertDialogContent>
-                                                    <AlertDialogHeader className="items-center">
-                                                        <div className="flex size-12 items-center justify-center rounded-xl bg-primary">
-                                                            <PartyPopper className="size-6 text-primary-foreground" />
-                                                        </div>
-                                                        <AlertDialogTitle className="text-2xl">Congratulations!</AlertDialogTitle>
-                                                        <AlertDialogDescription className="text-md text-center">
-                                                            You've achieved the academic honor of <strong>{honor}</strong> with a GWA of <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-xs font-semibold">{gwa?.toFixed(3)}</code>! Keep up the excellent work!
-                                                        </AlertDialogDescription>
-                                                    </AlertDialogHeader>
-                                                    <AlertDialogFooter>
-                                                        <AlertDialogCancel onClick={() => setCongratsDialogOpen(false)}>
-                                                            Close
-                                                        </AlertDialogCancel>
-                                                    </AlertDialogFooter>
-                                                </AlertDialogContent>
-                                            </AlertDialog>
-                                        </ButtonGroup>
-                                    )}
-                                    <ButtonGroup>
-                                        <Button
-                                            variant="outline"
-                                            onClick={() => setModalOpen(true)}
-                                        >
-                                            <PlusIcon className="size-4" />
-                                            Add
-                                        </Button>
-                                        <AlertDialog
-                                            open={resetDialogOpen}
-                                            onOpenChange={setResetDialogOpen}
-                                        >
-                                            <AlertDialogTrigger asChild>
-                                                <Button
-                                                    variant="outline"
-                                                    onClick={() =>
-                                                        setResetDialogOpen(true)
-                                                    }
-                                                >
-                                                    <RotateCcw className="size-4" />
-                                                    Reset
-                                                </Button>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>
-                                                    <AlertDialogTitle>
-                                                        Are you absolutely sure?
-                                                    </AlertDialogTitle>
-                                                    <AlertDialogDescription>
-                                                        This action cannot be undone.
-                                                        This will permanently delete all
-                                                        your subjects and reset your
-                                                        GWA.
-                                                    </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                    <AlertDialogCancel>
-                                                        Cancel
-                                                    </AlertDialogCancel>
-                                                    <AlertDialogAction
-                                                        onClick={handleReset}
-                                                    >
-                                                        Continue
-                                                    </AlertDialogAction>
-                                                </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
-                                    </ButtonGroup>
-                                </ButtonGroup>
-                            </div>
-                        )}
-                        {subjects.length > 0 && (
-                            <div className="w-full flex justify-end">
-                                <InputGroup className="sm ml-auto">
-                                    <InputGroupInput
-                                        placeholder="Search subjects..."
-                                        value={search}
-                                        onChange={(e) =>
-                                            setSearch(e.target.value)
-                                        }
-                                    />
-                                    <InputGroupAddon>
-                                        <Search className="size-4 text-muted-foreground" />
-                                    </InputGroupAddon>
-                                    <InputGroupAddon
-                                        align="inline-end"
-                                        className="text-muted-foreground"
-                                    >
-                                        {filteredSubjects.length} results
-                                    </InputGroupAddon>
-                                </InputGroup>
-                            </div>
-                        )}
-                        {paginatedSubjects.length > 0 && (
-                            <ItemGroup className="gap-4 mt-4">
-                                {paginatedSubjects.map((subject) => (
-                                    <Item
-                                        key={subject.id}
-                                        variant="outline"
-                                        asChild
-                                        role="listitem"
-                                    >
-                                        <div className="flex items-center w-full">
-                                            <ItemContent>
-                                                <ItemTitle className="line-clamp-1 text-muted-foreground">
-                                                    {subject.code}
-                                                </ItemTitle>
-                                                <ItemDescription className="text-xl font-semibold line-clamp-1">
-                                                    {subject.title}
-                                                </ItemDescription>
-                                            </ItemContent>
-                                            <ItemContent>
-                                                <ItemTitle className="line-clamp-1 text-muted-foreground w-full text-end">
-                                                    {subject.units}
-                                                </ItemTitle>
-                                                <ItemDescription className="text-2xl font-bold line-clamp-1 font-mono w-full text-end">
-                                                    {subject.grade.toFixed(2)}
-                                                </ItemDescription>
-                                            </ItemContent>
-                                            <ItemActions>
-                                                <ButtonGroup
-                                                    orientation="vertical"
-                                                    aria-label="Media controls"
-                                                    className="h-fit"
-                                                >
-                                                    <Button
-                                                        variant="outline"
-                                                        size="icon"
-                                                        onClick={() => {
-                                                            setEditingSubject(
-                                                                subject
-                                                            );
-                                                            setModalOpen(true);
-                                                        }}
-                                                    >
-                                                        <Pencil className="w-4 h-4" />
-                                                    </Button>
-                                                    <Button
-                                                        variant="destructive"
-                                                        size="icon"
-                                                        onClick={() =>
-                                                            handleDelete(
-                                                                subject
-                                                            )
-                                                        }
-                                                    >
-                                                        <Trash className="w-4 h-4" />
-                                                    </Button>
-                                                </ButtonGroup>
-                                            </ItemActions>
-                                        </div>
-                                    </Item>
-                                ))}
-                            </ItemGroup>
-                        )}
-
-                        {paginatedSubjects.length > 0 && (
-                            <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
-                                <div className="text-muted-foreground text-sm">
-                                    Showing {(currentPage - 1) * pageSize + 1}
-                                    {" - "}
-                                    {Math.min(
-                                        currentPage * pageSize,
-                                        filteredSubjects.length
-                                    )}
-                                    {" of "}
-                                    {filteredSubjects.length} row(s)
-                                </div>
-                                <div className="flex justify-end">
-                                    <Paginator
-                                        currentPage={currentPage}
-                                        totalPages={totalPages}
-                                        onPageChange={setCurrentPage}
-                                        showPreviousNext
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {filteredSubjects.length === 0 &&
-                            subjects.length > 0 && (
-                                <div className="flex flex-row items-center justify-center bg-muted rounded-lg py-12 px-4 gap-4">
-                                    <span className="text-muted-foreground">
-                                        No subjects match your search.
-                                    </span>
-                                </div>
-                            )}
-                    </div>
+                        </TabsContent>
+                    </Tabs>
                 </div>
             </main>
 
@@ -497,7 +393,7 @@ function App() {
                 />
             </footer>
 
-            { congratsDialogOpen && (
+            {congratsDialogOpen && (
                 <FireworksBackground
                     className="absolute inset-0 flex items-center justify-center rounded-xl"
                     fireworkSpeed={{ min: 8, max: 16 }}
@@ -508,12 +404,12 @@ function App() {
             )}
 
             <SubjectFormModal
-                open={modalOpen}
+                open={subjectModalOpen}
                 onOpenChange={(open) => {
-                    setModalOpen(open);
+                    setSubjectModalOpen(open);
                     if (!open) setEditingSubject(null);
                 }}
-                onClose={() => setModalOpen(false)}
+                onClose={() => setSubjectModalOpen(false)}
                 onSave={() => formRef.current?.requestSubmit()}
                 processing={processing}
                 success={success}
@@ -526,12 +422,43 @@ function App() {
                     subjects={subjects}
                     onSuccess={editingSubject ? handleUpdate : handleCreate}
                     inputRef={inputRef}
-                    setModalOpen={setModalOpen}
+                    setModalOpen={setSubjectModalOpen}
                     setProcessing={setProcessing}
                     setSuccess={setSuccess}
                     setDirty={setDirty}
                 />
             </SubjectFormModal>
+
+            <SemesterFormModal
+                open={semesterModalOpen}
+                onOpenChange={(open) => {
+                    setSemesterModalOpen(open);
+                    if (!open) setEditingSemester(null);
+                }}
+                onClose={() => setSemesterModalOpen(false)}
+                onSave={() => formRef.current?.requestSubmit()}
+                processing={processing}
+                success={success}
+                editingSemester={editingSemester}
+                dirty={dirty}
+            >
+                <SemesterForm
+                    ref={formRef}
+                    semester={editingSemester}
+                    semesters={semesters}
+                    subjects={subjects}
+                    onSuccess={
+                        editingSemester
+                            ? handleUpdateSemester
+                            : handleCreateSemester
+                    }
+                    inputRef={inputRef}
+                    setModalOpen={setSemesterModalOpen}
+                    setProcessing={setProcessing}
+                    setSuccess={setSuccess}
+                    setDirty={setDirty}
+                />
+            </SemesterFormModal>
         </div>
     );
 }

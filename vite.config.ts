@@ -3,6 +3,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from "@tailwindcss/vite"
 import { VitePWA } from 'vite-plugin-pwa'
+import pkg from "./package.json";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -13,10 +14,12 @@ export default defineConfig({
             registerType: 'autoUpdate',
             workbox: {
                 cleanupOutdatedCaches: true,
-                maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8 MiB
             },
         }),
     ],
+    define: {
+        __APP_VERSION__: JSON.stringify(pkg.version),
+    },
     build: {
         outDir: 'build',
         minify: 'terser',

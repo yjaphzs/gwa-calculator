@@ -19,6 +19,7 @@ A web application for calculating your General Weighted Average (GWA) and determ
 - Automatic GWA calculation
 - Academic honor detection (University Scholar, College Scholar)
 - Pagination and search for subjects
+- Add, edit, and delete semesters
 - Responsive design with dark mode support
 - Data autosave to local storage
 - Deployable to GitHub Pages
@@ -61,7 +62,7 @@ See the [workflow file](.github/workflows/main.yml) for automated deployment ins
 - **Ko-fi Button:**  
   [CostasAK/react-kofi-button](https://github.com/CostasAK/react-kofi-button)
 
-- **Copy Button & Fireworks Background:**  
+- **Copy Button, Fireworks Background, & Hooks:**  
   [shadcn/ui](https://www.shadcn.io/)
 
 - **Theme Switcher:**  

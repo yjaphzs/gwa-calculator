@@ -14,17 +14,17 @@ import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
 
 // Types
-import type { Subject } from "@/types";
+import type { Semester } from "@/types";
 
 /**
- * Props for the SubjectForm component.
+ * Props for the SemesterForm component.
  */
-interface SubjectFormProps {
+interface SemesterFormProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     title?: string;
     description?: string;
-    editingSubject?: Subject | null;
+    editingSemester?: Semester | null;
     onSave?: () => void;
     onClose?: () => void;
     children: ReactNode;
@@ -34,15 +34,15 @@ interface SubjectFormProps {
 }
 
 /**
- * SubjectFormModal
- * Modal dialog for creating or editing a subject, wraps a form and handles submission state.
+ * SemesterFormModal
+ * Modal dialog for creating or editing a semester, wraps a form and handles submission state.
  */
-const SubjectFormModal: React.FC<SubjectFormProps> = ({
+const SemesterFormModal: React.FC<SemesterFormProps> = ({
     open,
     onOpenChange,
     title,
     description,
-    editingSubject,
+    editingSemester,
     onSave,
     onClose,
     processing = false,
@@ -50,13 +50,13 @@ const SubjectFormModal: React.FC<SubjectFormProps> = ({
     dirty = true,
     children,
 }) => {
-    const isEdit = !!editingSubject;
-    const modalTitle = title ?? (isEdit ? "Edit Subject" : "Add Subject");
+    const isEdit = !!editingSemester;
+    const modalTitle = title ?? (isEdit ? "Edit Semester" : "Save Semester");
     const modalDescription =
         description ??
         (isEdit
-            ? "Update the form below to edit your subject. Click save when you're done."
-            : "Fill out the form below to add your subject. Click add when you're done.");
+            ? "Update the form below to edit your semester. Click save when you're done."
+            : "Fill out the form below to add your semester. Click add when you're done.");
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -87,7 +87,7 @@ const SubjectFormModal: React.FC<SubjectFormProps> = ({
                         {processing && (
                             <LoaderCircle className="h-4 w-4 animate-spin mr-2" />
                         )}
-                        {editingSubject ? "Update" : "Save"}
+                        {editingSemester ? "Update" : "Save"}
                     </Button>
                 </DialogFooter>
             </DialogContent>
@@ -95,4 +95,4 @@ const SubjectFormModal: React.FC<SubjectFormProps> = ({
     );
 };
 
-export default SubjectFormModal;
+export default SemesterFormModal;
