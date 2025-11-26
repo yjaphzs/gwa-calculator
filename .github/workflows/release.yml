@@ -39,22 +39,9 @@ jobs:
         run: |
           TAG_NAME=${GITHUB_REF_NAME}
           REPO_NAME=$(basename ${{ github.repository }})
-
-          echo "Archiving assets for ${TAG_NAME}..."
-
-          # Archive the BUILD folder
           BUILD_ZIP="${REPO_NAME}-${TAG_NAME}-build.zip"
           zip -r $BUILD_ZIP ./build
-
-          # Archive the SOURCE code (excluding .git, node_modules, build)
-          SOURCE_PREFIX="${REPO_NAME}-${TAG_NAME}-source"
-
-          # Create ZIP archive
-          zip -r ${SOURCE_PREFIX}.zip . \
-            -x ".git/*" "node_modules/*" "build/*"
-
           echo "BUILD_ZIP=$BUILD_ZIP" >> $GITHUB_OUTPUT
-          echo "SOURCE_ZIP=${SOURCE_PREFIX}.zip" >> $GITHUB_OUTPUT
 
       - name: Generate Changelog
         id: changelog
@@ -69,12 +56,11 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ github.ref_name  }}
           body: ${{ steps.changelog.outputs.changelog || 'No release notes available.' }}
-          prerelease: ${{ contains(github.ref, '-') }} 
+          prerelease: ${{ contains(github.ref, '-') }}
           draft: false 
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
             ${{ steps.archive.outputs.BUILD_ZIP }}
-            ${{ steps.archive.outputs.SOURCE_ZIP }}
           make_latest: true
