@@ -134,7 +134,7 @@ const SemesterList: React.FC<SemesterListProps> = ({
                                             </AlertDialogTrigger>
                                             <AlertDialogContent>
                                                 <AlertDialogHeader>
-                                                    <Trash className="size-10 border rounded-lg bg-primary text-primary-foreground p-2" />
+                                                    <Trash className="size-10 border rounded-lg bg-primary text-primary-foreground p-2 mx-auto sm:mx-0" />
                                                     <AlertDialogTitle>
                                                         Delete this semester?
                                                     </AlertDialogTitle>

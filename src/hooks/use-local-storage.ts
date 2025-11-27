@@ -17,6 +17,7 @@ type UseLocalStorageOptions<T> = {
   serializer?: (value: T) => string
   deserializer?: (value: string) => T
   initializeWithValue?: boolean
+  enabled?: boolean
 }
 
 const IS_SERVER = typeof window === "undefined"
@@ -107,14 +108,16 @@ export function useLocalStorage<T>(
       // Allow value to be a function so we have the same API as useState
       const newValue = value instanceof Function ? value(readValue()) : value
 
-      // Save to local storage
-      window.localStorage.setItem(key, serializer(newValue))
-
       // Save state
       setStoredValue(newValue)
 
-      // We dispatch a custom event so every similar useLocalStorage hook is notified
-      window.dispatchEvent(new StorageEvent("local-storage", { key }))
+      if (options.enabled !== false) {
+        // Save to local storage
+        window.localStorage.setItem(key, serializer(newValue))
+
+        // We dispatch a custom event so every similar useLocalStorage hook is notified
+        window.dispatchEvent(new StorageEvent("local-storage", { key }))
+      }
     } catch (error) {
       console.warn(`Error setting localStorage key "${key}":`, error)
     }

@@ -44,11 +44,11 @@ function App() {
     const [gwa, setGwa] = useState<number | null>(null);
     const [honor, setHonor] = useState<string | null>(null);
 
-    const [autosave, setAutosave] = useLocalStorage<boolean>(localStorageAutosaveKey, true);
+    const [autosave, setAutosave] = useLocalStorage<boolean>(localStorageAutosaveKey, true, { enabled: true });
 
-    const [subjects, setSubjects] = useLocalStorage<Subject[]>(localStorageSubjectsKey, []);
+    const [subjects, setSubjects] = useLocalStorage<Subject[]>(localStorageSubjectsKey, [], { enabled: autosave });
     const [editingSubject, setEditingSubject] = useState<null | Subject>(null);
-    const [semesters, setSemesters] = useLocalStorage<Semester[]>(localStorageSemestersKey, []);
+    const [semesters, setSemesters] = useLocalStorage<Semester[]>(localStorageSemestersKey, [], { enabled: autosave });
     const [editingSemester, setEditingSemester] = useState<null | Semester>(
         null
     );
@@ -115,14 +115,6 @@ function App() {
         setGwa(parseFloat(calculatedGwa.toFixed(3)));
 
         setHonor(honor);
-
-        // Only autosave if enabled
-        if (autosave) {
-            localStorage.setItem(
-                localStorageSubjectsKey,
-                JSON.stringify(subjects)
-            );
-        }
     }, [subjects, gwa, honor, autosave]);
 
     // Save semesters to localStorage when changed
@@ -284,6 +276,10 @@ function App() {
             ...prev,
             [id]: !prev[id],
         }));
+    };
+
+    const onSave = () => {
+
     };
 
     // Handle tab change

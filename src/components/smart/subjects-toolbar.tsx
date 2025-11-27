@@ -39,7 +39,10 @@ import {
     RotateCcw,
     MoreHorizontalIcon,
     FileSpreadsheetIcon,
+    ImportIcon,
+    DownloadIcon,
     SaveIcon,
+    SaveAllIcon,
     Album,
     Search,
     CommandIcon,
@@ -222,7 +225,7 @@ const SubjectsToolbar: React.FC<SubjectsToolbarProps> = ({
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
-                                        <RotateCcw className="size-10 border rounded-lg bg-primary text-primary-foreground p-2" />
+                                        <RotateCcw className="size-10 border rounded-lg bg-primary text-primary-foreground p-2 mx-auto sm:mx-0" />
                                         <AlertDialogTitle>
                                             Reset all subjects?
                                         </AlertDialogTitle>
@@ -274,7 +277,7 @@ const SubjectsToolbar: React.FC<SubjectsToolbarProps> = ({
                                             </AlertDialogTrigger>
                                             <AlertDialogContent>
                                                 <AlertDialogHeader>
-                                                    <FileSpreadsheetIcon className="size-10 border rounded-lg bg-primary text-primary-foreground p-2" />
+                                                    <FileSpreadsheetIcon className="size-10 border rounded-lg bg-primary text-primary-foreground p-2 mx-auto sm:mx-0" />
                                                     <AlertDialogTitle>
                                                         Save Semester
                                                     </AlertDialogTitle>
@@ -302,9 +305,26 @@ const SubjectsToolbar: React.FC<SubjectsToolbarProps> = ({
                                     </DropdownMenuGroup>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuGroup>
+                                        <DropdownMenuItem>
+                                            <ImportIcon />
+                                            Import
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem>
+                                            <DownloadIcon />
+                                            Export
+                                        </DropdownMenuItem>
+                                    </DropdownMenuGroup>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuGroup>
+                                        <DropdownMenuItem
+                                            onSelect={(e) => e.preventDefault()}
+                                        >
+                                            <SaveIcon />
+                                            Save
+                                        </DropdownMenuItem>
                                         <DropdownMenuSub>
                                             <DropdownMenuSubTrigger>
-                                                <SaveIcon />
+                                                <SaveAllIcon />
                                                 Autosave
                                             </DropdownMenuSubTrigger>
                                             <DropdownMenuSubContent>
