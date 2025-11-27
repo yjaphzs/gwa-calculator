@@ -270,6 +270,7 @@ function App() {
         }));
     };
 
+    // Handle Save (Manual)
     const handleSave = () => {
         try {
             localStorage.setItem(localStorageSubjectsKey, JSON.stringify(subjects));
@@ -278,6 +279,103 @@ function App() {
             toast.error("Failed to save subjects.");
             return;
         }
+    };
+
+    // Handle Export Data
+    const handleExport = () => {
+        try {
+            // Collect all relevant localStorage keys
+            const exportData = {
+                subjects: JSON.parse(localStorage.getItem(localStorageSubjectsKey) ?? "[]"),
+                semesters: JSON.parse(localStorage.getItem(localStorageSemestersKey) ?? "[]"),
+                autosave: JSON.parse(localStorage.getItem(localStorageAutosaveKey) ?? "true"),
+            };
+
+            // Create a blob from the data
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+
+            // Create a temporary link and trigger download
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "gwa-calculator-export.json";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            toast.success("Exported data as gwa-calculator-export.json!");
+        } catch (error) {
+            toast.error("Failed to export data.");
+        }
+    };
+
+    // Handle Import Data
+    const handleImport = () => {
+        // Create a hidden file input
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".json,application/json";
+        input.style.display = "none";
+
+        input.onchange = async (event: Event) => {
+            const file = (event.target as HTMLInputElement).files?.[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                const data = JSON.parse(text);
+                // Helper functions for validation
+                const isValidSubject = (subject: any): subject is Subject =>
+                    subject &&
+                    typeof subject.id === "string" &&
+                    typeof subject.code === "string" &&
+                    typeof subject.title === "string" &&
+                    typeof subject.grade === "number" &&
+                    typeof subject.units === "number";
+
+                const isValidSemester = (semester: any): semester is Semester =>
+                    semester &&
+                    typeof semester.id === "string" &&
+                    typeof semester.schoolYear === "string" &&
+                    typeof semester.semester === "string" &&
+                    Array.isArray(semester.subjects) &&
+                    semester.subjects.every(isValidSubject);
+
+                if (!data || typeof data !== "object") {
+                    throw new Error("Invalid file structure.");
+                }
+
+                if (!Array.isArray(data.subjects) || !data.subjects.every(isValidSubject)) {
+                    throw new Error("Missing or invalid 'subjects' array.");
+                }
+
+                if (!Array.isArray(data.semesters) || !data.semesters.every(isValidSemester)) {
+                    throw new Error("Missing or invalid 'semesters' array.");
+                }
+
+                if (typeof data.autosave !== "boolean") {
+                    throw new Error("Missing or invalid 'autosave' value.");
+                }
+
+                setSubjects(data.subjects);
+                localStorage.setItem(localStorageSubjectsKey, JSON.stringify(data.subjects));
+
+                setSemesters(data.semesters);
+                localStorage.setItem(localStorageSemestersKey, JSON.stringify(data.semesters));
+
+                setAutosave(data.autosave);
+                localStorage.setItem(localStorageAutosaveKey, JSON.stringify(data.autosave));
+
+                toast.success("Imported data successfully!");
+            } catch (error: any) {
+                toast.error("Failed to import data. Invalid file format.");
+            }
+        };
+
+        document.body.appendChild(input);
+        input.click();
+        document.body.removeChild(input);
     };
 
     // Handle tab change
@@ -338,6 +436,8 @@ function App() {
                                     resetDialogOpen={resetDialogOpen}
                                     setResetDialogOpen={setResetDialogOpen}
                                     handleReset={handleReset}
+                                    handleImport={handleImport}
+                                    handleExport={handleExport}
                                     congratsDialogOpen={congratsDialogOpen}
                                     setCongratsDialogOpen={setCongratsDialogOpen}
                                     saveSemesterDialogOpen={saveSemesterDialogOpen}

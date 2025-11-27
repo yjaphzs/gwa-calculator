@@ -75,6 +75,8 @@ interface SubjectsToolbarProps {
     resetDialogOpen: boolean;
     setResetDialogOpen: (open: boolean) => void;
     handleReset: () => void;
+    handleImport: () => void;
+    handleExport: () => void;
     congratsDialogOpen: boolean;
     setCongratsDialogOpen: (open: boolean) => void;
     saveSemesterDialogOpen: boolean;
@@ -102,6 +104,8 @@ const SubjectsToolbar: React.FC<SubjectsToolbarProps> = ({
     resetDialogOpen,
     setResetDialogOpen,
     handleReset,
+    handleImport,
+    handleExport,
     congratsDialogOpen,
     setCongratsDialogOpen,
     saveSemesterDialogOpen,
@@ -125,17 +129,26 @@ const SubjectsToolbar: React.FC<SubjectsToolbarProps> = ({
                     </EmptyMedia>
                     <EmptyTitle>No Subjects Found</EmptyTitle>
                     <EmptyDescription>
-                        Add subjects to get started. Your subjects will appear here and you’ll be able to view, edit, and calculate your GWA as you go.
+                        Add subjects to get started and calculate your GWA as you go. You can also import your records if you have existing subject data.
                     </EmptyDescription>
                 </EmptyHeader>
                 <EmptyContent>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSubjectModalOpen(true)}
-                    >
-                        Add Subject
-                    </Button>
+                    <div className="flex flex-row gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setSubjectModalOpen(true)}
+                        >
+                            Add Subject
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleImport}
+                        >
+                            Import Data
+                        </Button>
+                    </div>
                 </EmptyContent>
             </Empty>
         ) : subjects.length === 0 && semesters.length > 0 ? (
@@ -307,11 +320,15 @@ const SubjectsToolbar: React.FC<SubjectsToolbarProps> = ({
                                     </DropdownMenuGroup>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuGroup>
-                                        <DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            onClick={handleImport}
+                                        >
                                             <ImportIcon />
                                             Import
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            onClick={handleExport}
+                                        >
                                             <DownloadIcon />
                                             Export
                                         </DropdownMenuItem>
