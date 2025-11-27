@@ -8,6 +8,7 @@ import {
     TabsList,
     TabsTrigger
 } from "@/components/ui/tabs";
+import { Toaster, toast } from "sonner"
 import { FireworksBackground } from "@/components/ui/shadcn-io/fireworks-background";
 import { getAcademicHonor } from "@/lib/academic";
 import { useEventListener } from "@/hooks/use-event-listener";
@@ -46,9 +47,9 @@ function App() {
 
     const [autosave, setAutosave] = useLocalStorage<boolean>(localStorageAutosaveKey, true, { enabled: true });
 
-    const [subjects, setSubjects] = useLocalStorage<Subject[]>(localStorageSubjectsKey, [], { enabled: autosave });
+    const [subjects, setSubjects, removeSubjects] = useLocalStorage<Subject[]>(localStorageSubjectsKey, [], { enabled: autosave });
     const [editingSubject, setEditingSubject] = useState<null | Subject>(null);
-    const [semesters, setSemesters] = useLocalStorage<Semester[]>(localStorageSemestersKey, [], { enabled: autosave });
+    const [semesters, setSemesters] = useLocalStorage<Semester[]>(localStorageSemestersKey, [], { enabled: true });
     const [editingSemester, setEditingSemester] = useState<null | Semester>(
         null
     );
@@ -115,15 +116,7 @@ function App() {
         setGwa(parseFloat(calculatedGwa.toFixed(3)));
 
         setHonor(honor);
-    }, [subjects, gwa, honor, autosave]);
-
-    // Save semesters to localStorage when changed
-    useEffect(() => {
-        localStorage.setItem(
-            localStorageSemestersKey,
-            JSON.stringify(semesters)
-        );
-    }, [semesters]);
+    }, [subjects, gwa, honor]);
 
     const handleCreate = async (values: any) => {
         if (processing) return;
@@ -193,11 +186,10 @@ function App() {
     };
 
     const handleReset = () => {
-        setSubjects([]);
+        removeSubjects();
         setGwa(0);
         setHonor(null);
         setResetDialogOpen(false);
-        localStorage.removeItem(localStorageSubjectsKey);
     };
 
     const handleCreateSemester = async (values: any) => {
@@ -278,8 +270,14 @@ function App() {
         }));
     };
 
-    const onSave = () => {
-
+    const handleSave = () => {
+        try {
+            localStorage.setItem(localStorageSubjectsKey, JSON.stringify(subjects));
+            toast.success("Subjects have been saved!");
+        } catch (error) {
+            toast.error("Failed to save subjects.");
+            return;
+        }
     };
 
     // Handle tab change
@@ -333,6 +331,7 @@ function App() {
                                     semesters={semesters}
                                     honor={honor}
                                     gwa={gwa}
+                                    handleSave={handleSave}
                                     autosave={autosave}
                                     setAutosave={setAutosave}
                                     setSubjectModalOpen={setSubjectModalOpen}
@@ -455,6 +454,7 @@ function App() {
                     setDirty={setDirty}
                 />
             </SemesterFormModal>
+            <Toaster />
         </div>
     );
 }

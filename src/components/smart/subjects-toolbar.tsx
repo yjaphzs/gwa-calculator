@@ -68,6 +68,7 @@ interface SubjectsToolbarProps {
     semesters: Semester[];
     honor: string | null;
     gwa: number | null;
+    handleSave: () => void;
     autosave: boolean;
     setAutosave: (value: boolean) => void;
     setSubjectModalOpen: (open: boolean) => void;
@@ -94,6 +95,7 @@ const SubjectsToolbar: React.FC<SubjectsToolbarProps> = ({
     semesters,
     honor,
     gwa,
+    handleSave,
     autosave,
     setAutosave,
     setSubjectModalOpen,
@@ -317,7 +319,7 @@ const SubjectsToolbar: React.FC<SubjectsToolbarProps> = ({
                                     <DropdownMenuSeparator />
                                     <DropdownMenuGroup>
                                         <DropdownMenuItem
-                                            onSelect={(e) => e.preventDefault()}
+                                            onClick={handleSave}
                                         >
                                             <SaveIcon />
                                             Save
@@ -383,7 +385,7 @@ const SubjectsToolbar: React.FC<SubjectsToolbarProps> = ({
                             className="text-muted-foreground"
                         >
                             {filteredSubjectsCount} results
-                            <KbdGroup>
+                            <KbdGroup className="hidden sm:inline-flex">
                                 <Kbd>
                                     <CommandIcon />
                                 </Kbd>
