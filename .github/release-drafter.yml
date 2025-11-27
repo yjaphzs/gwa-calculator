@@ -6,7 +6,7 @@ template: |
   $FOOTER
 
 # Name and Tag generation
-name-template: 'Release Draft for $DATE'
+name-template: v$MAJOR.$MINOR.$PATCH
 tag-template: v$MAJOR.$MINOR.$PATCH
 tag-prefix: ''
 header: ''
