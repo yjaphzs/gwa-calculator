@@ -6,8 +6,8 @@ template: |
   $FOOTER
 
 # Name and Tag generation
-name-template: 'v$npm_package_version'
-tag-template: 'v$npm_package_version'
+name-template: 'Release Draft for $DATE'
+tag-template: v$MAJOR.$MINOR.$PATCH
 tag-prefix: ''
 header: ''
 footer: ''
