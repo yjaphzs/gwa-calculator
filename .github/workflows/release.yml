@@ -2,65 +2,22 @@ name: Release Drafter
 
 on:
   push:
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+*' 
+    branches:
+      - main
+      - master
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
 
 jobs:
-  create-release:
+  update_release_draft:
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Checkout main branch for changelog
-        run: git checkout main
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build project
+      - uses: release-drafter/release-drafter@v6
         env:
-            VITE_APP_NAME: ${{ vars.APP_NAME }}
-            VITE_APP_LOCAL_STORAGE_SUBJECTS_KEY: ${{ vars.APP_LOCAL_STORAGE_SUBJECTS_KEY }}
-            VITE_APP_LOCAL_STORAGE_SEMESTERS_KEY: ${{ vars.APP_LOCAL_STORAGE_SEMESTERS_KEY }}
-            VITE_APP_LOCAL_STORAGE_AUTOSAVE_KEY: ${{ vars.APP_LOCAL_STORAGE_AUTOSAVE_KEY }}
-        run: npm run build
-        
-      - name: Archive Release Assets (.zip)
-        id: archive
-        run: |
-          TAG_NAME=${GITHUB_REF_NAME}
-          REPO_NAME=$(basename ${{ github.repository }})
-          BUILD_ZIP="${REPO_NAME}-${TAG_NAME}-build.zip"
-          zip -r $BUILD_ZIP ./build
-          echo "BUILD_ZIP=$BUILD_ZIP" >> $GITHUB_OUTPUT
-
-      - name: Generate Changelog
-        id: changelog
-        uses: TriPSs/conventional-changelog-action@v5
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          output-file: 'false' 
-          tag-prefix: 'v'
-          preset: 'angular' 
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          tag_name: ${{ github.ref_name  }}
-          body: ${{ steps.changelog.outputs.changelog || 'No release notes available.' }}
-          prerelease: ${{ contains(github.ref, '-') }}
-          draft: false 
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: |
-            ${{ steps.archive.outputs.BUILD_ZIP }}
-          make_latest: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
