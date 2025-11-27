@@ -8,6 +8,7 @@ import {
     TabsList,
     TabsTrigger
 } from "@/components/ui/tabs";
+import { Toaster, toast } from "sonner"
 import { FireworksBackground } from "@/components/ui/shadcn-io/fireworks-background";
 import { getAcademicHonor } from "@/lib/academic";
 import { useEventListener } from "@/hooks/use-event-listener";
@@ -44,11 +45,11 @@ function App() {
     const [gwa, setGwa] = useState<number | null>(null);
     const [honor, setHonor] = useState<string | null>(null);
 
-    const [autosave, setAutosave] = useLocalStorage<boolean>(localStorageAutosaveKey, true);
+    const [autosave, setAutosave] = useLocalStorage<boolean>(localStorageAutosaveKey, true, { enabled: true });
 
-    const [subjects, setSubjects] = useLocalStorage<Subject[]>(localStorageSubjectsKey, []);
+    const [subjects, setSubjects, removeSubjects] = useLocalStorage<Subject[]>(localStorageSubjectsKey, [], { enabled: autosave });
     const [editingSubject, setEditingSubject] = useState<null | Subject>(null);
-    const [semesters, setSemesters] = useLocalStorage<Semester[]>(localStorageSemestersKey, []);
+    const [semesters, setSemesters] = useLocalStorage<Semester[]>(localStorageSemestersKey, [], { enabled: true });
     const [editingSemester, setEditingSemester] = useState<null | Semester>(
         null
     );
@@ -115,23 +116,7 @@ function App() {
         setGwa(parseFloat(calculatedGwa.toFixed(3)));
 
         setHonor(honor);
-
-        // Only autosave if enabled
-        if (autosave) {
-            localStorage.setItem(
-                localStorageSubjectsKey,
-                JSON.stringify(subjects)
-            );
-        }
-    }, [subjects, gwa, honor, autosave]);
-
-    // Save semesters to localStorage when changed
-    useEffect(() => {
-        localStorage.setItem(
-            localStorageSemestersKey,
-            JSON.stringify(semesters)
-        );
-    }, [semesters]);
+    }, [subjects, gwa, honor]);
 
     const handleCreate = async (values: any) => {
         if (processing) return;
@@ -201,11 +186,10 @@ function App() {
     };
 
     const handleReset = () => {
-        setSubjects([]);
+        removeSubjects();
         setGwa(0);
         setHonor(null);
         setResetDialogOpen(false);
-        localStorage.removeItem(localStorageSubjectsKey);
     };
 
     const handleCreateSemester = async (values: any) => {
@@ -286,6 +270,114 @@ function App() {
         }));
     };
 
+    // Handle Save (Manual)
+    const handleSave = () => {
+        try {
+            localStorage.setItem(localStorageSubjectsKey, JSON.stringify(subjects));
+            toast.success("Subjects have been saved!");
+        } catch (error) {
+            toast.error("Failed to save subjects.");
+            return;
+        }
+    };
+
+    // Handle Export Data
+    const handleExport = () => {
+        try {
+            // Collect all relevant localStorage keys
+            const exportData = {
+                subjects: JSON.parse(localStorage.getItem(localStorageSubjectsKey) ?? "[]"),
+                semesters: JSON.parse(localStorage.getItem(localStorageSemestersKey) ?? "[]"),
+                autosave: JSON.parse(localStorage.getItem(localStorageAutosaveKey) ?? "true"),
+            };
+
+            // Create a blob from the data
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+
+            // Create a temporary link and trigger download
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "gwa-calculator-export.json";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            toast.success("Exported data as gwa-calculator-export.json!");
+        } catch (error) {
+            toast.error("Failed to export data.");
+        }
+    };
+
+    // Handle Import Data
+    const handleImport = () => {
+        // Create a hidden file input
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".json,application/json";
+        input.style.display = "none";
+
+        input.onchange = async (event: Event) => {
+            const file = (event.target as HTMLInputElement).files?.[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                const data = JSON.parse(text);
+                // Helper functions for validation
+                const isValidSubject = (subject: any): subject is Subject =>
+                    subject &&
+                    typeof subject.id === "string" &&
+                    typeof subject.code === "string" &&
+                    typeof subject.title === "string" &&
+                    typeof subject.grade === "number" &&
+                    typeof subject.units === "number";
+
+                const isValidSemester = (semester: any): semester is Semester =>
+                    semester &&
+                    typeof semester.id === "string" &&
+                    typeof semester.schoolYear === "string" &&
+                    typeof semester.semester === "string" &&
+                    Array.isArray(semester.subjects) &&
+                    semester.subjects.every(isValidSubject);
+
+                if (!data || typeof data !== "object") {
+                    throw new Error("Invalid file structure.");
+                }
+
+                if (!Array.isArray(data.subjects) || !data.subjects.every(isValidSubject)) {
+                    throw new Error("Missing or invalid 'subjects' array.");
+                }
+
+                if (!Array.isArray(data.semesters) || !data.semesters.every(isValidSemester)) {
+                    throw new Error("Missing or invalid 'semesters' array.");
+                }
+
+                if (typeof data.autosave !== "boolean") {
+                    throw new Error("Missing or invalid 'autosave' value.");
+                }
+
+                setSubjects(data.subjects);
+                localStorage.setItem(localStorageSubjectsKey, JSON.stringify(data.subjects));
+
+                setSemesters(data.semesters);
+                localStorage.setItem(localStorageSemestersKey, JSON.stringify(data.semesters));
+
+                setAutosave(data.autosave);
+                localStorage.setItem(localStorageAutosaveKey, JSON.stringify(data.autosave));
+
+                toast.success("Imported data successfully!");
+            } catch (error: any) {
+                toast.error("Failed to import data. Invalid file format.");
+            }
+        };
+
+        document.body.appendChild(input);
+        input.click();
+        document.body.removeChild(input);
+    };
+
     // Handle tab change
     const onTabChange = (value: string) => {
         setTab(value);
@@ -337,12 +429,15 @@ function App() {
                                     semesters={semesters}
                                     honor={honor}
                                     gwa={gwa}
+                                    handleSave={handleSave}
                                     autosave={autosave}
                                     setAutosave={setAutosave}
                                     setSubjectModalOpen={setSubjectModalOpen}
                                     resetDialogOpen={resetDialogOpen}
                                     setResetDialogOpen={setResetDialogOpen}
                                     handleReset={handleReset}
+                                    handleImport={handleImport}
+                                    handleExport={handleExport}
                                     congratsDialogOpen={congratsDialogOpen}
                                     setCongratsDialogOpen={setCongratsDialogOpen}
                                     saveSemesterDialogOpen={saveSemesterDialogOpen}
@@ -459,6 +554,7 @@ function App() {
                     setDirty={setDirty}
                 />
             </SemesterFormModal>
+            <Toaster />
         </div>
     );
 }
