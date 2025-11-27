@@ -1,6 +1,31 @@
+# .github/release-drafter.yml
+
+template: |
+  $CHANGES
+  $CONTRIBUTORS
+  $FOOTER
+
+# Name and Tag generation
 name-template: 'v$npm_package_version'
 tag-template: 'v$npm_package_version'
+tag-prefix: ''
+header: ''
+footer: ''
 
+# Template for a single change item
+change-template: '* $TITLE (#$NUMBER) @$AUTHOR'
+change-title-escapes: ''
+no-changes-template: '* No changes'
+
+# Version Resolution (for automated version bumping)
+version-template: '$MAJOR.$MINOR.$PATCH$PRERELEASE'
+version-resolver:
+  major: { labels: [] }
+  minor: { labels: [] }
+  patch: { labels: [] }
+  default: 'patch'
+
+# Define Categories based on PR labels
 categories:
   - title: '🚀 Features'
     labels:
@@ -19,5 +44,12 @@ categories:
       - 'refactor'
       - 'dependencies'
 
+# Exclusion and other settings
 exclude-labels:
   - 'skip-changelog'
+no-contributors-template: 'No contributors'
+sort-by: 'merged_at'
+sort-direction: 'descending'
+prerelease: false
+latest: 'true'
+category-template: '## $TITLE'
