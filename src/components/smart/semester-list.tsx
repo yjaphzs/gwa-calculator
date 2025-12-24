@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
     Item,
     ItemContent,
-    ItemDescription,
     ItemTitle,
 } from "@/components/ui/item";
 import { Badge } from "@/components/ui/badge";
