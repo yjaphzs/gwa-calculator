@@ -1,0 +1,12 @@
+name: Post-Release Tasks
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Notification
+        run: echo "Release ${{ github.event.release.tag_name }} published!"
