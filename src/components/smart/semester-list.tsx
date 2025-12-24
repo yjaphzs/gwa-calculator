@@ -168,7 +168,7 @@ const SemesterList: React.FC<SemesterListProps> = ({
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </ItemTitle>
-                        <ItemDescription className="mt-4">
+                        <div className="mt-4">
                             {(() => {
                                 const totalUnits = semester.subjects.reduce(
                                     (acc, s) => acc + s.units,
@@ -289,7 +289,7 @@ const SemesterList: React.FC<SemesterListProps> = ({
                                             ))}
                                 </CollapsibleContent>
                             </Collapsible>
-                        </ItemDescription>
+                        </div>
                     </ItemContent>
                 </Item>
             ))}
