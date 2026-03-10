@@ -46,6 +46,8 @@ import {
     Album,
     Search,
     CommandIcon,
+    QrCodeIcon,
+    HeartIcon,
 } from "lucide-react";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import {
@@ -77,6 +79,7 @@ interface SubjectsToolbarProps {
     handleReset: () => void;
     handleImport: () => void;
     handleExport: () => void;
+    onQrTransfer?: () => void;
     congratsDialogOpen: boolean;
     setCongratsDialogOpen: (open: boolean) => void;
     saveSemesterDialogOpen: boolean;
@@ -106,6 +109,7 @@ const SubjectsToolbar: React.FC<SubjectsToolbarProps> = ({
     handleReset,
     handleImport,
     handleExport,
+    onQrTransfer,
     congratsDialogOpen,
     setCongratsDialogOpen,
     saveSemesterDialogOpen,
@@ -133,7 +137,7 @@ const SubjectsToolbar: React.FC<SubjectsToolbarProps> = ({
                     </EmptyDescription>
                 </EmptyHeader>
                 <EmptyContent>
-                    <div className="flex flex-row gap-2">
+                    <div className="flex flex-row flex-wrap sm:flex-nowrap items-center justify-center gap-2">
                         <Button
                             variant="outline"
                             size="sm"
@@ -148,6 +152,16 @@ const SubjectsToolbar: React.FC<SubjectsToolbarProps> = ({
                         >
                             Import Data
                         </Button>
+                        {onQrTransfer && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={onQrTransfer}
+                            >
+                                <QrCodeIcon className="size-4" />
+                                QR Transfer
+                            </Button>
+                        )}
                     </div>
                 </EmptyContent>
             </Empty>
@@ -207,6 +221,47 @@ const SubjectsToolbar: React.FC<SubjectsToolbarProps> = ({
                                                     {gwa?.toFixed(3)}
                                                 </code>
                                                 ! Keep up the excellent work!
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel
+                                                onClick={() => setCongratsDialogOpen(false)}
+                                            >
+                                                Close
+                                            </AlertDialogCancel>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </ButtonGroup>
+                        )}
+                        {!honor && gwa !== null && gwa > 0 && subjects.reduce((acc, s) => acc + s.units, 0) >= 12 && (
+                            <ButtonGroup>
+                                <AlertDialog
+                                    open={congratsDialogOpen}
+                                    onOpenChange={setCongratsDialogOpen}
+                                >
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            onClick={() => setCongratsDialogOpen(true)}
+                                        >
+                                            <HeartIcon className="size-4" />
+                                            My GWA
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader className="items-center">
+                                            <div className="flex size-12 items-center justify-center rounded-xl bg-primary">
+                                                <HeartIcon className="size-6 text-primary-foreground" />
+                                            </div>
+                                            <AlertDialogTitle className="text-2xl">
+                                                Keep Going!
+                                            </AlertDialogTitle>
+                                            <AlertDialogDescription className="text-md text-center">
+                                                Your current GWA is{" "}
+                                                <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-xs font-semibold">
+                                                    {gwa?.toFixed(3)}
+                                                </code>
+                                                . You're not on the honors list yet, but every step forward counts. Keep pushing — you've got this!
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
@@ -332,6 +387,12 @@ const SubjectsToolbar: React.FC<SubjectsToolbarProps> = ({
                                             <DownloadIcon />
                                             Export
                                         </DropdownMenuItem>
+                                        {onQrTransfer && (
+                                            <DropdownMenuItem onClick={onQrTransfer}>
+                                                <QrCodeIcon />
+                                                QR Transfer
+                                            </DropdownMenuItem>
+                                        )}
                                     </DropdownMenuGroup>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuGroup>

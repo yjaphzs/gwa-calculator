@@ -25,6 +25,7 @@ import SemesterFormModal from "@/components/smart/semester-modal";
 import SemesterForm from "@/components/smart/semester-form";
 
 import SemesterList from "@/components/smart/semester-list";
+import QrTransferDialog from "@/components/smart/qr-transfer-dialog";
 
 import { type Subject, type Semester } from "@/types";
 
@@ -66,6 +67,7 @@ function App() {
     const [resetDialogOpen, setResetDialogOpen] = useState(false);
     const [congratsDialogOpen, setCongratsDialogOpen] = useState(false);
     const [saveSemesterDialogOpen, setSaveSemesterDialogOpen] = useState(false);
+    const [qrTransferOpen, setQrTransferOpen] = useState(false);
 
     const [collapsedSemesters, setCollapsedSemesters] = useState<Record<string, boolean>>({});
 
@@ -438,6 +440,7 @@ function App() {
                                     handleReset={handleReset}
                                     handleImport={handleImport}
                                     handleExport={handleExport}
+                                    onQrTransfer={() => setQrTransferOpen(true)}
                                     congratsDialogOpen={congratsDialogOpen}
                                     setCongratsDialogOpen={setCongratsDialogOpen}
                                     saveSemesterDialogOpen={saveSemesterDialogOpen}
@@ -554,6 +557,23 @@ function App() {
                     setDirty={setDirty}
                 />
             </SemesterFormModal>
+
+            <QrTransferDialog
+                open={qrTransferOpen}
+                onOpenChange={setQrTransferOpen}
+                subjects={subjects}
+                semesters={semesters}
+                autosave={autosave}
+                onImport={(data) => {
+                    setSubjects(data.subjects);
+                    localStorage.setItem(localStorageSubjectsKey, JSON.stringify(data.subjects));
+                    setSemesters(data.semesters);
+                    localStorage.setItem(localStorageSemestersKey, JSON.stringify(data.semesters));
+                    setAutosave(data.autosave);
+                    localStorage.setItem(localStorageAutosaveKey, JSON.stringify(data.autosave));
+                    toast.success("Data imported via QR transfer!");
+                }}
+            />
             <Toaster />
         </div>
     );
