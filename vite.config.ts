@@ -37,5 +37,5 @@ export default defineConfig({
             "@": path.resolve(__dirname, "./src"),
         },
     },
-    base: "/gwa-calculator/",
+    base: "/",
 })
