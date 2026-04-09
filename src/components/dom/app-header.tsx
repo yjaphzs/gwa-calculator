@@ -1,5 +1,5 @@
 import React from "react";
-import JPBLogo from "@/assets/images/jpb-logo.jpg";
+import GWACalculator from "@/assets/images/gwa-calculator.jpg";
 
 interface AppHeaderProps {
     appName: string;
@@ -11,8 +11,8 @@ const AppHeader: React.FC<AppHeaderProps> = ({ appName, appVersion }) => (
         <a href="https://www.yjaphzs.xyz/" target="_blank" rel="noopener noreferrer">
             <div className="bg-primary-foreground rounded-md overflow-hidden flex items-center self-start h-8 w-8">
                 <img
-                    src={JPBLogo}
-                    alt="JPB Logo"
+                    src={GWACalculator}
+                    alt="GWA Calculator Logo"
                     className="object-cover"
                 />
             </div>
