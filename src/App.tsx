@@ -286,11 +286,11 @@ function App() {
     // Handle Export Data
     const handleExport = () => {
         try {
-            // Collect all relevant localStorage keys
+            // Use state directly so unsaved subjects (autosave off) are included
             const exportData = {
-                subjects: JSON.parse(localStorage.getItem(localStorageSubjectsKey) ?? "[]"),
-                semesters: JSON.parse(localStorage.getItem(localStorageSemestersKey) ?? "[]"),
-                autosave: JSON.parse(localStorage.getItem(localStorageAutosaveKey) ?? "true"),
+                subjects,
+                semesters,
+                autosave,
             };
 
             // Create a blob from the data
@@ -322,6 +322,8 @@ function App() {
 
         input.onchange = async (event: Event) => {
             const file = (event.target as HTMLInputElement).files?.[0];
+            // Safely remove — may already be gone in edge cases
+            if (document.body.contains(input)) document.body.removeChild(input);
             if (!file) return;
 
             try {
@@ -356,9 +358,8 @@ function App() {
                     throw new Error("Missing or invalid 'semesters' array.");
                 }
 
-                if (typeof data.autosave !== "boolean") {
-                    throw new Error("Missing or invalid 'autosave' value.");
-                }
+                // autosave field may be absent in older exports — default to true
+                const importedAutosave = typeof data.autosave === "boolean" ? data.autosave : true;
 
                 setSubjects(data.subjects);
                 localStorage.setItem(localStorageSubjectsKey, JSON.stringify(data.subjects));
@@ -366,18 +367,19 @@ function App() {
                 setSemesters(data.semesters);
                 localStorage.setItem(localStorageSemestersKey, JSON.stringify(data.semesters));
 
-                setAutosave(data.autosave);
-                localStorage.setItem(localStorageAutosaveKey, JSON.stringify(data.autosave));
+                setAutosave(importedAutosave);
+                localStorage.setItem(localStorageAutosaveKey, JSON.stringify(importedAutosave));
 
                 toast.success("Imported data successfully!");
             } catch (error: any) {
-                toast.error("Failed to import data. Invalid file format.");
+                const reason = error?.message ?? "Unknown error";
+                toast.error(`Failed to import data: ${reason}`);
             }
         };
 
+        // Keep element in DOM until after onchange fires
         document.body.appendChild(input);
         input.click();
-        document.body.removeChild(input);
     };
 
     // Handle tab change
