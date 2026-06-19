@@ -1,4 +1,28 @@
-# Logs
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+dist
+dist-ssr
+
+# misc
+.DS_Store
+*.pem
+*.local
+
+# logs / debug
 logs
 *.log
 npm-debug.log*
@@ -7,27 +31,34 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Build output
-dist
-dist-ssr
-build
-
+# env files (can opt-in for committing if needed)
 .env
 .env.*
-!.env.example
+!.env.local.example
 
-node_modules
-dist
-dist-ssr
-*.local
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+google-application-credentials.json
+functions/lib/
+functions/node_modules/
+functions/.env
 
-# Editor directories and files
+# Claude Code
+.claude/
+
+# editor
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts

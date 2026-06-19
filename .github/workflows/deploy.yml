@@ -1,43 +1,154 @@
-name: Deploy to GitHub Pages
+name: Firebase Deploy - CI/CD
 
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - "main"
+            - "development"
+        paths-ignore:
+            - "**/*.md"
+            - "docs/**"
+            - "LICENSE"
+            - ".claude/**"
+    workflow_dispatch:
 
-  release:
-    types: [published]
+permissions:
+    contents: read
+
+concurrency:
+    group: deploy-${{ github.ref }}
+    cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    environment: github-pages
+    lint:
+        name: Lint
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+            - name: Setup Node
+              uses: actions/setup-node@v5
+              with:
+                  node-version: 24
+                  cache: "npm"
+            - name: Install Dependencies
+              run: npm ci
+            - name: Run Lint
+              run: npm run lint:all
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    typecheck:
+        name: Type Check
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+            - name: Setup Node
+              uses: actions/setup-node@v5
+              with:
+                  node-version: 24
+                  cache: "npm"
+            - name: Install Dependencies
+              run: npm ci
+            - name: Run Type Check
+              run: npm run typecheck
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build project
+    build_and_deploy:
+        name: Build and Deploy
+        needs: [lint, typecheck]
+        # Single Firebase project — only `main` ships. Pushes to `development`
+        # still run lint + typecheck above as CI.
+        if: github.ref == 'refs/heads/main'
+        runs-on: ubuntu-latest
         env:
-            VITE_APP_NAME: ${{ vars.APP_NAME }}
-            VITE_APP_LOCAL_STORAGE_SUBJECTS_KEY: ${{ vars.APP_LOCAL_STORAGE_SUBJECTS_KEY }}
-            VITE_APP_LOCAL_STORAGE_SEMESTERS_KEY: ${{ vars.APP_LOCAL_STORAGE_SEMESTERS_KEY }}
-            VITE_APP_LOCAL_STORAGE_AUTOSAVE_KEY: ${{ vars.APP_LOCAL_STORAGE_AUTOSAVE_KEY }}
-        run: npm run build
+            GOOGLE_APPLICATION_CREDENTIALS: google-application-credentials.json
+            FIREBASE_PROJECT_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
-          force_orphan: true
-          cname: gwa-calculator.yjaphzs.xyz
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v5
+              with:
+                  node-version: 24
+                  cache: "npm"
+
+            - name: Install Dependencies
+              run: npm ci
+
+            # Build Next.js as a static export. Output lands in ./out and is
+            # deployed via `firebase deploy --only hosting`.
+            - name: Build
+              env:
+                  NEXT_PUBLIC_APP_NAME: ${{ vars.NEXT_PUBLIC_APP_NAME }}
+                  NEXT_PUBLIC_APP_ENV: ${{ vars.NEXT_PUBLIC_APP_ENV }}
+                  NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL }}
+                  NEXT_PUBLIC_APP_LOCAL_STORAGE_SUBJECTS_KEY: ${{ vars.NEXT_PUBLIC_APP_LOCAL_STORAGE_SUBJECTS_KEY }}
+                  NEXT_PUBLIC_APP_LOCAL_STORAGE_SEMESTERS_KEY: ${{ vars.NEXT_PUBLIC_APP_LOCAL_STORAGE_SEMESTERS_KEY }}
+                  NEXT_PUBLIC_APP_LOCAL_STORAGE_AUTOSAVE_KEY: ${{ vars.NEXT_PUBLIC_APP_LOCAL_STORAGE_AUTOSAVE_KEY }}
+                  NEXT_PUBLIC_FIREBASE_API_KEY: ${{ vars.NEXT_PUBLIC_FIREBASE_API_KEY }}
+                  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ vars.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+                  NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+                  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ vars.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+                  NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+                  NEXT_PUBLIC_FIREBASE_APP_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_APP_ID }}
+                  NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
+                  NEXT_PUBLIC_FIREBASE_FUNCTIONS_REGION: ${{ vars.NEXT_PUBLIC_FIREBASE_FUNCTIONS_REGION }}
+                  NEXT_PUBLIC_FIREBASE_APP_CHECK_RECAPTCHA_KEY: ${{ vars.NEXT_PUBLIC_FIREBASE_APP_CHECK_RECAPTCHA_KEY }}
+              run: npm run build
+
+            - name: Install Firebase CLI
+              run: npm install -g firebase-tools
+
+            - name: Install Functions Dependencies
+              run: cd functions && npm ci
+
+            - name: Build Functions
+              run: cd functions && npm run build
+
+            - name: Prepare Google Application Credentials
+              env:
+                  CREDENTIALS_BASE64: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_BASE64 }}
+              shell: bash
+              run: echo "$CREDENTIALS_BASE64" | base64 --decode > "google-application-credentials.json"
+
+            # Write functions/.env so the deployed functions get the Resend API
+            # key + app context (used by the auth email senders). RESEND_API_KEY
+            # is a secret; the rest are repository variables.
+            - name: Create Functions Environment File
+              env:
+                  APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL }}
+                  APP_NAME: ${{ vars.NEXT_PUBLIC_APP_NAME }}
+                  FUNCTIONS_ENV: ${{ vars.NEXT_PUBLIC_APP_ENV }}
+                  RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+                  EMAIL_FROM_NAME: ${{ vars.EMAIL_FROM_NAME }}
+                  EMAIL_FROM_EMAIL: ${{ vars.EMAIL_FROM_EMAIL }}
+              shell: bash
+              run: |
+                  cat << EOF > functions/.env
+                  APP_URL=$APP_URL
+                  APP_NAME=$APP_NAME
+                  FUNCTIONS_ENV=$FUNCTIONS_ENV
+                  RESEND_API_KEY=$RESEND_API_KEY
+                  EMAIL_FROM_NAME=$EMAIL_FROM_NAME
+                  EMAIL_FROM_EMAIL=$EMAIL_FROM_EMAIL
+                  EOF
+                  echo "✓ functions/.env created"
+
+            # Deploy order: Functions first (so any callable exists), then
+            # Hosting (the new static bundle), then the rules.
+            - name: Deploy Functions
+              run: firebase deploy --only functions --project "$FIREBASE_PROJECT_ID" --force
+
+            - name: Deploy Hosting
+              run: firebase deploy --only hosting --project "$FIREBASE_PROJECT_ID" --force
+
+            - name: Deploy Firestore Rules
+              run: firebase deploy --only firestore:rules --project "$FIREBASE_PROJECT_ID"
+
+            - name: Deploy Storage Rules
+              run: firebase deploy --only storage --project "$FIREBASE_PROJECT_ID"
+
+            - name: Remove Credentials File
+              if: always()
+              run: rm -f google-application-credentials.json

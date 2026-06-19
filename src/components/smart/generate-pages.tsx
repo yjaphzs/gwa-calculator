@@ -41,8 +41,8 @@ export const generatePaginationLinks = (
             pages.push(<PaginationEllipsis key="start-ellipsis" />);
         }
         // Show up to 2 pages before and after current page
-        let start = Math.max(2, currentPage - 1);
-        let end = Math.min(totalPages - 1, currentPage + 1);
+        const start = Math.max(2, currentPage - 1);
+        const end = Math.min(totalPages - 1, currentPage + 1);
         for (let i = start; i <= end; i++) {
             pages.push(
                 <PaginationItem key={i}>
