@@ -4,3 +4,41 @@ export function getAcademicHonor(gwa: number) {
     if (gwa > 1.75 && gwa <= 2.00) return "Dean's Lister";
     return null;
 }
+
+/** Minimum units required before an honor classification is shown. */
+export const HONOR_MIN_UNITS = 12;
+
+export interface GwaResult {
+    /** Weighted average rounded to 3 decimals, or null when there are no units. */
+    gwa: number | null;
+    totalUnits: number;
+}
+
+/**
+ * Computes the GWA for a set of subjects: Σ(grade × units) / Σ(units), rounded
+ * to 3 decimals. Mirrors the inline calculation used across the app so reports
+ * stay consistent with what's shown on screen.
+ */
+export function computeGwa(
+    subjects: { grade: number; units: number }[],
+): GwaResult {
+    const totalUnits = subjects.reduce((acc, s) => acc + s.units, 0);
+    if (totalUnits === 0) return { gwa: null, totalUnits: 0 };
+    const totalWeightedGrades = subjects.reduce(
+        (acc, s) => acc + s.grade * s.units,
+        0,
+    );
+    return {
+        gwa: parseFloat((totalWeightedGrades / totalUnits).toFixed(3)),
+        totalUnits,
+    };
+}
+
+/** The honor for a set of subjects, applying the {@link HONOR_MIN_UNITS} gate. */
+export function getHonorFor(
+    subjects: { grade: number; units: number }[],
+): string | null {
+    const { gwa, totalUnits } = computeGwa(subjects);
+    if (gwa === null || totalUnits < HONOR_MIN_UNITS) return null;
+    return getAcademicHonor(gwa);
+}

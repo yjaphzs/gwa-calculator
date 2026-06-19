@@ -13,6 +13,9 @@ import {
 import { toast } from "sonner"
 import { FireworksBackground } from "@/components/ui/shadcn-io/fireworks-background";
 import { getAcademicHonor } from "@/lib/academic";
+import { printSemesterReport, printAcademicSummary } from "@/lib/grade-report";
+import { APP_NAME } from "@/config/app";
+import { useAuth } from "@/context/auth-provider";
 import { useEventListener } from "@/hooks/use-event-listener";
 import { useCalculatorData } from "@/hooks/use-calculator-data";
 
@@ -35,6 +38,9 @@ import { type Subject, type Semester } from "@/types";
 
 function App() {
     const [tab, setTab] = useState("current");
+
+    const { profile } = useAuth();
+    const studentName = profile?.displayName ?? null;
 
     const [gwa, setGwa] = useState<number | null>(null);
     const [honor, setHonor] = useState<string | null>(null);
@@ -375,6 +381,46 @@ function App() {
         input.click();
     };
 
+    // Print the current (working) subjects as a one-semester report.
+    const handleSemesterReport = () => {
+        if (subjects.length === 0) {
+            toast.error("Add subjects before exporting a Semester Report.");
+            return;
+        }
+        try {
+            printSemesterReport({ appName: APP_NAME, studentName, subjects });
+        } catch {
+            toast.error("Failed to open the Semester Report.");
+        }
+    };
+
+    // Print a single saved semester as a Semester Report.
+    const handleExportSemester = (semester: Semester) => {
+        try {
+            printSemesterReport({
+                appName: APP_NAME,
+                studentName,
+                periodLabel: `${semester.semester} Semester, S.Y. ${semester.schoolYear}`,
+                subjects: semester.subjects,
+            });
+        } catch {
+            toast.error("Failed to open the Semester Report.");
+        }
+    };
+
+    // Print all saved semesters as an Academic Summary (with cumulative GWA).
+    const handleAcademicSummary = () => {
+        if (semesters.length === 0) {
+            toast.error("Save a semester before exporting an Academic Summary.");
+            return;
+        }
+        try {
+            printAcademicSummary({ appName: APP_NAME, studentName, semesters });
+        } catch {
+            toast.error("Failed to open the Academic Summary.");
+        }
+    };
+
     // Handle tab change
     const onTabChange = (value: string) => {
         setTab(value);
@@ -435,6 +481,8 @@ function App() {
                                     handleReset={handleReset}
                                     handleImport={handleImport}
                                     handleExport={handleExport}
+                                    handleSemesterReport={handleSemesterReport}
+                                    handleAcademicSummary={handleAcademicSummary}
                                     onQrTransfer={() => setQrTransferOpen(true)}
                                     congratsDialogOpen={congratsDialogOpen}
                                     setCongratsDialogOpen={setCongratsDialogOpen}
@@ -470,6 +518,8 @@ function App() {
                                 collapsedSemesters={collapsedSemesters}
                                 onToggleSemester={handleToggleSemester}
                                 onDeleteSemester={handleDeleteSemester}
+                                onExportSemester={handleExportSemester}
+                                onAcademicSummary={handleAcademicSummary}
                                 setSemesterModalOpen={setSemesterModalOpen}
                                 setEditingSemester={setEditingSemester}
                             />

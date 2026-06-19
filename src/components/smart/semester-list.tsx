@@ -29,7 +29,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { ChevronsUpDown, Pencil, Medal, Trash, MoreHorizontalIcon } from "lucide-react";
+import { ChevronsUpDown, Pencil, Medal, Trash, MoreHorizontalIcon, FileTextIcon, FilesIcon } from "lucide-react";
 import { getAcademicHonor } from "@/lib/academic";
 import type { Semester } from "@/types";
 
@@ -45,6 +45,8 @@ interface SemesterListProps {
     collapsedSemesters: Record<string, boolean>;
     onToggleSemester: (id: string) => void;
     onDeleteSemester: (semester: Semester) => void;
+    onExportSemester: (semester: Semester) => void;
+    onAcademicSummary: () => void;
     setSemesterModalOpen: (open: boolean) => void;
     setEditingSemester: (semester: Semester | null) => void;
 }
@@ -54,6 +56,8 @@ const SemesterList: React.FC<SemesterListProps> = ({
     collapsedSemesters,
     onToggleSemester,
     onDeleteSemester,
+    onExportSemester,
+    onAcademicSummary,
     setSemesterModalOpen,
     setEditingSemester,
 }) => {
@@ -76,6 +80,18 @@ const SemesterList: React.FC<SemesterListProps> = ({
 
     return (
         <div className="flex flex-col gap-4">
+            {semesters.length > 0 && (
+                <div className="flex justify-end">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={onAcademicSummary}
+                    >
+                        <FilesIcon className="size-4" />
+                        Academic Summary
+                    </Button>
+                </div>
+            )}
             {sortedSemesters.map((semester) => (
                 <Item key={semester.id} variant="outline" className="items-start">
                     <ItemContent>
@@ -103,6 +119,15 @@ const SemesterList: React.FC<SemesterListProps> = ({
                                     className="w-52"
                                 >
                                     <DropdownMenuGroup>
+                                        <DropdownMenuItem
+                                            onSelect={(e) => {
+                                                e.preventDefault();
+                                                onExportSemester(semester);
+                                            }}
+                                        >
+                                            <FileTextIcon className="w-4 h-4" />
+                                            Semester Report
+                                        </DropdownMenuItem>
                                         <DropdownMenuItem
                                             onSelect={(e) => {
                                                 e.preventDefault();

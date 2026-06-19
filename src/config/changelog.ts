@@ -23,6 +23,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "2.1.0",
+    date: "June 20, 2026",
+    title: "Printable grade reports",
+    changes: [
+      { type: "new", text: "Export a Semester Report — print or save a single semester's grades as a PDF." },
+      { type: "new", text: "Export an Academic Summary — all your saved semesters with a cumulative GWA, in one printable document." },
+      { type: "new", text: "Both documents are a personal-reference copy of the data you enter — not an official academic record." },
+    ],
+  },
+  {
     version: "2.0.0",
     date: "June 19, 2026",
     title: "Accounts & cloud sync",
