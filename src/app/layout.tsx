@@ -5,6 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/context/auth-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { ServiceWorkerCleanup } from "@/components/service-worker-cleanup";
 
 const fontSans = Roboto({
   subsets: ["latin"],
@@ -71,6 +72,7 @@ export default function RootLayout({
       <body
         className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}
       >
+        <ServiceWorkerCleanup />
         <NextTopLoader
           color="var(--primary)"
           height={3}
