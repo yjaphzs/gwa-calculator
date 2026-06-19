@@ -189,7 +189,8 @@ Users can print / save-as-PDF two documents (deliberately **not** branded as the
 official registrar documents "COG"/"TOR"):
 
 - **Semester Report** — one semester's subjects, units, grades, GWA, and honor.
-- **Academic Summary** — all saved semesters plus a cumulative GWA.
+- **Academic Summary** — all saved semesters plus a cumulative GWA, with Latin
+  (graduation) honors on the overall standing.
 
 Implementation:
 
@@ -199,7 +200,10 @@ Implementation:
   API: `printSemesterReport(...)`, `printAcademicSummary(...)`.
 - GWA/honor come from the shared helpers in
   [src/lib/academic.ts](src/lib/academic.ts) (`computeGwa`, `getAcademicHonor`,
-  `HONOR_MIN_UNITS = 12`).
+  `HONOR_MIN_UNITS = 12`). Per-semester sections use the scholarship honors
+  (`getAcademicHonor`: University/College Scholar, Dean's Lister); the Academic
+  Summary's cumulative standing uses Latin honors (`getLatinHonor`: Summa
+  1.00–1.20 / Magna 1.21–1.45 / Cum Laude 1.46–1.75).
 - Entry points: the toolbar "More options" menu
   ([subjects-toolbar.tsx](src/components/smart/subjects-toolbar.tsx)) for the
   current working set + Academic Summary, and per-semester / Academic-Summary

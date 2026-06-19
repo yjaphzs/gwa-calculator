@@ -5,6 +5,18 @@ export function getAcademicHonor(gwa: number) {
     return null;
 }
 
+/**
+ * Latin (graduation) honors based on a cumulative GWA — used for the overall
+ * standing in the Academic Summary, not for individual semesters. Bands (UP
+ * style, 1.00 = highest): Summa 1.00–1.20, Magna 1.21–1.45, Cum Laude 1.46–1.75.
+ */
+export function getLatinHonor(gwa: number) {
+    if (gwa >= 1.00 && gwa <= 1.20) return "Summa Cum Laude";
+    if (gwa > 1.20 && gwa <= 1.45) return "Magna Cum Laude";
+    if (gwa > 1.45 && gwa <= 1.75) return "Cum Laude";
+    return null;
+}
+
 /** Minimum units required before an honor classification is shown. */
 export const HONOR_MIN_UNITS = 12;
 

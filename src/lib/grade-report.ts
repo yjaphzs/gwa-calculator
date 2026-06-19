@@ -10,7 +10,12 @@
  * on every document and the wording must stay consistent with the in-app Terms
  * and Conditions and Privacy Policy.
  */
-import { computeGwa, getAcademicHonor, HONOR_MIN_UNITS } from "@/lib/academic";
+import {
+    computeGwa,
+    getAcademicHonor,
+    getLatinHonor,
+    HONOR_MIN_UNITS,
+} from "@/lib/academic";
 import type { Semester, Subject } from "@/types";
 
 // ── Formatting helpers ───────────────────────────────────────────────────────
@@ -290,9 +295,11 @@ export function printAcademicSummary({
 
     const allSubjects = ordered.flatMap((s) => s.subjects);
     const { gwa: overallGwa, totalUnits: overallUnits } = computeGwa(allSubjects);
+    // Latin (graduation) honors for the cumulative standing — distinct from the
+    // per-semester scholarship honors above.
     const overallHonor =
         overallGwa !== null && overallUnits >= HONOR_MIN_UNITS
-            ? getAcademicHonor(overallGwa)
+            ? getLatinHonor(overallGwa)
             : null;
 
     const body = `
