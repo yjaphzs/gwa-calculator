@@ -119,9 +119,9 @@ Set the custom domain (`gwa-calculator.yjaphzs.xyz`) under Firebase Hosting → 
 
 ## Screenshots
 
-<img width="1920" height="1045" alt="screencapture-yjaphzs-github-io-gwa-calculator-2025-11-26-01_03_34" src="https://github.com/user-attachments/assets/103e8ae1-a783-4f04-a8a7-e1bf067efc02" />
-<img width="1920" height="1045" alt="screencapture-yjaphzs-github-io-gwa-calculator-2025-11-26-01_03_48" src="https://github.com/user-attachments/assets/23152f10-5d1c-45b9-8d9f-ac2c19772d47" />
-<img width="1920" height="1273" alt="screencapture-yjaphzs-github-io-gwa-calculator-2025-11-25-22_25_45" src="https://github.com/user-attachments/assets/9bc70fe3-3840-4409-b4ca-6544adc660b6" />
+<img width="1919" height="1075" alt="image" src="https://github.com/user-attachments/assets/5dd9e98e-a6e4-4c2e-b5bb-b79b2f67306f" />
+<img width="1919" height="1069" alt="image" src="https://github.com/user-attachments/assets/a98aa81a-79c9-4894-856e-b48bcda8841a" />
+<img width="1919" height="1074" alt="image" src="https://github.com/user-attachments/assets/cea2a8f1-3088-498d-896c-f6d81fa4a418" />
 
 ## MIT License
 
