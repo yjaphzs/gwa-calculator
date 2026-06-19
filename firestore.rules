@@ -1,0 +1,47 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ────────────────────────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // ── Users ──────────────────────────────────────────────────────────────
+    // One document per account holding the public profile (email, display
+    // name, photo URL). A user may only ever touch their own document.
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId)
+                    && request.resource.data.keys().hasAll(['email', 'createdAt']);
+      allow update: if isOwner(userId);
+      // Account deletion goes through the `deleteAccount` Cloud Function, which
+      // uses the Admin SDK and bypasses these rules. Clients cannot self-delete
+      // their profile doc directly (keeps cleanup atomic across Auth/Storage).
+      allow delete: if false;
+
+      // Calculator state — the synced subjects / semesters / settings. Stored
+      // as a subcollection (one doc, `calculator/state`) so the profile doc
+      // stays small and the snapshot listener only watches what it needs.
+      match /calculator/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // Rate-limit buckets for the auth Cloud Functions. Server-only — written
+    // exclusively by the Admin SDK (which bypasses rules); clients get nothing.
+    match /rateLimits/{bucketId} {
+      allow read, write: if false;
+    }
+
+    // Default deny — everything not explicitly matched above is private.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

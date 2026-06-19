@@ -112,7 +112,10 @@ const SemesterForm = forwardRef<HTMLFormElement, SemesterFormProps>(
             setDirty?.(form.formState.isDirty);
         }, [form.formState.isDirty, setDirty]);
 
-        // Validation for duplicate semester/schoolYear
+        // Validation for duplicate semester/schoolYear. Watched values are
+        // extracted to variables so the effect's deps can be statically checked.
+        const watchedSemester = form.watch("semester");
+        const watchedSchoolYear = form.watch("schoolYear");
         useEffect(() => {
             if (!semesters) return;
             const { semester: semValue, schoolYear: syValue } = form.getValues();
@@ -131,7 +134,7 @@ const SemesterForm = forwardRef<HTMLFormElement, SemesterFormProps>(
             } else {
                 setDuplicateError(null);
             }
-        }, [form.watch("semester"), form.watch("schoolYear"), semesters, semester, form]);
+        }, [watchedSemester, watchedSchoolYear, semesters, semester, form]);
 
         async function onSubmit(values: SemesterFormValues) {
             if (duplicateError) {

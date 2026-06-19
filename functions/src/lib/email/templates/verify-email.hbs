@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <meta name="supported-color-schemes" content="light" />
+  <title>Verify your email</title>
+  <style>:root { color-scheme: light; }</style>
+</head>
+<body class="bg-zinc-100 m-0 p-0 font-sans">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-zinc-100">
+    <tr>
+      <td align="center" class="py-10 px-4">
+        <table width="600" cellpadding="0" cellspacing="0" border="0" class="bg-white rounded-xl overflow-hidden">
+          <!-- Header: dark with amber wordmark -->
+          <tr>
+            <td class="bg-zinc-900 px-8 pt-8 pb-6">
+              <p class="m-0 mb-2 text-lg font-extrabold tracking-tight text-white">
+                <span class="text-amber-400">&#9679;</span>&nbsp;{{appName}}
+              </p>
+              <h1 class="text-white text-2xl font-bold m-0 tracking-tight">Welcome to {{appName}}! &#127891;</h1>
+            </td>
+          </tr>
+          <tr>
+            <td class="bg-amber-400" style="background-color: #eab308; height: 4px; line-height: 4px; font-size: 0;">&nbsp;</td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td class="px-8 pt-8 pb-2">
+              <table cellpadding="0" cellspacing="0" border="0" class="mb-6">
+                <tr>
+                  <td align="center" class="bg-amber-100 rounded-full w-14 h-14 text-center" style="width: 56px; height: 56px;">
+                    <span class="text-amber-600 text-2xl" style="line-height: 56px;">&#9993;</span>
+                  </td>
+                </tr>
+              </table>
+
+              <p class="text-zinc-800 text-base leading-relaxed mt-0 mb-3 font-medium">
+                Thanks for creating an account.
+              </p>
+              <p class="text-zinc-700 text-base leading-relaxed mt-0 mb-3">
+                Confirm your email address to secure your account and keep your subjects and semesters synced across all your devices.
+              </p>
+              <p class="text-zinc-600 text-sm leading-relaxed mt-0 mb-6">
+                This link expires after a while and can only be used once.
+              </p>
+
+              <!-- CTA -->
+              <table cellpadding="0" cellspacing="0" border="0" class="mb-6">
+                <tr>
+                  <td class="bg-zinc-900 rounded-lg">
+                    <a href="{{actionUrl}}" class="block px-6 py-3 text-white font-semibold text-base no-underline rounded-lg">Verify my email &rarr;</a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Security note -->
+              <table cellpadding="0" cellspacing="0" border="0" width="100%" class="mt-2 mb-6 bg-zinc-50 rounded-lg">
+                <tr>
+                  <td class="px-4 py-3">
+                    <p class="text-zinc-700 text-xs leading-relaxed m-0">
+                      <strong>Didn&apos;t create this account?</strong> You can safely ignore this email.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Fallback link -->
+          <tr>
+            <td class="px-8 pb-8">
+              <p class="text-zinc-400 text-xs leading-relaxed m-0 pt-4 border-t border-zinc-200">
+                Button not working? Paste this URL into your browser:<br />
+                <a href="{{actionUrl}}" class="text-zinc-600 break-all">{{actionUrl}}</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td class="bg-zinc-50 px-8 py-4 text-center">
+              <p class="text-zinc-400 text-xs m-0">&copy; {{year}} {{appName}}. <a href="{{appUrl}}" class="text-zinc-400">{{appUrl}}</a></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
