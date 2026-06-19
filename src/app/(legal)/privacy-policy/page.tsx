@@ -158,7 +158,7 @@ export default function PrivacyPolicyPage() {
       <h2>11. Contact</h2>
       <p>
         Questions about this policy or your data? Email{" "}
-        <a href="mailto:yjaphzs@gmail.com">yjaphzs@gmail.com</a>.
+        <a href="mailto:jan@yjaphzs.xyz">jan@yjaphzs.xyz</a>.
       </p>
     </>
   );

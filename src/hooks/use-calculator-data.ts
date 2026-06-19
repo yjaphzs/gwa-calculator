@@ -194,7 +194,7 @@ export function useCalculatorData(): UseCalculatorData {
       return;
     }
 
-    const unsub = subscribeCalculatorState(uid, (incoming) => {
+    const unsub = subscribeCalculatorState(uid, (incoming, meta) => {
       if (!cloudInitedRef.current) {
         cloudInitedRef.current = true;
         setCloudReady(true);
@@ -226,7 +226,13 @@ export function useCalculatorData(): UseCalculatorData {
         return;
       }
 
-      // Subsequent live updates. Keep in-memory subjects when autosave is off.
+      // Subsequent live updates — real-time sync from OTHER devices. Skip the
+      // echo of our own pending local writes (latency compensation) so a fresh
+      // edit made between a write and its server-ack isn't transiently clobbered;
+      // the local optimistic state already reflects our own changes.
+      if (meta.hasPendingWrites) return;
+
+      // Keep in-memory subjects when autosave is off.
       setCloud((prev) => ({
         subjects: autosaveRef.current ? incoming.subjects : prev.subjects,
         semesters: incoming.semesters,

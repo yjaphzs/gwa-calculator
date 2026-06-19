@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { LogOutIcon, ShieldIcon, Trash2Icon } from "lucide-react";
+import { LogOutIcon, Trash2Icon } from "lucide-react";
 
 import { useAuth } from "@/context/auth-provider";
 import {
@@ -99,20 +99,15 @@ export function SecurityTab() {
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Change password */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ShieldIcon className="size-4" />
-            Password
-          </CardTitle>
-          <CardDescription>
-            {canChangePassword
-              ? "Change the password you use to sign in."
-              : "You sign in with Google. Manage your password in your Google account."}
-          </CardDescription>
-        </CardHeader>
-        {canChangePassword && (
+      {/* Change password — hidden for Google-only accounts (no password). */}
+      {canChangePassword && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Password</CardTitle>
+            <CardDescription>
+              Change the password you use to sign in.
+            </CardDescription>
+          </CardHeader>
           <CardContent>
             <form
               onSubmit={handleSubmit(onChangePassword)}
@@ -172,8 +167,8 @@ export function SecurityTab() {
               </div>
             </form>
           </CardContent>
-        )}
-      </Card>
+        </Card>
+      )}
 
       {/* Sign out */}
       <Card>
