@@ -21,6 +21,9 @@ The calculator is fully usable **without an account** (data is kept in your brow
 - Automatic GWA calculation + academic honor detection (University/College Scholar, Dean's Lister)
 - Add, edit, and delete semesters; pagination and search
 - Import/export and QR transfer of your data
+- Print or save as PDF a **Semester Report** (one semester) or **Academic
+  Summary** (all semesters) — a personal-reference copy of your grades, *not* an
+  official academic record
 - Responsive design with dark mode support
 - **Guest mode** — autosave to local storage, no account required
 - **Optional accounts** — email/password + Google sign-in, password reset, email verification,
@@ -29,7 +32,8 @@ The calculator is fully usable **without an account** (data is kept in your brow
 ## Tech stack
 
 - **Next.js** App Router, exported as a static site (`output: 'export'`)
-- **Firebase**: Hosting, Authentication, Firestore, Storage, and a Cloud Function (`deleteAccount`)
+- **Firebase**: Hosting, Authentication, Firestore, Storage, and Cloud Functions
+  (`deleteAccount`, `sendVerificationEmail`, `sendPasswordResetEmail`)
 - **Tailwind CSS v4** + **shadcn/ui**
 
 ## Getting Started
@@ -121,4 +125,4 @@ Set the custom domain (`gwa-calculator.yjaphzs.xyz`) under Firebase Hosting → 
 
 ## MIT License
 
-Made with ❤️ using React and shadcn/ui.
+Made with ❤️ using Next.js and shadcn/ui.

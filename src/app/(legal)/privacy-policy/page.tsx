@@ -11,7 +11,7 @@ export default function PrivacyPolicyPage() {
     <>
       <h1>Privacy Policy</h1>
       <p>
-        <strong>Last updated: June 19, 2026</strong>
+        <strong>Last updated: June 20, 2026</strong>
       </p>
 
       <p>
@@ -139,8 +139,23 @@ export default function PrivacyPolicyPage() {
       <ul>
         <li>Access and edit your profile and saved data within the app.</li>
         <li>Export your data using the in-app Export feature.</li>
+        <li>
+          Generate a printable summary of your grades — a Semester Report (one
+          semester) or an Academic Summary (all semesters) — for your own
+          personal reference.
+        </li>
         <li>Delete your account and all associated data.</li>
       </ul>
+      <p>
+        Any file you export, and any printable grade summary you generate (a
+        Semester Report or Academic Summary), are created{" "}
+        <strong>on your device</strong>, from data already on your device, at
+        the moment you ask for them. The resulting file or printout is{" "}
+        <strong>not uploaded to or stored by us</strong> — what you do with it,
+        including saving, printing, or sharing it, is entirely up to you. These
+        summaries are for personal reference only and are not official academic
+        records; see our <a href="/terms-and-conditions">Terms and Conditions</a>.
+      </p>
       <p>
         Depending on where you live, you may have additional rights under laws
         such as the Philippine Data Privacy Act or the GDPR. To exercise them,

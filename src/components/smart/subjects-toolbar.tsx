@@ -48,6 +48,8 @@ import {
     CommandIcon,
     QrCodeIcon,
     HeartIcon,
+    FileTextIcon,
+    FilesIcon,
 } from "lucide-react";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import {
@@ -79,6 +81,8 @@ interface SubjectsToolbarProps {
     handleReset: () => void;
     handleImport: () => void;
     handleExport: () => void;
+    handleSemesterReport: () => void;
+    handleAcademicSummary: () => void;
     onQrTransfer?: () => void;
     congratsDialogOpen: boolean;
     setCongratsDialogOpen: (open: boolean) => void;
@@ -109,6 +113,8 @@ const SubjectsToolbar: React.FC<SubjectsToolbarProps> = ({
     handleReset,
     handleImport,
     handleExport,
+    handleSemesterReport,
+    handleAcademicSummary,
     onQrTransfer,
     congratsDialogOpen,
     setCongratsDialogOpen,
@@ -391,6 +397,23 @@ const SubjectsToolbar: React.FC<SubjectsToolbarProps> = ({
                                             <DropdownMenuItem onClick={onQrTransfer}>
                                                 <QrCodeIcon />
                                                 QR Transfer
+                                            </DropdownMenuItem>
+                                        )}
+                                    </DropdownMenuGroup>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuGroup>
+                                        <DropdownMenuItem
+                                            onClick={handleSemesterReport}
+                                        >
+                                            <FileTextIcon />
+                                            Semester Report
+                                        </DropdownMenuItem>
+                                        {semesters.length > 0 && (
+                                            <DropdownMenuItem
+                                                onClick={handleAcademicSummary}
+                                            >
+                                                <FilesIcon />
+                                                Academic Summary
                                             </DropdownMenuItem>
                                         )}
                                     </DropdownMenuGroup>
