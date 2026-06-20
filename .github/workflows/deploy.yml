@@ -135,13 +135,17 @@ jobs:
                   EOF
                   echo "✓ functions/.env created"
 
-            # Deploy order: Functions first (so any callable exists), then
-            # Hosting (the new static bundle), then the rules.
+            # Deploy order: Functions first (so any callable/trigger exists),
+            # then Hosting (the new static bundle), then the Firestore indexes
+            # (built async — kick them off before rules), then the rules.
             - name: Deploy Functions
               run: firebase deploy --only functions --project "$FIREBASE_PROJECT_ID" --force
 
             - name: Deploy Hosting
               run: firebase deploy --only hosting --project "$FIREBASE_PROJECT_ID" --force
+
+            - name: Deploy Firestore Indexes
+              run: firebase deploy --only firestore:indexes --project "$FIREBASE_PROJECT_ID"
 
             - name: Deploy Firestore Rules
               run: firebase deploy --only firestore:rules --project "$FIREBASE_PROJECT_ID"

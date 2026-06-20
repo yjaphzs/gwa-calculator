@@ -71,6 +71,17 @@ async function deleteSemesterEntries(
 }
 
 /**
+ * Removes a handle's public board entries (overall + all per-term) without
+ * touching their private settings — used when a participant's data drops below
+ * the threshold so their opt-in is preserved for when they qualify again.
+ */
+export async function deletePublicEntries(handle: string): Promise<void> {
+  const db = getFirestore();
+  await db.doc(`${SUMMARY_COLLECTION}/${handle}`).delete();
+  await deleteSemesterEntries(db, handle);
+}
+
+/**
  * Computes the caller's standings and publishes them to the public boards:
  *   - the overall (cumulative) entry at `leaderboard/{handle}` with Latin
  *     honors, and
