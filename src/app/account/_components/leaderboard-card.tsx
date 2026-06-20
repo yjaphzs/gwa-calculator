@@ -274,6 +274,15 @@ export function LeaderboardCard() {
           />
         </div>
 
+        {/* How the boards qualify */}
+        <p className="rounded-lg bg-muted/40 p-3 text-xs text-muted-foreground">
+          Each saved semester with <strong>12+ units</strong> appears on its{" "}
+          <strong>per-semester</strong> board. The <strong>overall</strong> board
+          is a complete academic summary — it needs at least{" "}
+          <strong>8 semesters</strong> and <strong>120 units</strong>, so it only
+          shows near- or fully-finished students.
+        </p>
+
         {/* Current standing (when on the board) */}
         {optIn && (
           <div className="flex flex-col gap-3 rounded-lg border bg-muted/30 p-4">

@@ -201,10 +201,11 @@ function OverallBoard({
           <EmptyMedia variant="icon">
             <TrophyIcon />
           </EmptyMedia>
-          <EmptyTitle>No one&apos;s here yet</EmptyTitle>
+          <EmptyTitle>No complete records yet</EmptyTitle>
           <EmptyDescription>
-            No one from {schoolName} has joined the overall board yet. Be the
-            first — opt in from your Account page.
+            The overall board ranks full academic summaries from {schoolName} —
+            it needs 8+ semesters and 120+ units, so it fills up later. The{" "}
+            <strong>Per semester</strong> tab fills up sooner.
           </EmptyDescription>
         </EmptyHeader>
       </Empty>
