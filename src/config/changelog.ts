@@ -23,6 +23,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "2.2.1",
+    date: "June 20, 2026",
+    title: "Sync fixes",
+    changes: [
+      { type: "fixed", text: "Saved semesters no longer briefly appear then disappear — they now persist and sync reliably when you're signed in." },
+      { type: "fixed", text: "Refreshing no longer occasionally loads an old version of the app; it now always serves the latest." },
+    ],
+  },
+  {
     version: "2.2.0",
     date: "June 20, 2026",
     title: "Leaderboards",
