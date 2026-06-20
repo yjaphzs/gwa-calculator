@@ -2,6 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfileTab } from "./profile-tab";
+import { LeaderboardCard } from "./leaderboard-card";
 import { SecurityTab } from "./security-tab";
 
 export function AccountView() {
@@ -19,8 +20,9 @@ export function AccountView() {
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
         </TabsList>
-        <TabsContent value="profile" className="mt-4">
+        <TabsContent value="profile" className="mt-4 flex flex-col gap-6">
           <ProfileTab />
+          <LeaderboardCard />
         </TabsContent>
         <TabsContent value="security" className="mt-4">
           <SecurityTab />

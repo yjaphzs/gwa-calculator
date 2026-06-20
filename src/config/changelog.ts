@@ -23,6 +23,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "2.2.0",
+    date: "June 20, 2026",
+    title: "Leaderboards",
+    changes: [
+      { type: "new", text: "Opt in to per-school leaderboards — an overall (cumulative) board and per-semester boards by term — to see how you rank among classmates." },
+      { type: "new", text: "Nothing is shared without your permission — a first-visit note explains your choices, and you stay private until you choose to join." },
+      { type: "new", text: "Stay private: join anonymously with a generated handle, or share your name and photo — your choice, and you can leave anytime." },
+      { type: "new", text: "Pick your school from a directory of Philippine universities and colleges; participation needs a verified email, and only signed-in users can view the boards." },
+    ],
+  },
+  {
     version: "2.1.0",
     date: "June 20, 2026",
     title: "Printable grade reports",

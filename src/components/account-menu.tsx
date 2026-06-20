@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CloudCheckIcon, LogInIcon, LogOutIcon, UserIcon } from "lucide-react";
+import {
+  CloudCheckIcon,
+  LogInIcon,
+  LogOutIcon,
+  TrophyIcon,
+  UserIcon,
+} from "lucide-react";
 
 import { useAuth } from "@/context/auth-provider";
 import { signOut } from "@/lib/firebase/auth";
@@ -73,6 +79,12 @@ export function AccountMenu() {
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/leaderboard">
+            <TrophyIcon />
+            Leaderboard
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/account">
             <UserIcon />

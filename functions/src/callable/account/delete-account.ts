@@ -28,11 +28,32 @@ export const deleteAccount = onCall(callableOptions, async (request) => {
 
   const db = getFirestore();
 
-  // 1. Firestore — calculator subcollection + profile doc.
+  // 1. Firestore — calculator + leaderboard subcollections, the public
+  //    leaderboard entry + its handle reservation, and the profile doc.
   try {
-    const calcSnap = await db.collection(`users/${uid}/calculator`).get();
+    const [calcSnap, leaderboardSnap, settingsSnap] = await Promise.all([
+      db.collection(`users/${uid}/calculator`).get(),
+      db.collection(`users/${uid}/leaderboard`).get(),
+      db.doc(`users/${uid}/leaderboard/settings`).get(),
+    ]);
     const batch = db.batch();
     calcSnap.forEach((doc) => batch.delete(doc.ref));
+    leaderboardSnap.forEach((doc) => batch.delete(doc.ref));
+
+    const handle =
+      settingsSnap.exists && typeof settingsSnap.data()?.handle === "string"
+        ? (settingsSnap.data()!.handle as string)
+        : null;
+    if (handle) {
+      batch.delete(db.doc(`leaderboard/${handle}`));
+      batch.delete(db.doc(`leaderboardHandles/${handle}`));
+      const semSnap = await db
+        .collection("leaderboardSemesters")
+        .where("handle", "==", handle)
+        .get();
+      semSnap.forEach((doc) => batch.delete(doc.ref));
+    }
+
     batch.delete(db.doc(`users/${uid}`));
     await batch.commit();
   } catch (err) {
