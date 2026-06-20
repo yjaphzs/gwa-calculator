@@ -47,6 +47,16 @@ export const setLeaderboardParticipation = httpsCallable<
 >(functions, 'setLeaderboardParticipation');
 
 /**
+ * Sets a custom anonymous codename for the user's leaderboard entry. The handle
+ * is validated + reserved server-side (lowercased, unique); returns the final
+ * stored handle. Throws `already-exists` when the codename is taken.
+ */
+export const setLeaderboardHandle = httpsCallable<
+  { handle: string },
+  { handle: string }
+>(functions, 'setLeaderboardHandle');
+
+/**
  * Recomputes and republishes the signed-in user's standing (the "Update my
  * standing" button). No-op unless they've already opted in.
  */
