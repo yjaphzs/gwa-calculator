@@ -2,7 +2,6 @@ import {
   doc,
   collection,
   getDoc,
-  getDocs,
   setDoc,
   onSnapshot,
   query,
@@ -107,39 +106,59 @@ export function subscribeLeaderboardSettings(
 }
 
 /**
- * Fetches the top entries for a school, ranked by cumulative GWA ascending
- * (1.00 = best). Requires the composite index in firestore.indexes.json.
+ * Live subscription to a school's overall (cumulative) board, ranked by GWA
+ * ascending (1.00 = best). Updates in realtime as participants' entries change.
+ * Requires the composite index in firestore.indexes.json. Returns the
+ * unsubscribe function.
  */
-export async function fetchLeaderboard(
+export function subscribeLeaderboard(
   schoolId: string,
+  callback: (entries: LeaderboardEntry[]) => void,
+  onError?: (err: Error) => void,
   max = 100,
-): Promise<LeaderboardEntry[]> {
+): () => void {
   const q = query(
     collection(db, 'leaderboard'),
     where('schoolId', '==', schoolId),
     orderBy('gwa', 'asc'),
     limit(max),
   );
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => d.data() as LeaderboardEntry);
+  return onSnapshot(
+    q,
+    (snap) => callback(snap.docs.map((d) => d.data() as LeaderboardEntry)),
+    (err) => {
+      console.error('[firestore] leaderboard snapshot error:', err);
+      onError?.(err);
+    },
+  );
 }
 
 /**
- * Fetches a school's per-term entries (all terms), ranked by GWA ascending. The
- * caller groups them by `termKey` to build the per-semester boards.
+ * Live subscription to a school's per-term entries (all terms), ranked by GWA
+ * ascending. The caller groups them by `termKey` to build the per-semester
+ * boards. Returns the unsubscribe function.
  */
-export async function fetchSemesterLeaderboard(
+export function subscribeSemesterLeaderboard(
   schoolId: string,
+  callback: (entries: LeaderboardSemesterEntry[]) => void,
+  onError?: (err: Error) => void,
   max = 300,
-): Promise<LeaderboardSemesterEntry[]> {
+): () => void {
   const q = query(
     collection(db, 'leaderboardSemesters'),
     where('schoolId', '==', schoolId),
     orderBy('gwa', 'asc'),
     limit(max),
   );
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => d.data() as LeaderboardSemesterEntry);
+  return onSnapshot(
+    q,
+    (snap) =>
+      callback(snap.docs.map((d) => d.data() as LeaderboardSemesterEntry)),
+    (err) => {
+      console.error('[firestore] semester leaderboard snapshot error:', err);
+      onError?.(err);
+    },
+  );
 }
 
 // ── Calculator state ─────────────────────────────────────────────────────────

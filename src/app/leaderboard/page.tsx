@@ -1,17 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { MedalIcon, TrophyIcon, UserIcon, UsersIcon } from "lucide-react";
 
 import { useAuth } from "@/context/auth-provider";
 import { getSchoolById, type School } from "@/config/schools";
 import {
-  fetchLeaderboard,
-  fetchSemesterLeaderboard,
+  subscribeLeaderboard,
+  subscribeSemesterLeaderboard,
   subscribeLeaderboardSettings,
 } from "@/lib/firebase/firestore";
-import { refreshLeaderboardStanding } from "@/lib/firebase/callable";
 import type { LeaderboardEntry, LeaderboardSemesterEntry } from "@/types";
 import { SchoolCombobox } from "@/components/smart/school-combobox";
 import { LeaderboardIntroDialog } from "@/components/smart/leaderboard-intro-dialog";
@@ -172,38 +171,26 @@ function LoadError() {
   );
 }
 
-/** Overall (cumulative) board for a school. */
+/** Overall (cumulative) board for a school — live. */
 function OverallBoard({
   schoolId,
   ownHandle,
-  version,
 }: {
   schoolId: string;
   ownHandle: string | null;
-  version: number;
 }) {
   const [entries, setEntries] = useState<LeaderboardEntry[] | null>(null);
   const [error, setError] = useState(false);
   const schoolName = getSchoolById(schoolId)?.name ?? "this school";
 
   useEffect(() => {
-    let active = true;
     setEntries(null);
     setError(false);
-    fetchLeaderboard(schoolId, 100)
-      .then((rows) => {
-        if (active) setEntries(rows);
-      })
-      .catch(() => {
-        if (active) {
-          setError(true);
-          setEntries([]);
-        }
-      });
-    return () => {
-      active = false;
-    };
-  }, [schoolId, version]);
+    return subscribeLeaderboard(schoolId, setEntries, () => {
+      setError(true);
+      setEntries([]);
+    });
+  }, [schoolId]);
 
   if (entries === null) return <LoadingRows />;
   if (error) return <LoadError />;
@@ -226,15 +213,13 @@ function OverallBoard({
   return <RankedList entries={entries} ownHandle={ownHandle} />;
 }
 
-/** Per-term board for a school, with a term selector. */
+/** Per-term board for a school, with a term selector — live. */
 function SemesterBoard({
   schoolId,
   ownHandle,
-  version,
 }: {
   schoolId: string;
   ownHandle: string | null;
-  version: number;
 }) {
   const [entries, setEntries] = useState<LeaderboardSemesterEntry[] | null>(
     null,
@@ -244,23 +229,13 @@ function SemesterBoard({
   const schoolName = getSchoolById(schoolId)?.name ?? "this school";
 
   useEffect(() => {
-    let active = true;
     setEntries(null);
     setError(false);
-    fetchSemesterLeaderboard(schoolId)
-      .then((rows) => {
-        if (active) setEntries(rows);
-      })
-      .catch(() => {
-        if (active) {
-          setError(true);
-          setEntries([]);
-        }
-      });
-    return () => {
-      active = false;
-    };
-  }, [schoolId, version]);
+    return subscribeSemesterLeaderboard(schoolId, setEntries, () => {
+      setError(true);
+      setEntries([]);
+    });
+  }, [schoolId]);
 
   // Distinct terms present, most recent first.
   const terms = useMemo(() => {
@@ -326,37 +301,18 @@ export default function LeaderboardPage() {
 
   const [schoolId, setSchoolId] = useState<string | null>(null);
   const [ownHandle, setOwnHandle] = useState<string | null>(null);
-  const [optedIn, setOptedIn] = useState(false);
-  const [version, setVersion] = useState(0);
-  const refreshedRef = useRef(false);
 
   // Default the filter to the signed-in user's own school (once).
   useEffect(() => {
     if (profile?.schoolId) setSchoolId((prev) => prev ?? profile.schoolId ?? null);
   }, [profile?.schoolId]);
 
-  // Know our own handle + opt-in state (to highlight our row + refresh on visit).
+  // Know our own handle, to highlight our row across the boards.
   const uid = user?.uid;
   useEffect(() => {
     if (!uid) return;
-    return subscribeLeaderboardSettings(uid, (s) => {
-      setOwnHandle(s?.handle ?? null);
-      setOptedIn(s?.optIn ?? false);
-    });
+    return subscribeLeaderboardSettings(uid, (s) => setOwnHandle(s?.handle ?? null));
   }, [uid]);
-
-  // Refresh our own standing once when we open the page, so the boards reflect
-  // any grade edits made since we last published, then trigger a refetch.
-  const bumpVersion = useCallback(() => setVersion((v) => v + 1), []);
-  useEffect(() => {
-    if (!optedIn || refreshedRef.current) return;
-    refreshedRef.current = true;
-    refreshLeaderboardStanding()
-      .then(bumpVersion)
-      .catch(() => {
-        /* not critical — boards still show the last published values */
-      });
-  }, [optedIn, bumpVersion]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -367,8 +323,8 @@ export default function LeaderboardPage() {
           Leaderboard
         </h1>
         <p className="text-sm text-muted-foreground">
-          GWA rankings by school, for students who opted in. Lower is better —
-          1.00 leads. Join or leave anytime from your{" "}
+          GWA rankings by school, for students who opted in — updated live. Lower
+          is better; 1.00 leads. Join or leave anytime from your{" "}
           <Link href="/account" className="underline underline-offset-2">
             Account
           </Link>{" "}
@@ -404,18 +360,10 @@ export default function LeaderboardPage() {
             <TabsTrigger value="semester">Per semester</TabsTrigger>
           </TabsList>
           <TabsContent value="overall" className="mt-4">
-            <OverallBoard
-              schoolId={schoolId}
-              ownHandle={ownHandle}
-              version={version}
-            />
+            <OverallBoard schoolId={schoolId} ownHandle={ownHandle} />
           </TabsContent>
           <TabsContent value="semester" className="mt-4">
-            <SemesterBoard
-              schoolId={schoolId}
-              ownHandle={ownHandle}
-              version={version}
-            />
+            <SemesterBoard schoolId={schoolId} ownHandle={ownHandle} />
           </TabsContent>
         </Tabs>
       )}

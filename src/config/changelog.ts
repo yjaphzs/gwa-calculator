@@ -28,6 +28,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     title: "Leaderboards",
     changes: [
       { type: "new", text: "Opt in to per-school leaderboards — an overall (cumulative) board and per-semester boards by term — to see how you rank among classmates." },
+      { type: "new", text: "Boards update in realtime: your standing refreshes automatically whenever you save a semester, and rankings update live as you watch." },
       { type: "new", text: "Nothing is shared without your permission — a first-visit note explains your choices, and you stay private until you choose to join." },
       { type: "new", text: "Stay private: join anonymously with a generated handle, or share your name and photo — your choice, and you can leave anytime." },
       { type: "new", text: "Pick your school from a directory of Philippine universities and colleges; participation needs a verified email, and only signed-in users can view the boards." },
