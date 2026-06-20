@@ -295,10 +295,15 @@ export function useCalculatorData(): UseCalculatorData {
   const cloudRemoveSubjects = useCallback(() => {
     setCloud((prev) => {
       const next = { ...prev, subjects: [] };
-      // Removing is explicit — always persist, regardless of autosave.
+      // Removing is explicit — always persist, regardless of autosave. Write the
+      // FULL next state (not just { subjects: [] }) so that a semester saved in
+      // the same tick isn't lost: "Save semester" adds the semester (scheduling
+      // a debounced write) and then immediately resets subjects via this fn —
+      // which cancels that pending write. `prev` already includes the new
+      // semester, so writing `next` persists both the semester and the reset.
       if (uidRef.current) {
         if (writeTimerRef.current) clearTimeout(writeTimerRef.current);
-        writeCalculatorState(uidRef.current, { subjects: [] }).catch((err) =>
+        writeCalculatorState(uidRef.current, next).catch((err) =>
           console.error("[useCalculatorData] remove failed:", err),
         );
       }
