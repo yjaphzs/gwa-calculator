@@ -13,6 +13,7 @@ export { deleteAccount } from "./callable/account/delete-account";
 export { sendVerificationEmail } from "./callable/auth/send-verification-email";
 export { sendPasswordResetEmail } from "./callable/auth/send-password-reset-email";
 export { setLeaderboardParticipation } from "./callable/leaderboard/set-leaderboard-participation";
+export { setLeaderboardHandle } from "./callable/leaderboard/set-leaderboard-handle";
 export { refreshLeaderboardStanding } from "./callable/leaderboard/refresh-leaderboard-standing";
 
 // ── Firestore triggers ───────────────────────────────────────────────────────

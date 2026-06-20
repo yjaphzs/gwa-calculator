@@ -284,3 +284,105 @@ export async function removeLeaderboardEntry(uid: string): Promise<void> {
     { merge: true },
   );
 }
+
+// Reserved codenames: the auto-generated "anonymous<digits>" pattern plus a few
+// role-ish words so nobody can impersonate the system or staff.
+const RESERVED_HANDLES = new Set([
+  "anonymous",
+  "admin",
+  "administrator",
+  "moderator",
+  "mod",
+  "staff",
+  "official",
+  "support",
+  "root",
+  "system",
+  "gwa",
+  "leaderboard",
+]);
+
+/**
+ * Validates + canonicalizes a user-chosen codename. Handles are lowercased so
+ * uniqueness (and the public doc id) is unambiguous — "CoolGuy" and "coolguy"
+ * are the same codename.
+ */
+export function validateHandle(raw: string): string {
+  const handle = String(raw ?? "").trim().toLowerCase();
+  if (!/^[a-z0-9_]{3,20}$/.test(handle)) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Codename must be 3–20 characters using only letters, numbers, or underscores.",
+    );
+  }
+  if (/^anonymous\d+$/.test(handle) || RESERVED_HANDLES.has(handle)) {
+    throw new HttpsError(
+      "invalid-argument",
+      "That codename is reserved — please choose another.",
+    );
+  }
+  return handle;
+}
+
+/**
+ * Sets the caller's leaderboard codename to a custom value. Reserves it
+ * atomically in the handle registry (fails if another user owns it), releases
+ * the previous handle (its registry slot + public board entries), stores the new
+ * one, and republishes under it when the user is currently on the board.
+ */
+export async function chooseLeaderboardHandle(
+  uid: string,
+  raw: string,
+): Promise<{ handle: string }> {
+  const db = getFirestore();
+  const handle = validateHandle(raw);
+
+  const settingsRef = db.doc(`users/${uid}/leaderboard/settings`);
+  const settingsSnap = await settingsRef.get();
+  const data = settingsSnap.exists ? (settingsSnap.data() ?? {}) : {};
+  const currentHandle =
+    typeof data.handle === "string" ? (data.handle as string) : null;
+
+  if (currentHandle === handle) {
+    return { handle }; // no change
+  }
+
+  // Reserve the new handle (fail if someone else already holds it).
+  const ref = db.collection(HANDLE_REGISTRY).doc(handle);
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    if (snap.exists && snap.data()?.uid !== uid) {
+      throw new HttpsError(
+        "already-exists",
+        "That codename is already taken — please choose another.",
+      );
+    }
+    tx.set(ref, { uid, createdAt: FieldValue.serverTimestamp() });
+  });
+
+  // Release the previous handle: drop its public entries + registry slot so it
+  // becomes available to others and no stale board rows linger under it.
+  if (currentHandle) {
+    try {
+      await deletePublicEntries(currentHandle);
+      await db.collection(HANDLE_REGISTRY).doc(currentHandle).delete();
+    } catch (err) {
+      logger.warn("[leaderboard] failed to release old handle (continuing)", {
+        uid,
+        err,
+      });
+    }
+  }
+
+  await settingsRef.set(
+    { handle, updatedAt: FieldValue.serverTimestamp() },
+    { merge: true },
+  );
+
+  // Republish under the new handle if they're currently on the board.
+  if (data.optIn === true) {
+    await publishLeaderboardEntry(uid, { isAnonymous: data.isAnonymous !== false });
+  }
+
+  return { handle };
+}

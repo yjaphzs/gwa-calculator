@@ -17,6 +17,7 @@ import {
 import {
   refreshLeaderboardStanding,
   requestEmailVerification,
+  setLeaderboardHandle,
   setLeaderboardParticipation,
 } from "@/lib/firebase/callable";
 import { getAuthErrorMessage } from "@/lib/firebase/errors";
@@ -51,6 +52,9 @@ function leaderboardError(err: unknown): string {
   return getAuthErrorMessage(err);
 }
 
+// Must match the server's validation in functions/src/lib/leaderboard.ts.
+const CODENAME_RE = /^[a-z0-9_]{3,20}$/;
+
 export function LeaderboardCard() {
   const { user, profile } = useAuth();
 
@@ -60,6 +64,8 @@ export function LeaderboardCard() {
 
   const [settings, setSettings] = useState<LeaderboardSettings | null>(null);
   const [anonymous, setAnonymous] = useState(true);
+  const [codename, setCodename] = useState("");
+  const [savingCodename, setSavingCodename] = useState(false);
   const [busy, setBusy] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [resending, setResending] = useState(false);
@@ -82,6 +88,11 @@ export function LeaderboardCard() {
     if (settings) setAnonymous(settings.isAnonymous);
   }, [settings]);
 
+  // Seed the codename input from the stored handle (auto-generated or chosen).
+  useEffect(() => {
+    if (settings?.handle) setCodename(settings.handle);
+  }, [settings?.handle]);
+
   if (!user) return null;
 
   const optIn = settings?.optIn ?? false;
@@ -89,6 +100,10 @@ export function LeaderboardCard() {
   const schoolUnchanged =
     schoolId === savedSchool && program.trim() === (profile?.program ?? "");
   const verified = user.emailVerified;
+
+  const normalizedCodename = codename.trim().toLowerCase();
+  const codenameValid = CODENAME_RE.test(normalizedCodename);
+  const codenameUnchanged = normalizedCodename === (settings?.handle ?? "");
 
   async function handlePickSchool(school: School | null) {
     setSchoolId(school?.id ?? null);
@@ -145,6 +160,20 @@ export function LeaderboardCard() {
       toast.error(leaderboardError(err));
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function handleSaveCodename() {
+    if (!user) return;
+    setSavingCodename(true);
+    try {
+      const res = await setLeaderboardHandle({ handle: codename.trim() });
+      setCodename(res.data.handle);
+      toast.success("Codename updated.");
+    } catch (err) {
+      toast.error(leaderboardError(err));
+    } finally {
+      setSavingCodename(false);
     }
   }
 
@@ -273,6 +302,41 @@ export function LeaderboardCard() {
             onCheckedChange={handleToggleAnonymous}
           />
         </div>
+
+        {/* Custom codename (used when appearing anonymously) */}
+        {anonymous && (
+          <Field>
+            <FieldLabel htmlFor="codename">Your codename</FieldLabel>
+            <div className="flex gap-2">
+              <Input
+                id="codename"
+                value={codename}
+                onChange={(e) => setCodename(e.target.value)}
+                placeholder="e.g. silent_scholar"
+                maxLength={20}
+                autoComplete="off"
+                disabled={savingCodename || !verified}
+              />
+              <Button
+                type="button"
+                onClick={handleSaveCodename}
+                disabled={
+                  savingCodename ||
+                  !verified ||
+                  !codenameValid ||
+                  codenameUnchanged
+                }
+              >
+                {savingCodename && <Spinner data-icon="inline-start" />}
+                Save
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              3–20 characters — letters, numbers, and underscores. This is how
+              you appear on the board when anonymous.
+            </p>
+          </Field>
+        )}
 
         {/* How the boards qualify */}
         <p className="rounded-lg bg-muted/40 p-3 text-xs text-muted-foreground">

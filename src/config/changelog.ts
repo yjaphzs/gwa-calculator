@@ -25,8 +25,9 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     version: "2.2.1",
     date: "June 20, 2026",
-    title: "Sync fixes",
+    title: "Custom codenames & fixes",
     changes: [
+      { type: "new", text: "Choose your own anonymous leaderboard codename instead of the auto-generated one." },
       { type: "fixed", text: "Saved semesters no longer briefly appear then disappear — they now persist and sync reliably when you're signed in." },
       { type: "fixed", text: "Refreshing no longer occasionally loads an old version of the app; it now always serves the latest." },
     ],
