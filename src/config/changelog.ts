@@ -27,7 +27,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: "June 20, 2026",
     title: "Leaderboards",
     changes: [
-      { type: "new", text: "Opt in to per-school leaderboards — an overall (cumulative) board and per-semester boards by term — to see how you rank among classmates." },
+      { type: "new", text: "Opt in to per-school leaderboards: per-semester boards rank any term with 12+ units, plus an overall board for complete academic summaries (8+ semesters, 120+ units)." },
       { type: "new", text: "Boards update in realtime: your standing refreshes automatically whenever you save a semester, and rankings update live as you watch." },
       { type: "new", text: "Nothing is shared without your permission — a first-visit note explains your choices, and you stay private until you choose to join." },
       { type: "new", text: "Stay private: join anonymously with a generated handle, or share your name and photo — your choice, and you can leave anytime." },

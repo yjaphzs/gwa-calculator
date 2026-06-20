@@ -8,6 +8,7 @@ import {
   getAcademicHonor,
   getLatinHonor,
   HONOR_MIN_UNITS,
+  LEADERBOARD_MIN_SEMESTERS,
   LEADERBOARD_MIN_UNITS,
   LEADERBOARD_SEMESTER_MIN_UNITS,
 } from "./academic";
@@ -83,17 +84,21 @@ export async function deletePublicEntries(handle: string): Promise<void> {
 
 /**
  * Computes the caller's standings and publishes them to the public boards:
- *   - the overall (cumulative) entry at `leaderboard/{handle}` with Latin
- *     honors, and
+ *   - the overall (academic-summary) entry at `leaderboard/{handle}` with Latin
+ *     honors — only when the record is reasonably *complete* (at least
+ *     {@link LEADERBOARD_MIN_SEMESTERS} saved semesters AND
+ *     {@link LEADERBOARD_MIN_UNITS} cumulative units), and
  *   - one per-term entry at `leaderboardSemesters/{handle}__{termKey}` for each
- *     saved semester that has enough units, with scholarship honors.
+ *     saved semester with at least {@link LEADERBOARD_SEMESTER_MIN_UNITS} units,
+ *     with scholarship honors.
  *
  * GWAs are read from the user's actual saved calculator state (Admin SDK) so the
- * boards reflect what's stored, not whatever the client claims. Stale per-term
- * entries (e.g. a semester the user deleted) are reconciled away.
+ * boards reflect what's stored, not whatever the client claims. Stale entries
+ * (e.g. a semester the user deleted, or an overall entry that no longer
+ * qualifies) are reconciled away.
  *
- * Throws `failed-precondition` when the profile has no school or there aren't
- * enough cumulative units to qualify.
+ * Throws `failed-precondition` when the profile has no school or the user
+ * doesn't qualify for *any* board yet.
  */
 export async function publishLeaderboardEntry(
   uid: string,
@@ -119,10 +124,44 @@ export async function publishLeaderboardEntry(
     Array.isArray(s.subjects) ? s.subjects : [],
   );
   const { gwa, totalUnits } = computeGwa(allSubjects);
-  if (gwa === null || totalUnits < LEADERBOARD_MIN_UNITS) {
+
+  // Evaluate each saved semester: count the non-empty ones (for the overall
+  // "complete record" gate) and collect the ones that qualify for a term board.
+  const semesterCandidates: {
+    termKey: string;
+    termLabel: string;
+    gwa: number;
+    totalUnits: number;
+  }[] = [];
+  let nonEmptySemesters = 0;
+  for (const sem of semesters) {
+    const subs = Array.isArray(sem.subjects) ? sem.subjects : [];
+    const { gwa: sGwa, totalUnits: sUnits } = computeGwa(subs);
+    if (sUnits > 0) nonEmptySemesters++;
+    if (sGwa === null || sUnits < LEADERBOARD_SEMESTER_MIN_UNITS) continue;
+    const term = normalizeTerm(
+      String(sem.schoolYear ?? ""),
+      String(sem.semester ?? ""),
+    );
+    semesterCandidates.push({
+      termKey: term.key,
+      termLabel: term.label,
+      gwa: sGwa,
+      totalUnits: sUnits,
+    });
+  }
+
+  // The overall board represents a complete academic summary — it needs both a
+  // full semester count and a full unit load.
+  const overallQualifies =
+    gwa !== null &&
+    totalUnits >= LEADERBOARD_MIN_UNITS &&
+    nonEmptySemesters >= LEADERBOARD_MIN_SEMESTERS;
+
+  if (!overallQualifies && semesterCandidates.length === 0) {
     throw new HttpsError(
       "failed-precondition",
-      `Save at least ${LEADERBOARD_MIN_UNITS} units of subjects across your semesters to appear on the leaderboard.`,
+      `To appear on the leaderboard, save a semester with at least ${LEADERBOARD_SEMESTER_MIN_UNITS} units — or complete ${LEADERBOARD_MIN_SEMESTERS} semesters and ${LEADERBOARD_MIN_UNITS} units for the overall board.`,
     );
   }
 
@@ -158,39 +197,35 @@ export async function publishLeaderboardEntry(
     isAnonymous: opts.isAnonymous,
   };
 
-  // 1. Overall (cumulative) entry — Latin honors.
-  const summaryEntry = {
-    ...identity,
-    gwa,
-    totalUnits,
-    honor: totalUnits >= HONOR_MIN_UNITS ? getLatinHonor(gwa) : null,
-    updatedAt: FieldValue.serverTimestamp(),
-  };
+  // 1. Overall entry — only when the record is complete enough; otherwise drop
+  //    any stale one so an incomplete record never lingers on the overall board.
+  if (overallQualifies && gwa !== null) {
+    await db.doc(`${SUMMARY_COLLECTION}/${handle}`).set({
+      ...identity,
+      gwa,
+      totalUnits,
+      honor: totalUnits >= HONOR_MIN_UNITS ? getLatinHonor(gwa) : null,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+  } else {
+    await db.doc(`${SUMMARY_COLLECTION}/${handle}`).delete();
+  }
 
   // 2. Per-term entries — scholarship honors, one per qualifying semester.
   const semesterEntries = new Map<string, Record<string, unknown>>();
-  for (const sem of semesters) {
-    const subs = Array.isArray(sem.subjects) ? sem.subjects : [];
-    const { gwa: sGwa, totalUnits: sUnits } = computeGwa(subs);
-    if (sGwa === null || sUnits < LEADERBOARD_SEMESTER_MIN_UNITS) continue;
-    const term = normalizeTerm(
-      String(sem.schoolYear ?? ""),
-      String(sem.semester ?? ""),
-    );
-    semesterEntries.set(`${handle}__${term.key}`, {
+  for (const c of semesterCandidates) {
+    semesterEntries.set(`${handle}__${c.termKey}`, {
       ...identity,
-      gwa: sGwa,
-      totalUnits: sUnits,
-      honor: getAcademicHonor(sGwa),
-      termKey: term.key,
-      termLabel: term.label,
+      gwa: c.gwa,
+      totalUnits: c.totalUnits,
+      honor: getAcademicHonor(c.gwa),
+      termKey: c.termKey,
+      termLabel: c.termLabel,
       updatedAt: FieldValue.serverTimestamp(),
     });
   }
 
-  // Write summary, then reconcile the per-term entries (set new, drop stale).
-  await db.doc(`${SUMMARY_COLLECTION}/${handle}`).set(summaryEntry);
-
+  // Reconcile the per-term entries (set new, drop stale).
   const existing = await db
     .collection(SEMESTER_COLLECTION)
     .where("handle", "==", handle)

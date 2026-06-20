@@ -7,8 +7,16 @@
 /** Minimum total units before an honor classification is shown. */
 export const HONOR_MIN_UNITS = 12;
 
-/** Minimum cumulative units required to appear on the overall leaderboard. */
-export const LEADERBOARD_MIN_UNITS = HONOR_MIN_UNITS;
+/**
+ * Overall (academic-summary) board gate — meant to represent a *complete*
+ * record, so only near-/fully-finished students appear:
+ *   - at least this many cumulative units (≈ a full bachelor's load), and
+ *   - at least {@link LEADERBOARD_MIN_SEMESTERS} saved semesters.
+ */
+export const LEADERBOARD_MIN_UNITS = 120;
+
+/** Minimum saved semesters for the overall board (2/yr × 4 yrs = a full program). */
+export const LEADERBOARD_MIN_SEMESTERS = 8;
 
 /** Minimum units in a single semester for it to appear on a per-term board. */
 export const LEADERBOARD_SEMESTER_MIN_UNITS = HONOR_MIN_UNITS;
