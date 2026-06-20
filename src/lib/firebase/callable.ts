@@ -34,3 +34,23 @@ export const requestPasswordReset = httpsCallable<
   { email: string },
   { submitted: boolean }
 >(functions, 'sendPasswordResetEmail');
+
+/**
+ * Joins / updates / leaves the per-school leaderboard. Participation requires a
+ * verified email; opt-in computes the user's cumulative GWA server-side and
+ * publishes a privacy-respecting projection. Returns the assigned anonymous
+ * handle on opt-in.
+ */
+export const setLeaderboardParticipation = httpsCallable<
+  { optIn: boolean; isAnonymous: boolean },
+  { optIn: boolean; handle?: string }
+>(functions, 'setLeaderboardParticipation');
+
+/**
+ * Recomputes and republishes the signed-in user's standing (the "Update my
+ * standing" button). No-op unless they've already opted in.
+ */
+export const refreshLeaderboardStanding = httpsCallable<void, { handle: string }>(
+  functions,
+  'refreshLeaderboardStanding',
+);

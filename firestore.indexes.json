@@ -1,4 +1,21 @@
 {
-  "indexes": [],
+  "indexes": [
+    {
+      "collectionGroup": "leaderboard",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "schoolId", "order": "ASCENDING" },
+        { "fieldPath": "gwa", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "leaderboardSemesters",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "schoolId", "order": "ASCENDING" },
+        { "fieldPath": "gwa", "order": "ASCENDING" }
+      ]
+    }
+  ],
   "fieldOverrides": []
 }

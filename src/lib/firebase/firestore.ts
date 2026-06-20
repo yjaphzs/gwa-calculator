@@ -1,14 +1,26 @@
 import {
   doc,
+  collection,
   getDoc,
+  getDocs,
   setDoc,
   onSnapshot,
+  query,
+  where,
+  orderBy,
+  limit,
   serverTimestamp,
   type DocumentReference,
 } from 'firebase/firestore';
 import { db } from './client';
 import type { User } from './auth';
-import type { CalculatorState, UserProfile } from '@/types';
+import type {
+  CalculatorState,
+  LeaderboardEntry,
+  LeaderboardSemesterEntry,
+  LeaderboardSettings,
+  UserProfile,
+} from '@/types';
 
 // ── Document references ─────────────────────────────────────────────────────
 export function userProfileRef(uid: string): DocumentReference {
@@ -48,13 +60,86 @@ export async function ensureUserProfile(user: User): Promise<void> {
 /** Merges fields into the profile document. */
 export async function updateUserProfile(
   uid: string,
-  data: Partial<Pick<UserProfile, 'displayName' | 'photoURL' | 'email'>>,
+  data: Partial<
+    Pick<
+      UserProfile,
+      | 'displayName'
+      | 'photoURL'
+      | 'email'
+      | 'schoolId'
+      | 'schoolName'
+      | 'schoolType'
+      | 'program'
+    >
+  >,
 ): Promise<void> {
   await setDoc(
     userProfileRef(uid),
     { ...data, updatedAt: serverTimestamp() },
     { merge: true },
   );
+}
+
+// ── Leaderboard ──────────────────────────────────────────────────────────────
+/** Private per-user leaderboard settings doc (server-written, owner-readable). */
+export function leaderboardSettingsRef(uid: string): DocumentReference {
+  return doc(db, 'users', uid, 'leaderboard', 'settings');
+}
+
+/**
+ * Live subscription to the caller's own leaderboard settings (opt-in state +
+ * assigned handle). Returns the unsubscribe function. Yields null while no
+ * settings doc exists yet (user has never opted in).
+ */
+export function subscribeLeaderboardSettings(
+  uid: string,
+  callback: (settings: LeaderboardSettings | null) => void,
+  onError?: (err: Error) => void,
+): () => void {
+  return onSnapshot(
+    leaderboardSettingsRef(uid),
+    (snap) => callback(snap.exists() ? (snap.data() as LeaderboardSettings) : null),
+    (err) => {
+      console.error('[firestore] leaderboard settings snapshot error:', err);
+      onError?.(err);
+    },
+  );
+}
+
+/**
+ * Fetches the top entries for a school, ranked by cumulative GWA ascending
+ * (1.00 = best). Requires the composite index in firestore.indexes.json.
+ */
+export async function fetchLeaderboard(
+  schoolId: string,
+  max = 100,
+): Promise<LeaderboardEntry[]> {
+  const q = query(
+    collection(db, 'leaderboard'),
+    where('schoolId', '==', schoolId),
+    orderBy('gwa', 'asc'),
+    limit(max),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => d.data() as LeaderboardEntry);
+}
+
+/**
+ * Fetches a school's per-term entries (all terms), ranked by GWA ascending. The
+ * caller groups them by `termKey` to build the per-semester boards.
+ */
+export async function fetchSemesterLeaderboard(
+  schoolId: string,
+  max = 300,
+): Promise<LeaderboardSemesterEntry[]> {
+  const q = query(
+    collection(db, 'leaderboardSemesters'),
+    where('schoolId', '==', schoolId),
+    orderBy('gwa', 'asc'),
+    limit(max),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => d.data() as LeaderboardSemesterEntry);
 }
 
 // ── Calculator state ─────────────────────────────────────────────────────────

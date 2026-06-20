@@ -1,3 +1,7 @@
+// NOTE: `computeGwa`, `getLatinHonor`, and `HONOR_MIN_UNITS` are duplicated in
+// `functions/src/lib/academic.ts` (the functions package can't import from this
+// `src/` tree). Keep the two files in sync — same bands, rounding, and gate.
+
 export function getAcademicHonor(gwa: number) {
     if (gwa >= 1.00 && gwa <= 1.50) return "University Scholar";
     if (gwa > 1.50 && gwa <= 1.75) return "College Scholar";

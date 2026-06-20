@@ -98,12 +98,34 @@ export default function TermsPage() {
           or school-issued academic record.
         </li>
         <li>
+          Submit false information to, impersonate another person on, or
+          otherwise manipulate the leaderboard.
+        </li>
+        <li>
           Reverse engineer or misuse the Service in ways that harm us or other
           users.
         </li>
       </ul>
 
-      <h2>6. Availability and changes</h2>
+      <h2>6. Leaderboards (optional)</h2>
+      <p>
+        The leaderboard is an <strong>optional, opt-in</strong> feature. We do
+        not publish any of your information to it unless you explicitly choose to
+        join from your Account page. By opting in, you consent to display your
+        standings — your overall and per-semester GWAs and honors, your school,
+        and <em>either</em> your name and photo <em>or</em> a randomly generated
+        anonymous handle — to other signed-in users. You decide whether to appear
+        by name or anonymously, you can change that at any time, and you can leave
+        the leaderboard whenever you like, which removes your entry. Participation
+        requires a <strong>verified email</strong>. Because the figures are the
+        ones you enter yourself, leaderboard standings are{" "}
+        <strong>not verified or official</strong> and must not be relied upon as
+        an accurate ranking. We may remove any entry that is abusive,
+        impersonating, or otherwise violates these Terms. See our{" "}
+        <a href="/privacy-policy">Privacy Policy</a> for how this data is handled.
+      </p>
+
+      <h2>7. Availability and changes</h2>
       <p>
         The Service is provided free of charge on an &ldquo;as is&rdquo; and
         &ldquo;as available&rdquo; basis. We may modify, suspend, or discontinue
@@ -112,7 +134,7 @@ export default function TermsPage() {
         stored or synced.
       </p>
 
-      <h2>7. Disclaimers and limitation of liability</h2>
+      <h2>8. Disclaimers and limitation of liability</h2>
       <p>
         To the fullest extent permitted by law, the Service is provided without
         warranties of any kind, whether express or implied, including fitness
@@ -122,14 +144,14 @@ export default function TermsPage() {
         — or inability to use — the Service.
       </p>
 
-      <h2>8. Termination</h2>
+      <h2>9. Termination</h2>
       <p>
         You may stop using the Service and delete your account at any time from
         the <strong>Account → Security</strong> page. We may suspend or
         terminate access if you violate these Terms or misuse the Service.
       </p>
 
-      <h2>9. Changes to these Terms</h2>
+      <h2>10. Changes to these Terms</h2>
       <p>
         We may revise these Terms from time to time. Material changes will be
         reflected by updating the &ldquo;Last updated&rdquo; date above.
@@ -137,7 +159,7 @@ export default function TermsPage() {
         Terms.
       </p>
 
-      <h2>10. Governing law</h2>
+      <h2>11. Governing law</h2>
       <p>
         These Terms are governed by the laws of the Republic of the Philippines,
         without regard to its conflict-of-law rules. Any disputes will be
@@ -145,7 +167,7 @@ export default function TermsPage() {
         the Philippines.
       </p>
 
-      <h2>11. Contact</h2>
+      <h2>12. Contact</h2>
       <p>
         Questions about these Terms? Email{" "}
         <a href="mailto:jan@yjaphzs.xyz">jan@yjaphzs.xyz</a>.

@@ -73,6 +73,10 @@ export default function PrivacyPolicyPage() {
         <li>To save your calculator data and sync it across your devices.</li>
         <li>To display your profile (name and photo) within the app.</li>
         <li>
+          To show your entry on the leaderboard — <strong>only if you opt
+          in</strong> (see section 10).
+        </li>
+        <li>
           To send essential account emails (verification and password reset).
         </li>
         <li>To keep the Service secure and prevent abuse.</li>
@@ -162,7 +166,26 @@ export default function PrivacyPolicyPage() {
         contact us using the details below.
       </p>
 
-      <h2>10. Changes to this policy</h2>
+      <h2>10. Leaderboards (optional)</h2>
+      <p>
+        The leaderboard is <strong>strictly opt-in</strong>. By default, none of
+        your data is shown to anyone else. If you choose to join from the{" "}
+        <strong>Account</strong> page, we publish limited entries — visible only
+        to other signed-in users — containing your school (and optional program),
+        your overall and per-semester GWAs and honor standings, and{" "}
+        <em>either</em> your display name and photo <em>or</em>, if you choose to
+        stay anonymous, a randomly
+        generated handle (for example <em>anonymous2421</em>) with no name or
+        photo. We never expose your email address or account identifier on the
+        leaderboard. Participation requires a <strong>verified email</strong>.
+        You can switch between anonymous and named, refresh your standing, or
+        leave the leaderboard at any time from the Account page — leaving removes
+        your public entries. Deleting your account also removes them. The first time
+        you open the leaderboard, we show a brief note explaining these choices so
+        your consent is informed before you decide to take part.
+      </p>
+
+      <h2>11. Changes to this policy</h2>
       <p>
         We may update this Privacy Policy from time to time. Material changes
         will be reflected by updating the &ldquo;Last updated&rdquo; date above.
@@ -170,7 +193,7 @@ export default function PrivacyPolicyPage() {
         policy.
       </p>
 
-      <h2>11. Contact</h2>
+      <h2>12. Contact</h2>
       <p>
         Questions about this policy or your data? Email{" "}
         <a href="mailto:jan@yjaphzs.xyz">jan@yjaphzs.xyz</a>.
