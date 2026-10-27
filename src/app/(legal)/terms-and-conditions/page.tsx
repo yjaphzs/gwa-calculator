@@ -11,7 +11,7 @@ export default function TermsPage() {
     <>
       <h1>Terms and Conditions</h1>
       <p>
-        <strong>Last updated: June 20, 2026</strong>
+        <strong>Last updated: October 28, 2026</strong>
       </p>
 
       <p>
@@ -20,7 +20,7 @@ export default function TermsPage() {
         <a href="https://gwa-calculator.yjaphzs.xyz">
           gwa-calculator.yjaphzs.xyz
         </a>
-        . By using the Service — or by creating an account — you agree to these
+        . By using the Service, or by creating an account, you agree to these
         Terms. If you do not agree, please don&apos;t use the Service.
       </p>
 
@@ -45,11 +45,13 @@ export default function TermsPage() {
       </p>
       <p>
         This also applies to any document you generate, print, export, or
-        download from the Service — such as a per-semester grade summary (a{" "}
+        download from the Service, such as a per-semester grade summary (a{" "}
         <strong>Semester Report</strong>) or a summary across all your semesters
         (an <strong>Academic Summary</strong>). These are produced solely from
         the figures you enter and are offered only as a convenient, personal
-        copy of your own data. They are{" "}
+        copy of your own data. If you are signed in, they also show the name,
+        school, and college or program saved to your profile, and every page is
+        marked as a personal copy. They are{" "}
         <strong>not official academic records</strong>, are not issued,
         certified, or endorsed by any school, registrar, or other authority,
         and must not be presented or relied upon as official. For an official
@@ -112,9 +114,9 @@ export default function TermsPage() {
         The leaderboard is an <strong>optional, opt-in</strong> feature. We do
         not publish any of your information to it unless you explicitly choose to
         join from your Account page. By opting in, you consent to display your
-        standings — your overall and per-semester GWAs and honors, your school,
+        standings (your overall and per-semester GWAs and honors, your school,
         and <em>either</em> your name and photo <em>or</em> a randomly generated
-        anonymous handle — to other signed-in users. You decide whether to appear
+        anonymous handle) to other signed-in users. You decide whether to appear
         by name or anonymously, you can change that at any time, and you can leave
         the leaderboard whenever you like, which removes your entry. Participation
         requires a <strong>verified email</strong>. Because the figures are the
@@ -141,7 +143,7 @@ export default function TermsPage() {
         for a particular purpose and accuracy of results. To the maximum extent
         permitted by law, we will not be liable for any indirect, incidental, or
         consequential damages, or for any loss of data, arising from your use of
-        — or inability to use — the Service.
+        or inability to use, the Service.
       </p>
 
       <h2>9. Termination</h2>

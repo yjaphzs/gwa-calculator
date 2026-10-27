@@ -1,11 +1,20 @@
 import type { FieldValue, Timestamp } from "firebase/firestore";
 
+import type { SubjectMark } from "@/lib/academic";
+
+export type { SubjectMark };
+
 export interface Subject {
     id: string;
     code: string;
     title: string;
+    /** Ignored by the GWA when the subject is excluded or carries a mark. */
     grade: number;
     units: number;
+    /** Left out of the GWA by school policy (e.g. NSTP). Omitted when false. */
+    excluded?: boolean;
+    /** INC / DRP / W / IP instead of a final grade. Omitted when graded. */
+    mark?: SubjectMark;
 }
 
 export interface Semester {

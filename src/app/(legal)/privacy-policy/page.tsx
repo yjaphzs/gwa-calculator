@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "How GWA Calculator handles your data — what we collect, how it's used, and your choices.",
+    "How GWA Calculator handles your data: what we collect, how it's used, and your choices.",
 };
 
 export default function PrivacyPolicyPage() {
@@ -11,7 +11,7 @@ export default function PrivacyPolicyPage() {
     <>
       <h1>Privacy Policy</h1>
       <p>
-        <strong>Last updated: June 20, 2026</strong>
+        <strong>Last updated: October 28, 2026</strong>
       </p>
 
       <p>
@@ -43,28 +43,28 @@ export default function PrivacyPolicyPage() {
       </p>
       <ul>
         <li>
-          <strong>Account details</strong> — your email address, an optional
+          <strong>Account details:</strong> your email address, an optional
           display name, and an optional profile photo you upload.
         </li>
         <li>
-          <strong>Authentication data</strong> — managed by Firebase
+          <strong>Authentication data:</strong> managed by Firebase
           Authentication. If you sign in with Google, we receive your basic
           Google profile (name, email, and photo) to create your account. We
           never receive or store your password in readable form.
         </li>
         <li>
-          <strong>Your calculator data</strong> — the subjects, grades, units,
+          <strong>Your calculator data:</strong> the subjects, grades, units,
           and semesters you save, so they can sync across your devices.
         </li>
         <li>
-          <strong>Technical metadata</strong> — standard sign-in metadata such
+          <strong>Technical metadata:</strong> standard sign-in metadata such
           as account creation and last sign-in time, retained by Firebase
           Authentication.
         </li>
       </ul>
       <p>
         We do <strong>not</strong> collect your school records, student number,
-        or any official academic data — only the figures you type in yourself.
+        or any official academic data. We only have the figures you type in yourself.
       </p>
 
       <h2>3. How we use your information</h2>
@@ -73,7 +73,7 @@ export default function PrivacyPolicyPage() {
         <li>To save your calculator data and sync it across your devices.</li>
         <li>To display your profile (name and photo) within the app.</li>
         <li>
-          To show your entry on the leaderboard — <strong>only if you opt
+          To show your entry on the leaderboard, <strong>only if you opt
           in</strong> (see section 10).
         </li>
         <li>
@@ -144,18 +144,21 @@ export default function PrivacyPolicyPage() {
         <li>Access and edit your profile and saved data within the app.</li>
         <li>Export your data using the in-app Export feature.</li>
         <li>
-          Generate a printable summary of your grades — a Semester Report (one
-          semester) or an Academic Summary (all semesters) — for your own
+          Generate a printable summary of your grades, either a Semester Report
+          (one semester) or an Academic Summary (all semesters), for your own
           personal reference.
         </li>
         <li>Delete your account and all associated data.</li>
       </ul>
       <p>
-        Any file you export, and any printable grade summary you generate (a
-        Semester Report or Academic Summary), are created{" "}
+        A printable grade summary contains the subjects and grades you entered
+        and, if you are signed in, the display name, school, and college or
+        program saved to your profile. Any file you export, and any printable
+        grade summary you generate (a Semester Report or Academic Summary), are
+        created{" "}
         <strong>on your device</strong>, from data already on your device, at
         the moment you ask for them. The resulting file or printout is{" "}
-        <strong>not uploaded to or stored by us</strong> — what you do with it,
+        <strong>not uploaded to or stored by us</strong>. What you do with it,
         including saving, printing, or sharing it, is entirely up to you. These
         summaries are for personal reference only and are not official academic
         records; see our <a href="/terms-and-conditions">Terms and Conditions</a>.
@@ -170,8 +173,8 @@ export default function PrivacyPolicyPage() {
       <p>
         The leaderboard is <strong>strictly opt-in</strong>. By default, none of
         your data is shown to anyone else. If you choose to join from the{" "}
-        <strong>Account</strong> page, we publish limited entries — visible only
-        to other signed-in users — containing your school (and optional program),
+        <strong>Account</strong> page, we publish limited entries, visible only
+        to other signed-in users, containing your school (and optional program),
         your overall and per-semester GWAs and honor standings, and{" "}
         <em>either</em> your display name and photo <em>or</em>, if you choose to
         stay anonymous, a randomly
@@ -179,7 +182,7 @@ export default function PrivacyPolicyPage() {
         photo. We never expose your email address or account identifier on the
         leaderboard. Participation requires a <strong>verified email</strong>.
         You can switch between anonymous and named, refresh your standing, or
-        leave the leaderboard at any time from the Account page — leaving removes
+        leave the leaderboard at any time from the Account page. Leaving removes
         your public entries. Deleting your account also removes them. The first time
         you open the leaderboard, we show a brief note explaining these choices so
         your consent is informed before you decide to take part.

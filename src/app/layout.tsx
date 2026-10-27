@@ -5,7 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/context/auth-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { ServiceWorkerCleanup } from "@/components/service-worker-cleanup";
+import { ServiceWorkerCleanup } from "@/components/shared/service-worker-cleanup";
 
 const fontSans = Roboto({
   subsets: ["latin"],
@@ -29,7 +29,7 @@ const fontMono = Martian_Mono({
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 const SITE_NAME = process.env.NEXT_PUBLIC_APP_NAME ?? "GWA Calculator";
 const SITE_DESCRIPTION =
-  "Compute your General Weighted Average and academic honors. Works offline in your browser — sign in to save your progress and sync across devices.";
+  "Compute your General Weighted Average and academic honors. Works offline in your browser. Sign in to save your progress and sync across devices.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -54,11 +54,15 @@ export const metadata: Metadata = {
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
     url: SITE_URL,
+    // Static file (not an opengraph-image route) so Hosting serves it as a
+    // plain .png regardless of trailing-slash rewrites.
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: `${SITE_NAME}: compute your GWA and honors` }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
+    images: ["/og-image.png"],
   },
 };
 
@@ -68,10 +72,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}
-      >
+    // The font variables must live on <html>: globals.css reads them on :root
+    // (--font-sans: var(--font-roboto)…), which can't see variables set on <body>.
+    <html
+      lang="en"
+      className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="antialiased">
         <ServiceWorkerCleanup />
         <NextTopLoader
           color="var(--primary)"

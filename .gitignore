@@ -46,8 +46,10 @@ functions/lib/
 functions/node_modules/
 functions/.env
 
-# Claude Code
-.claude/
+# Claude Code — project skills, commands, and settings.json are shared;
+# personal overrides stay local.
+.claude/settings.local.json
+.claude/*.local.*
 
 # editor
 .vscode/*

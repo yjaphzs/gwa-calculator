@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AccountView } from "./_components/account-view";
+import { AccountView } from "@/features/account/components/account-view";
 
 export const metadata: Metadata = {
   title: "Account",
