@@ -18,7 +18,7 @@ All client math lives in **`src/lib/academic.ts`**. Use its exports — never re
 | `HONOR_MIN_UNITS` | `12` — no honor shown below this many units |
 | `ACADEMIC_HONOR_BANDS`, `LATIN_HONOR_BANDS` | band tables used to render honors in the UI/guide |
 | `GRADE_OPTIONS`, `UNIT_OPTIONS` | what the subject form offers |
-| `countsTowardGwa`, `SUBJECT_MARKS` | excluded / INC / DRP / W subjects are skipped by every GWA |
+| `countsTowardGwa`, `SUBJECT_MARKS` | excluded / INC / DRP / W / IP subjects are skipped by every GWA |
 | `src/lib/gwa-insights.ts` | `honorProgress`, `describeHonorProgress`, `requiredTermGwa` (client-only) |
 
 ## The rules
@@ -30,7 +30,10 @@ All client math lives in **`src/lib/academic.ts`**. Use its exports — never re
   University Scholar 1.00–1.50 · College Scholar >1.50–1.75 · Dean's Lister >1.75–2.00.
 - **Latin honors** (cumulative, Academic Summary only):
   Summa Cum Laude 1.00–1.20 · Magna Cum Laude >1.20–1.45 · Cum Laude >1.45–1.75.
-- **Not counted:** `excluded: true` (school policy, e.g. NSTP) or `mark: "INC" | "DRP" | "W"`.
+- **Not counted:** `excluded: true` (school policy, e.g. NSTP) or `mark: "INC" | "DRP" | "W" | "IP"`.
+  IP (in progress) is for courses that continue into the next term; the final grade is usually
+  entered in the semester the course is completed, or edited into the saved semester
+  (`updateSemesterSubject`) when a school back-fills it.
   These subjects stay listed but contribute neither grade nor units. Marked subjects store
   `grade: 0`.
 - **Cumulative GWA** is unit-weighted across **all** subjects of all semesters

@@ -2,7 +2,10 @@
 
 import { useCallback, type Dispatch, type SetStateAction } from "react";
 
+import type { SubjectFormValues } from "@/features/calculator/components/subject-form";
+import { buildSubject } from "@/features/calculator/lib/subject-status";
 import type { SemesterValues } from "@/features/semesters/components/semester-form";
+import { replaceSemesterSubject } from "@/features/semesters/lib/semesters";
 import type { Semester, Subject } from "@/types";
 
 interface Options {
@@ -11,7 +14,7 @@ interface Options {
   removeSubjects: () => void;
 }
 
-/** Archive the working subjects as a semester, rename a term, delete one. */
+/** Archive the working subjects as a semester, rename or delete one, edit its subjects. */
 export function useSemesterActions({
   subjects,
   setSemesters,
@@ -51,5 +54,13 @@ export function useSemesterActions({
     [setSemesters],
   );
 
-  return { createSemester, updateSemester, deleteSemester };
+  // Edit one subject inside a saved semester (e.g. fill in an INC or IP grade).
+  const updateSemesterSubject = useCallback(
+    (semesterId: string, subjectId: string, values: SubjectFormValues) => {
+      setSemesters((prev) => replaceSemesterSubject(prev, semesterId, buildSubject(subjectId, values)));
+    },
+    [setSemesters],
+  );
+
+  return { createSemester, updateSemester, deleteSemester, updateSemesterSubject };
 }

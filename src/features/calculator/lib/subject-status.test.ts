@@ -23,8 +23,10 @@ describe("subject status", () => {
     expect(statusOf({})).toBe("graded");
     expect(statusOf({ excluded: true })).toBe("excluded");
     expect(statusOf({ mark: "W" })).toBe("W");
+    expect(statusOf({ mark: "IP" })).toBe("IP");
     expect(notCountedLabel({})).toBeNull();
     expect(notCountedLabel({ excluded: true })).toBe("Not counted");
     expect(notCountedLabel({ mark: "DRP" })).toBe("Dropped");
+    expect(notCountedLabel({ mark: "IP" })).toBe("In progress");
   });
 });

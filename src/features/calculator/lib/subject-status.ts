@@ -1,7 +1,7 @@
 import { SUBJECT_MARKS, type SubjectMark } from "@/lib/academic";
 import type { Subject } from "@/types";
 
-/** How a subject relates to the GWA: graded, excluded by policy, or an INC/DRP/W mark. */
+/** How a subject relates to the GWA: graded, excluded by policy, or an INC/DRP/W/IP mark. */
 export type SubjectStatus = "graded" | "excluded" | SubjectMark;
 
 export const STATUS_OPTIONS: { value: SubjectStatus; label: string }[] = [

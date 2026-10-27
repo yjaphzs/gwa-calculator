@@ -4,6 +4,7 @@ import {
   formatTermLabel,
   generateSchoolYears,
   isDuplicateTerm,
+  replaceSemesterSubject,
   sortNewestFirst,
   sortOldestFirst,
 } from "@/features/semesters/lib/semesters";
@@ -54,6 +55,20 @@ describe("generateSchoolYears", () => {
       "2025-2026",
       "2024-2025",
     ]);
+  });
+});
+
+describe("replaceSemesterSubject", () => {
+  it("swaps one subject in one semester and leaves the rest alone", () => {
+    const subject = { id: "x", code: "THESIS", title: "Thesis", grade: 0, units: 3, mark: "IP" as const };
+    const other = sem("b", "Second", "2025-2026");
+    const list = [{ ...sem("a", "First", "2025-2026"), subjects: [subject] }, { ...other, subjects: [subject] }];
+    const graded = { id: "x", code: "THESIS", title: "Thesis", grade: 1.25, units: 3 };
+
+    const next = replaceSemesterSubject(list, "a", graded);
+    expect(next[0].subjects).toEqual([graded]);
+    expect(next[1].subjects).toEqual([subject]);
+    expect(list[0].subjects).toEqual([subject]);
   });
 });
 

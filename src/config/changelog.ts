@@ -27,7 +27,8 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: "October 28, 2026",
     title: "Planner, trends & navigation",
     changes: [
-      { type: "new", text: "Mark a subject as not counted (like NSTP or PE) or as INC, DRP, or W. It stays on your list and reports without changing your GWA." },
+      { type: "new", text: "Mark a subject as not counted (like NSTP or PE) or as INC, DRP, W, or IP (in progress, for courses that continue next term). It stays on your list and reports without changing your GWA." },
+      { type: "new", text: "Edit a subject inside a saved semester, for example to fill in the final grade for an INC or IP course." },
       { type: "new", text: "Plan your next semester: see the GWA you need to keep Cum Laude, Magna Cum Laude, or Summa Cum Laude." },
       { type: "new", text: "A GWA-by-semester chart on the Semesters tab." },
       { type: "new", text: "Undo right after deleting a subject." },

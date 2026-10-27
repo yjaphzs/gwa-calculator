@@ -54,13 +54,18 @@ export const GRADE_OPTIONS: readonly number[] = [
 /** Units offered by the subject form (imports may still carry decimals). */
 export const UNIT_OPTIONS: readonly number[] = Array.from({ length: 10 }, (_, i) => i + 1);
 
-/** Non-numeric marks a subject can carry instead of a final grade. */
-export type SubjectMark = "INC" | "DRP" | "W";
+/**
+ * Non-numeric marks a subject can carry instead of a final grade. IP is for
+ * courses that continue into the next term (thesis, practicum): the grade comes
+ * when the course is completed, usually recorded in that later term.
+ */
+export type SubjectMark = "INC" | "DRP" | "W" | "IP";
 
 export const SUBJECT_MARKS: readonly { value: SubjectMark; label: string }[] = [
     { value: "INC", label: "Incomplete" },
     { value: "DRP", label: "Dropped" },
     { value: "W", label: "Withdrawn" },
+    { value: "IP", label: "In progress" },
 ];
 
 /** What the GWA math needs from a subject. */
@@ -69,11 +74,11 @@ export interface GwaInput {
     units: number;
     /** Left out of the GWA by school policy (e.g. NSTP). */
     excluded?: boolean;
-    /** INC/DRP/W: not a grade, so it doesn't count until resolved. */
+    /** INC/DRP/W/IP: not a final grade, so it doesn't count until there is one. */
     mark?: SubjectMark | null;
 }
 
-/** Whether a subject is part of the GWA (not excluded and not marked INC/DRP/W). */
+/** Whether a subject is part of the GWA (not excluded and not marked INC/DRP/W/IP). */
 export function countsTowardGwa(subject: GwaInput): boolean {
     return !subject.excluded && !subject.mark;
 }

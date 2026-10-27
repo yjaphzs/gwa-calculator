@@ -28,7 +28,7 @@ Two documents, printed or saved as PDF from the browser:
 4. **Escape all user input.** That means subject codes and titles, the student name, school,
    program, and term labels. Use `escapeHtml` from `lib/format.ts`. The documents are raw
    HTML strings.
-5. **Not-counted subjects stay listed.** Rows for excluded and INC/DRP/W subjects are muted,
+5. **Not-counted subjects stay listed.** Rows for excluded and INC/DRP/W/IP subjects are muted,
    tagged, and show "Not counted" in place of Grade × units. Totals and the division use
    only counted subjects (`weightedSum`, `computeGwa`).
 6. **No em dashes in report text.** Write empty values as "N/A" or "None".

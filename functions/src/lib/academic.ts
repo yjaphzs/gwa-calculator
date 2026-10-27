@@ -33,7 +33,7 @@ export interface GwaInput {
   units: number;
   /** Left out of the GWA by school policy (e.g. NSTP). */
   excluded?: boolean;
-  /** INC / DRP / W: not a grade, so it doesn't count until resolved. */
+  /** INC / DRP / W / IP: not a final grade, so it doesn't count until there is one. */
   mark?: string | null;
 }
 

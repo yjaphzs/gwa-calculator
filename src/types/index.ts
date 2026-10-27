@@ -13,7 +13,7 @@ export interface Subject {
     units: number;
     /** Left out of the GWA by school policy (e.g. NSTP). Omitted when false. */
     excluded?: boolean;
-    /** INC / DRP / W instead of a final grade. Omitted when graded. */
+    /** INC / DRP / W / IP instead of a final grade. Omitted when graded. */
     mark?: SubjectMark;
 }
 

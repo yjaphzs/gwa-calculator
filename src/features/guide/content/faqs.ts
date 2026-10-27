@@ -30,9 +30,9 @@ export const FAQS: readonly Faq[] = [
       "Usually yes. A 5.00 is computed with its units like any other grade. If you retake the subject, schools differ on whether both attempts count, so follow your registrar's rule.",
   },
   {
-    question: "What about INC, DRP, or W?",
+    question: "What about INC, DRP, W, or IP?",
     answer:
-      "These aren't numeric grades, so they don't count until they're resolved. In the calculator, set the subject's status to INC, DRP, or W to keep it on your list without affecting your GWA, then change it to its final grade once you have one.",
+      "These aren't final grades, so they don't count yet. In the calculator, set the subject's status to INC, DRP, W, or IP (in progress) to keep it on your list without affecting your GWA. For a course that continues next term, like a thesis, most schools record the final grade in the term you finish it, so add it to that semester with its grade. If your school puts the grade back on the earlier term, open that saved semester on the Semesters tab and edit the subject there.",
   },
   {
     question: "Does the example calculator on this page save anything?",

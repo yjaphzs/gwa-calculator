@@ -11,12 +11,15 @@ import type { Subject } from "@/types";
 interface SubjectEditorDialogProps {
   editor: EditorDialog<Subject>;
   subjects: Subject[];
-  onCreate: (values: SubjectFormValues) => void;
+  /** Omit for edit-only use (subjects inside a saved semester). */
+  onCreate?: (values: SubjectFormValues) => void;
   onUpdate: (id: string, values: SubjectFormValues) => void;
+  /** Overrides the default edit-mode description. */
+  editDescription?: string;
 }
 
 /** Add or edit a subject in a modal form. */
-export function SubjectEditorDialog({ editor, subjects, onCreate, onUpdate }: SubjectEditorDialogProps) {
+export function SubjectEditorDialog({ editor, subjects, onCreate, onUpdate, editDescription }: SubjectEditorDialogProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const { onOpenChange, editing } = editor;
   const close = useCallback(() => onOpenChange(false), [onOpenChange]);
@@ -29,7 +32,7 @@ export function SubjectEditorDialog({ editor, subjects, onCreate, onUpdate }: Su
       title={editing ? "Edit Subject" : "Add Subject"}
       description={
         editing
-          ? "Update the form below to edit your subject. Click update when you're done."
+          ? (editDescription ?? "Update the form below to edit your subject. Click update when you're done.")
           : "Fill out the form below to add your subject. Click save when you're done."
       }
       submitLabel={editing ? "Update" : "Save"}
@@ -45,7 +48,7 @@ export function SubjectEditorDialog({ editor, subjects, onCreate, onUpdate }: Su
         subjects={subjects}
         onDirtyChange={submit.setDirty}
         onSubmit={(values) =>
-          submit.run(() => (editing ? onUpdate(editing.id, values) : onCreate(values)))
+          submit.run(() => (editing ? onUpdate(editing.id, values) : onCreate?.(values)))
         }
       />
     </FormDialog>

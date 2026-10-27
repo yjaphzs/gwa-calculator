@@ -16,7 +16,9 @@ import { useCalculatorData } from "@/features/persistence/hooks/use-calculator-d
 import { useReportActions } from "@/features/reports/hooks/use-report-actions";
 import { SemesterEditorDialog } from "@/features/semesters/components/semester-editor-dialog";
 import { SemestersPanel } from "@/features/semesters/components/semesters-panel";
+import { useSavedSubjectEditor } from "@/features/semesters/hooks/use-saved-subject-editor";
 import { useSemesterActions } from "@/features/semesters/hooks/use-semester-actions";
+import { formatTermLabel } from "@/features/semesters/lib/semesters";
 import { QrTransferDialog } from "@/features/transfer/components/qr-transfer/qr-transfer-dialog";
 import { useFileTransfer } from "@/features/transfer/hooks/use-file-transfer";
 import { useEditorDialog } from "@/hooks/use-editor-dialog";
@@ -43,6 +45,7 @@ export function CalculatorView() {
   const searchInputRef = useFocusShortcut("k");
   const subjectEditor = useEditorDialog<Subject>();
   const semesterEditor = useEditorDialog<Semester>();
+  const savedSubject = useSavedSubjectEditor();
   const subjectActions = useSubjectActions(data);
   const semesterActions = useSemesterActions(data);
   const transfer = useFileTransfer({ state: { subjects, semesters, autosave }, replaceAll: data.replaceAll });
@@ -104,6 +107,7 @@ export function CalculatorView() {
                     onReport: reports.printSemester,
                     onEdit: semesterEditor.openEdit,
                     onDelete: semesterActions.deleteSemester,
+                    onEditSubject: savedSubject.openEdit,
                   }}
                 />
               </TabsContent>
@@ -124,6 +128,18 @@ export function CalculatorView() {
         subjects={subjects}
         onCreate={semesterActions.createSemester}
         onUpdate={semesterActions.updateSemester}
+      />
+      <SubjectEditorDialog
+        editor={savedSubject.editor}
+        subjects={savedSubject.semester?.subjects ?? []}
+        onUpdate={(id, values) =>
+          savedSubject.semester && semesterActions.updateSemesterSubject(savedSubject.semester.id, id, values)
+        }
+        editDescription={
+          savedSubject.semester
+            ? `Saved in ${formatTermLabel(savedSubject.semester)}. Changes update that semester's GWA.`
+            : undefined
+        }
       />
       <QrTransferDialog
         open={qrOpen}

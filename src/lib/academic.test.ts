@@ -80,6 +80,7 @@ describe("excluded and marked subjects", () => {
     expect(countsTowardGwa({ grade: 1, units: 3 })).toBe(true);
     expect(countsTowardGwa({ grade: 1, units: 3, excluded: true })).toBe(false);
     expect(countsTowardGwa({ grade: 1, units: 3, mark: "DRP" })).toBe(false);
+    expect(countsTowardGwa({ grade: 0, units: 3, mark: "IP" })).toBe(false);
   });
 });
 

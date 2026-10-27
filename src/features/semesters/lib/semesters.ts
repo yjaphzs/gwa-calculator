@@ -1,4 +1,4 @@
-import type { Semester } from "@/types";
+import type { Semester, Subject } from "@/types";
 
 /** Terms a semester can be saved as, in calendar order. */
 export const SEMESTER_TERMS = ["First", "Second", "Third"] as const;
@@ -46,6 +46,19 @@ export function generateSchoolYears(count: number, now = new Date()): string[] {
     const from = currentYear - i;
     return `${from}-${from + 1}`;
   });
+}
+
+/** Replace one subject (matched by id) inside one saved semester; everything else is untouched. */
+export function replaceSemesterSubject(
+  semesters: Semester[],
+  semesterId: string,
+  subject: Subject,
+): Semester[] {
+  return semesters.map((semester) =>
+    semester.id === semesterId
+      ? { ...semester, subjects: semester.subjects.map((s) => (s.id === subject.id ? subject : s)) }
+      : semester,
+  );
 }
 
 /** Whether another semester already uses this term + school year. */

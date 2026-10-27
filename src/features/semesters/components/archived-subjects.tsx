@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown, Pencil } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,11 +22,17 @@ export function CountChip({ children }: { children: ReactNode }) {
   );
 }
 
-function ArchivedSubjectRow({ subject }: { subject: Subject }) {
+interface ArchivedSubjectRowProps {
+  subject: Subject;
+  /** Shown only for saved semesters; the save-semester preview is read-only. */
+  onEdit?: (subject: Subject) => void;
+}
+
+function ArchivedSubjectRow({ subject, onEdit }: ArchivedSubjectRowProps) {
   const notCounted = notCountedLabel(subject);
 
   return (
-    <div className="flex flex-row items-center justify-between rounded-md border px-4 py-2 text-sm">
+    <div className="flex flex-row items-center justify-between gap-3 rounded-md border px-4 py-2 text-sm">
       <div className="flex flex-col">
         <span className="text-xs text-muted-foreground">
           {subject.code}
@@ -34,11 +40,24 @@ function ArchivedSubjectRow({ subject }: { subject: Subject }) {
         </span>
         <span className="line-clamp-1 font-semibold">{subject.title}</span>
       </div>
-      <div className="flex flex-col justify-end text-end">
-        <span className="text-xs text-muted-foreground">{subject.units}</span>
-        <span className={cn("line-clamp-1 font-mono font-bold", notCounted && "text-muted-foreground")}>
-          {subject.mark ?? subject.grade.toFixed(2)}
-        </span>
+      <div className="flex items-center gap-2">
+        <div className="flex flex-col justify-end text-end">
+          <span className="text-xs text-muted-foreground">{subject.units}</span>
+          <span className={cn("line-clamp-1 font-mono font-bold", notCounted && "text-muted-foreground")}>
+            {subject.mark ?? subject.grade.toFixed(2)}
+          </span>
+        </div>
+        {onEdit && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-8"
+            aria-label={`Edit ${subject.code}`}
+            onClick={() => onEdit(subject)}
+          >
+            <Pencil className="size-4" />
+          </Button>
+        )}
       </div>
     </div>
   );
@@ -49,6 +68,7 @@ interface ArchivedSubjectsProps {
   heading: ReactNode;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onEditSubject?: (subject: Subject) => void;
   className?: string;
 }
 
@@ -58,6 +78,7 @@ export function ArchivedSubjects({
   heading,
   open,
   onOpenChange,
+  onEditSubject,
   className = "flex flex-col gap-2",
 }: ArchivedSubjectsProps) {
   const [first, ...rest] = subjects;
@@ -75,10 +96,10 @@ export function ArchivedSubjects({
           </CollapsibleTrigger>
         )}
       </div>
-      {first && <ArchivedSubjectRow subject={first} />}
+      {first && <ArchivedSubjectRow subject={first} onEdit={onEditSubject} />}
       <CollapsibleContent className="flex flex-col gap-2">
         {rest.map((subject) => (
-          <ArchivedSubjectRow key={subject.id} subject={subject} />
+          <ArchivedSubjectRow key={subject.id} subject={subject} onEdit={onEditSubject} />
         ))}
       </CollapsibleContent>
     </Collapsible>

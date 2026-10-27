@@ -138,7 +138,7 @@ and have unit tests. **Read the `calculator-persistence` skill before changing a
 `src/lib/academic.ts` covers:
 - `computeGwa`: Σ(grade × units) ÷ Σ units, rounded to 3 decimals, over subjects that
   `countsTowardGwa`. A subject is skipped when it is `excluded` (e.g. NSTP) or carries a `mark`
-  (INC / DRP / W); its units don't count either
+  (INC / DRP / W / IP, where IP means in progress); its units don't count either
 - `getHonorFor`, which applies the `HONOR_MIN_UNITS = 12` gate
 - the band tables `ACADEMIC_HONOR_BANDS` and `LATIN_HONOR_BANDS`
 - `GRADE_OPTIONS` and `UNIT_OPTIONS`

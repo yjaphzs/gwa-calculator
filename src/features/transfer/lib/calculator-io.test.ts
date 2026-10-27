@@ -15,9 +15,10 @@ describe("isValidSubject / isValidSemester", () => {
     expect(isValidSemester(semester)).toBe(true);
   });
 
-  it("accepts the optional excluded flag and INC/DRP/W marks", () => {
+  it("accepts the optional excluded flag and INC/DRP/W/IP marks", () => {
     expect(isValidSubject({ ...subject, excluded: true })).toBe(true);
     expect(isValidSubject({ ...subject, mark: "INC" })).toBe(true);
+    expect(isValidSubject({ ...subject, mark: "IP" })).toBe(true);
     expect(isValidSubject({ ...subject, mark: "PASS" })).toBe(false);
     expect(isValidSubject({ ...subject, excluded: "yes" })).toBe(false);
   });

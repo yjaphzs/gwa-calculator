@@ -5,7 +5,7 @@ import { weightedSum } from "@/lib/academic";
 import type { Subject } from "@/types";
 
 function renderSubjectRow(s: Subject, index: number): string {
-  // Excluded and INC/DRP/W subjects stay listed for the record, muted and
+  // Excluded and INC/DRP/W/IP subjects stay listed for the record, muted and
   // tagged, but contribute nothing to the totals.
   const notCounted = notCountedLabel(s);
   const tag = notCounted ? ` <span class="tag">${escapeHtml(notCounted)}</span>` : "";

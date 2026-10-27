@@ -12,7 +12,7 @@ import { renderDocument } from "@/features/reports/lib/render-document";
 import { computeGwa, countsTowardGwa, getHonorFor } from "@/lib/academic";
 import type { Subject } from "@/types";
 
-/** "2 not counted" when some subjects are excluded or marked INC/DRP/W. */
+/** "2 not counted" when some subjects are excluded or marked INC/DRP/W/IP. */
 function notCountedNote(subjects: Subject[]): string | undefined {
   const count = subjects.filter((s) => !countsTowardGwa(s)).length;
   return count > 0 ? `${count} not counted` : undefined;
