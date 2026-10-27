@@ -22,6 +22,8 @@ const SEMESTER_COLLECTION = "leaderboardSemesters";
 interface Subject {
   grade: number;
   units: number;
+  excluded?: boolean;
+  mark?: string | null;
 }
 
 interface Semester {
@@ -161,7 +163,7 @@ export async function publishLeaderboardEntry(
   if (!overallQualifies && semesterCandidates.length === 0) {
     throw new HttpsError(
       "failed-precondition",
-      `To appear on the leaderboard, save a semester with at least ${LEADERBOARD_SEMESTER_MIN_UNITS} units — or complete ${LEADERBOARD_MIN_SEMESTERS} semesters and ${LEADERBOARD_MIN_UNITS} units for the overall board.`,
+      `To appear on the leaderboard, save a semester with at least ${LEADERBOARD_SEMESTER_MIN_UNITS} units, or complete ${LEADERBOARD_MIN_SEMESTERS} semesters and ${LEADERBOARD_MIN_UNITS} units for the overall board.`,
     );
   }
 
@@ -318,7 +320,7 @@ export function validateHandle(raw: string): string {
   if (/^anonymous\d+$/.test(handle) || RESERVED_HANDLES.has(handle)) {
     throw new HttpsError(
       "invalid-argument",
-      "That codename is reserved — please choose another.",
+      "That codename is reserved. Please choose another.",
     );
   }
   return handle;
@@ -354,7 +356,7 @@ export async function chooseLeaderboardHandle(
     if (snap.exists && snap.data()?.uid !== uid) {
       throw new HttpsError(
         "already-exists",
-        "That codename is already taken — please choose another.",
+        "That codename is already taken. Please choose another.",
       );
     }
     tx.set(ref, { uid, createdAt: FieldValue.serverTimestamp() });

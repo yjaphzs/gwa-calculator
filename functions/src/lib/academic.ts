@@ -27,16 +27,31 @@ export interface GwaResult {
   totalUnits: number;
 }
 
+/** What the GWA math needs from a stored subject. */
+export interface GwaInput {
+  grade: number;
+  units: number;
+  /** Left out of the GWA by school policy (e.g. NSTP). */
+  excluded?: boolean;
+  /** INC / DRP / W: not a grade, so it doesn't count until resolved. */
+  mark?: string | null;
+}
+
+/** Whether a subject is part of the GWA. Mirrors the client's `countsTowardGwa`. */
+export function countsTowardGwa(subject: GwaInput): boolean {
+  return !subject.excluded && !subject.mark;
+}
+
 /**
- * Σ(grade × units) / Σ(units), rounded to 3 decimals. Mirrors the client's
- * `computeGwa` so the leaderboard matches what the user sees in-app.
+ * Σ(grade × units) / Σ(units), rounded to 3 decimals, over the subjects that
+ * count. Mirrors the client's `computeGwa` so the leaderboard matches what the
+ * user sees in-app.
  */
-export function computeGwa(
-  subjects: { grade: number; units: number }[],
-): GwaResult {
-  const totalUnits = subjects.reduce((acc, s) => acc + s.units, 0);
+export function computeGwa(subjects: GwaInput[]): GwaResult {
+  const counted = subjects.filter(countsTowardGwa);
+  const totalUnits = counted.reduce((acc, s) => acc + s.units, 0);
   if (totalUnits === 0) return { gwa: null, totalUnits: 0 };
-  const totalWeightedGrades = subjects.reduce(
+  const totalWeightedGrades = counted.reduce(
     (acc, s) => acc + s.grade * s.units,
     0,
   );
