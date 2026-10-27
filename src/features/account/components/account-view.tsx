@@ -1,9 +1,9 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProfileTab } from "./profile-tab";
-import { LeaderboardCard } from "./leaderboard-card";
-import { SecurityTab } from "./security-tab";
+import { ProfileTab } from "@/features/account/components/profile-tab";
+import { LeaderboardCard } from "@/features/account/components/leaderboard-settings/leaderboard-card";
+import { SecurityTab } from "@/features/account/components/security-tab";
 
 export function AccountView() {
   return (

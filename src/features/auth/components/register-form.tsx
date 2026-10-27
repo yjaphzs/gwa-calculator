@@ -4,37 +4,30 @@ import { useState } from "react";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { toast } from "sonner";
+import { z } from "zod";
 
-import { signUp, signInWithGoogle } from "@/lib/firebase/auth";
-import { requestEmailVerification } from "@/lib/firebase/callable";
-import { getAuthErrorMessage } from "@/lib/firebase/errors";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldSeparator,
-} from "@/components/ui/field";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { GoogleIcon } from "@/components/google-icon";
-import { cn } from "@/lib/utils";
+import { AuthFormHeader } from "@/features/auth/components/shared/auth-form-header";
+import { FormRootError } from "@/features/auth/components/shared/form-root-error";
+import { GoogleSignInButton } from "@/features/auth/components/shared/google-sign-in-button";
+import { TermsConsentField } from "@/features/auth/components/shared/terms-consent-field";
+import { signInWithGoogle, signUp } from "@/lib/firebase/auth";
+import { requestEmailVerification } from "@/lib/firebase/callable";
+import { getAuthErrorMessage } from "@/lib/firebase/errors";
+
+const TERMS_MESSAGE = "You must agree to the Privacy Policy and Terms to continue.";
 
 const registerSchema = z
   .object({
-    email: z
-      .string()
-      .min(1, "Email is required.")
-      .email("Enter a valid email address."),
+    email: z.string().min(1, "Email is required.").email("Enter a valid email address."),
     password: z.string().min(6, "Use at least 6 characters."),
     confirmPassword: z.string().min(1, "Please confirm your password."),
-    acceptTerms: z.boolean().refine((v) => v, {
-      message: "You must agree to the Privacy Policy and Terms to continue.",
-    }),
+    acceptTerms: z.boolean().refine((v) => v, { message: TERMS_MESSAGE }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match.",
@@ -59,7 +52,7 @@ export function RegisterForm() {
       // profile doc is created by the AuthProvider once auth state updates.
       try {
         await requestEmailVerification();
-        toast.success("Account created — check your email to verify it.");
+        toast.success("Account created. Check your email to verify it.");
       } catch {
         toast.success("Account created.");
       }
@@ -71,12 +64,9 @@ export function RegisterForm() {
 
   async function handleGoogle() {
     if (!getValues("acceptTerms")) {
-      setError("acceptTerms", {
-        message: "You must agree to the Privacy Policy and Terms to continue.",
-      });
+      setError("acceptTerms", { message: TERMS_MESSAGE });
       return;
     }
-
     setGoogleLoading(true);
     try {
       await signInWithGoogle();
@@ -91,12 +81,9 @@ export function RegisterForm() {
   return (
     <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
       <FieldGroup>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-2xl font-bold">Create your account</h1>
-          <p className="text-sm text-balance text-muted-foreground">
-            Save your progress and sync it across devices
-          </p>
-        </div>
+        <AuthFormHeader title="Create your account">
+          Save your progress and sync it across devices
+        </AuthFormHeader>
 
         <Field data-invalid={!!errors.email}>
           <FieldLabel htmlFor="register-email">Email</FieldLabel>
@@ -136,49 +123,13 @@ export function RegisterForm() {
           <FieldError errors={[errors.confirmPassword]} />
         </Field>
 
-        {errors.root && (
-          <p className="rounded-md bg-destructive/10 p-3 text-center text-sm text-destructive">
-            {errors.root.message}
-          </p>
-        )}
+        <FormRootError message={errors.root?.message} />
 
-        {/* Consent — required before creating an account by any method. */}
-        <div>
-          <label
-            htmlFor="register-accept-terms"
-            className={cn(
-              "flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-sm leading-relaxed text-muted-foreground transition-colors",
-              "has-checked:border-primary/40 has-checked:bg-primary/5",
-              errors.acceptTerms ? "border-destructive" : "border-input",
-            )}
-          >
-            <input
-              id="register-accept-terms"
-              type="checkbox"
-              className="mt-0.5 size-4 shrink-0 rounded border border-input accent-primary"
-              disabled={busy}
-              {...register("acceptTerms")}
-            />
-            <span>
-              I agree to the{" "}
-              <Link
-                href="/terms-and-conditions"
-                className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
-              >
-                Terms and Conditions
-              </Link>{" "}
-              and{" "}
-              <Link
-                href="/privacy-policy"
-                className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
-              >
-                Privacy Policy
-              </Link>
-              .
-            </span>
-          </label>
-          <FieldError errors={[errors.acceptTerms]} className="mt-1.5" />
-        </div>
+        <TermsConsentField
+          registration={register("acceptTerms")}
+          error={errors.acceptTerms}
+          disabled={busy}
+        />
 
         <Field>
           <Button type="submit" disabled={busy}>
@@ -189,19 +140,7 @@ export function RegisterForm() {
 
         <FieldSeparator>or</FieldSeparator>
 
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleGoogle}
-          disabled={busy}
-        >
-          {googleLoading ? (
-            <Spinner data-icon="inline-start" />
-          ) : (
-            <GoogleIcon className="size-4" />
-          )}
-          Continue with Google
-        </Button>
+        <GoogleSignInButton loading={googleLoading} disabled={busy} onClick={handleGoogle} />
 
         <p className="text-center text-sm text-muted-foreground">
           Already have an account?{" "}

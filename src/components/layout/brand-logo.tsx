@@ -29,7 +29,7 @@ export function BrandLogo({
         />
       </span>
       {showName && (
-        <span className="text-base font-extrabold tracking-tight">
+        <span className="text-base font-bold tracking-tight whitespace-nowrap sm:text-lg">
           {APP_NAME}
         </span>
       )}

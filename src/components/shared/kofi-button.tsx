@@ -1,5 +1,5 @@
 import React from "react";
-import "@/components/dom/KofiButton/style.scss";
+import "@/components/shared/kofi-button.scss";
 
 const known_presets = [
     "",

@@ -7,13 +7,23 @@ import { Skeleton } from "@/components/ui/skeleton";
  */
 export function CalculatorSkeleton() {
   return (
-    <div className="mt-8 flex flex-col gap-4" aria-hidden>
+    <div className="flex flex-col gap-4" aria-hidden>
+      {/* Tab bar (Current / Semesters) */}
+      <Skeleton className="h-9 w-48 rounded-lg" />
+
       {/* GWA summary card — same shell as the real <GwaSummary /> */}
-      <div className="flex flex-col gap-2 rounded-lg border border-dashed bg-muted/30 px-8 py-12">
+      <div className="flex flex-col gap-3 rounded-lg border border-dashed bg-muted/30 px-5 py-6 sm:px-8 sm:py-8">
+        <div className="flex items-start justify-between">
+          <div className="flex flex-col gap-1.5">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-3 w-36" />
+          </div>
+        </div>
         <div className="flex items-center justify-between">
           <Skeleton className="size-11 rounded-md" />
           <Skeleton className="h-14 w-40" />
         </div>
+        <Skeleton className="h-4 w-56" />
       </div>
 
       {/* Toolbar — action buttons (Add / Reset / more) */}

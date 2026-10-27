@@ -12,6 +12,7 @@ import {
 
 import { useAuth } from "@/context/auth-provider";
 import { signOut } from "@/lib/firebase/auth";
+import { initials } from "@/lib/initials";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,13 +23,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-function initialsFrom(name: string | null, email: string | null): string {
-  const source = (name ?? email ?? "?").trim();
-  const parts = source.split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-  return source.slice(0, 2).toUpperCase();
-}
 
 export function AccountMenu() {
   const { user, profile, loading } = useAuth();
@@ -55,7 +49,7 @@ export function AccountMenu() {
 
   const photo = profile?.photoURL ?? user.photoURL ?? undefined;
   const name = user.displayName ?? profile?.displayName ?? null;
-  const initials = initialsFrom(name, user.email);
+  const avatarInitials = initials(name ?? user.email ?? "?");
 
   return (
     <DropdownMenu>
@@ -63,7 +57,7 @@ export function AccountMenu() {
         <Button variant="ghost" size="icon" className="rounded-full">
           <Avatar>
             {photo && <AvatarImage src={photo} alt="" />}
-            <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+            <AvatarFallback className="text-xs">{avatarInitials}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

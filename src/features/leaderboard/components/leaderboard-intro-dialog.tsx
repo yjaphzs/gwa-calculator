@@ -87,7 +87,7 @@ export function LeaderboardIntroDialog() {
             students. You can leave at any time from your Account page.
           </Point>
           <Point icon={EyeOffIcon} title="You can stay anonymous">
-            Prefer privacy? Join under a generated handle with no name or photo —
+            Prefer privacy? Join under a generated handle with no name or photo,
             and switch between anonymous and named whenever you like.
           </Point>
         </div>

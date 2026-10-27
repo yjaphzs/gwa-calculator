@@ -5,7 +5,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-import { generatePaginationLinks } from "@/components/smart/generate-pages";
+import { generatePaginationLinks } from "@/components/shared/generate-pages";
 
 type PaginatorProps = {
     currentPage: number;

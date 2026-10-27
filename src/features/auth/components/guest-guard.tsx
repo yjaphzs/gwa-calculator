@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-provider';
-import { LoadingScreen } from '@/components/loading-screen';
+import { LoadingScreen } from '@/components/layout/loading-screen';
 import { DEFAULT_PRIVATE_ROUTE } from '@/config/routes';
 
 /**

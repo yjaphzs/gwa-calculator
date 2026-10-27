@@ -1,236 +1,159 @@
-import {
-    useEffect,
-    forwardRef,
-    type Dispatch,
-    type SetStateAction,
-    type RefObject,
-} from "react";
+"use client";
 
-// Form and validation
-import { useForm } from "react-hook-form";
+import { useEffect, type Ref } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-// UI Components
+import { FormSelectField } from "@/components/shared/form-select-field";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-
-// Types
+import {
+  STATUS_OPTIONS,
+  isMark,
+  statusOf,
+  type SubjectStatus,
+} from "@/features/calculator/lib/subject-status";
+import { GRADE_OPTIONS, UNIT_OPTIONS } from "@/lib/academic";
 import type { Subject } from "@/types";
 
-/**
- * Zod schema for subject form validation
- */
-const subjectFormSchema = z.object({
-    code: z.string({ message: "Code is required." }),
-    title: z.string({ message: "Title is required." }),
-    grade: z.string({ message: "Grade is required." }),
+const STATUSES = STATUS_OPTIONS.map((o) => o.value) as [SubjectStatus, ...SubjectStatus[]];
+
+const subjectFormSchema = z
+  .object({
+    code: z.string().trim().max(30, "Keep the code to 30 characters or fewer."),
+    title: z.string().trim().max(120, "Keep the title to 120 characters or fewer."),
+    status: z.enum(STATUSES),
+    grade: z.string().optional(),
     units: z.string({ message: "Units are required." }),
-});
+  })
+  .refine((v) => isMark(v.status) || !!v.grade, { message: "Grade is required.", path: ["grade"] });
 
-type SubjectFormValues = z.infer<typeof subjectFormSchema>;
+type SubjectFormFields = z.infer<typeof subjectFormSchema>;
 
-/**
- * Props for the SubjectForm component.
- */
-interface SubjectFormProps {
-    subject?: Subject | null;
-    subjects?: Subject[];
-    onSuccess?: (values: Omit<SubjectFormValues, "grade" | "units"> & { grade: number; units: number }) => void;
-    inputRef?: RefObject<HTMLInputElement | null>;
-    setModalOpen?: Dispatch<SetStateAction<boolean>>;
-    setProcessing?: Dispatch<SetStateAction<boolean>>;
-    setSuccess?: Dispatch<SetStateAction<boolean>>;
-    setDirty?: Dispatch<SetStateAction<boolean>>;
+export interface SubjectFormValues {
+  code: string;
+  title: string;
+  grade: number;
+  units: number;
+  status: SubjectStatus;
 }
 
-/**
- * SubjectForm
- * Form for creating or editing a subject, including code, name, grade, and units.
- */
-const SubjectForm = forwardRef<HTMLFormElement, SubjectFormProps>(
-    (
-        {
-            subject,
-            subjects,
-            onSuccess,
-            inputRef,
-            setModalOpen,
-            setProcessing,
-            setSuccess,
-            setDirty,
-        },
-        ref
-    ) => {
-        const form = useForm<SubjectFormValues>({
-            resolver: zodResolver(subjectFormSchema),
-            defaultValues: subject ? {
-                code: subject.code,
-                title: subject.title,
-                grade: subject.grade.toFixed(2),
-                units: subject.units.toString(),
-            } : {
-                code: "CODE" + (subjects ? (subjects.length + 1).toString().padStart(4, "0") : "0001"),
-                title: "Subject " + (subjects ? (subjects.length + 1).toString() : "1"),
-            },
-        });
+const GRADE_SELECT = GRADE_OPTIONS.map((g) => ({ value: g.toFixed(2), label: g.toFixed(2) }));
+const UNIT_SELECT = UNIT_OPTIONS.map((u) => ({ value: String(u), label: String(u) }));
+const STATUS_SELECT = STATUS_OPTIONS.map((o) => ({ value: o.value, label: o.label }));
 
-        useEffect(() => {
-            setDirty?.(form.formState.isDirty);
-        }, [form.formState.isDirty, setDirty]);
+function defaultValues(subject: Subject | null): Partial<SubjectFormFields> {
+  if (!subject) return { code: "", title: "", status: "graded" };
+  return {
+    code: subject.code,
+    title: subject.title,
+    status: statusOf(subject),
+    grade: subject.mark ? undefined : subject.grade.toFixed(2),
+    units: subject.units.toString(),
+  };
+}
 
-        async function onSubmit(values: SubjectFormValues) {
-            setProcessing?.(true);
-            setSuccess?.(false);
-            try {
-                const processedValues = {
-                    ...values,
-                    grade: parseFloat(values.grade),
-                    units: Number(values.units),
-                };
-                if (onSuccess) await onSuccess(processedValues);
-                setSuccess?.(true);
-            } finally {
-                setProcessing?.(false);
-                setModalOpen?.(false);
-            }
-        }
+interface SubjectFormProps {
+  ref?: Ref<HTMLFormElement>;
+  subject: Subject | null;
+  subjects: Subject[];
+  onSubmit: (values: SubjectFormValues) => void | Promise<void>;
+  onDirtyChange?: (dirty: boolean) => void;
+}
 
-        return (
-            <Form {...form}>
-                <form
-                    ref={ref}
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-4"
-                >
-                    <FormField
-                        control={form.control}
-                        name="code"
-                        render={({ field }) => (
-                            <FormItem className="flex-1">
-                                <FormLabel>Course Code</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        placeholder="e.g., COMSCI 1101"
-                                        {...field}
-                                        ref={inputRef}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+/** Course code, title, GWA status, grade, and units for one subject. */
+export function SubjectForm({ ref, subject, subjects, onSubmit, onDirtyChange }: SubjectFormProps) {
+  const form = useForm<SubjectFormFields>({
+    resolver: zodResolver(subjectFormSchema),
+    defaultValues: defaultValues(subject),
+  });
+  const status = useWatch({ control: form.control, name: "status" });
 
-                    <FormField
-                        control={form.control}
-                        name="title"
-                        render={({ field }) => (
-                            <FormItem className="flex-1">
-                                <FormLabel>Course Title</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        placeholder="e.g., Computer Programming I"
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+  const { isDirty } = form.formState;
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
 
-                    <div className="flex gap-4">
-                        <FormField
-                            control={form.control}
-                            name="grade"
-                            render={({ field }) => (
-                                <FormItem className="flex-1">
-                                    <FormLabel>Grade</FormLabel>
-                                    <FormControl>
-                                        <Select
-                                            value={field.value ?? ""}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select your grade" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    <SelectLabel>
-                                                        Grades
-                                                    </SelectLabel>
-                                                    {[1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 2.75, 3.00, 4.00, 5.00].map(grade => (
-                                                        <SelectItem
-                                                            key={grade}
-                                                            value={grade.toFixed(2)}
-                                                        >
-                                                            {grade.toFixed(2)}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+  // Blank code/title fall back to the numbered defaults shown as placeholders.
+  const next = subject ? null : subjects.length + 1;
+  const codeFallback = subject?.code || `CODE${String(next).padStart(4, "0")}`;
+  const titleFallback = subject?.title || `Subject ${next}`;
 
-                        <FormField
-                            control={form.control}
-                            name="units"
-                            render={({ field }) => (
-                                <FormItem className="flex-1">
-                                    <FormLabel>Units</FormLabel>
-                                    <FormControl>
-                                        <Select
-                                            value={field.value ?? ""}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select units" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    <SelectLabel>
-                                                        Units
-                                                    </SelectLabel>
-                                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(unit => (
-                                                        <SelectItem
-                                                            key={unit}
-                                                            value={unit.toString()}
-                                                        >
-                                                            {unit}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-                </form>
-            </Form>
-        );
-    }
-);
+  const submit = (values: SubjectFormFields) =>
+    onSubmit({
+      code: values.code || codeFallback,
+      title: values.title || titleFallback,
+      status: values.status,
+      grade: values.grade ? parseFloat(values.grade) : 0,
+      units: Number(values.units),
+    });
 
-export default SubjectForm;
+  return (
+    <Form {...form}>
+      <form ref={ref} onSubmit={form.handleSubmit(submit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="code"
+          render={({ field }) => (
+            <FormItem className="flex-1">
+              <FormLabel>Course Code</FormLabel>
+              <FormControl>
+                <Input placeholder={codeFallback} autoComplete="off" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem className="flex-1">
+              <FormLabel>Course Title</FormLabel>
+              <FormControl>
+                <Input placeholder={titleFallback} autoComplete="off" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormSelectField
+          control={form.control}
+          name="status"
+          label="Counts toward GWA?"
+          placeholder="Choose"
+          groupLabel="Status"
+          options={STATUS_SELECT}
+        />
+        <div className="flex gap-4">
+          {!isMark(status) && (
+            <FormSelectField
+              control={form.control}
+              name="grade"
+              label="Grade"
+              placeholder="Select your grade"
+              groupLabel="Grades"
+              options={GRADE_SELECT}
+            />
+          )}
+          <FormSelectField
+            control={form.control}
+            name="units"
+            label="Units"
+            placeholder="Select units"
+            groupLabel="Units"
+            options={UNIT_SELECT}
+          />
+        </div>
+      </form>
+    </Form>
+  );
+}

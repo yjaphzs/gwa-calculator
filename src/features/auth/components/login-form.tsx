@@ -6,26 +6,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { signIn, signInWithGoogle } from "@/lib/firebase/auth";
-import { getAuthErrorMessage } from "@/lib/firebase/errors";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldSeparator,
-} from "@/components/ui/field";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { GoogleIcon } from "@/components/google-icon";
+import { AuthFormHeader } from "@/features/auth/components/shared/auth-form-header";
+import { FormRootError } from "@/features/auth/components/shared/form-root-error";
+import { GoogleSignInButton } from "@/features/auth/components/shared/google-sign-in-button";
+import { signIn, signInWithGoogle } from "@/lib/firebase/auth";
+import { getAuthErrorMessage } from "@/lib/firebase/errors";
 
 const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email is required.")
-    .email("Enter a valid email address."),
+  email: z.string().min(1, "Email is required.").email("Enter a valid email address."),
   password: z.string().min(1, "Password is required."),
 });
 type LoginSchema = z.infer<typeof loginSchema>;
@@ -63,12 +56,9 @@ export function LoginForm() {
   return (
     <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
       <FieldGroup>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-2xl font-bold">Welcome back</h1>
-          <p className="text-sm text-balance text-muted-foreground">
-            Sign in to sync your GWA across your devices
-          </p>
-        </div>
+        <AuthFormHeader title="Welcome back">
+          Sign in to sync your GWA across your devices
+        </AuthFormHeader>
 
         <Field data-invalid={!!errors.email}>
           <FieldLabel htmlFor="login-email">Email</FieldLabel>
@@ -87,10 +77,7 @@ export function LoginForm() {
         <Field data-invalid={!!errors.password}>
           <div className="flex items-center">
             <FieldLabel htmlFor="login-password">Password</FieldLabel>
-            <Link
-              href="/forgot-password"
-              className="ml-auto text-sm underline-offset-4 hover:underline"
-            >
+            <Link href="/forgot-password" className="ml-auto text-sm underline-offset-4 hover:underline">
               Forgot your password?
             </Link>
           </div>
@@ -104,11 +91,7 @@ export function LoginForm() {
           <FieldError errors={[errors.password]} />
         </Field>
 
-        {errors.root && (
-          <p className="rounded-md bg-destructive/10 p-3 text-center text-sm text-destructive">
-            {errors.root.message}
-          </p>
-        )}
+        <FormRootError message={errors.root?.message} />
 
         <Field>
           <Button type="submit" disabled={busy}>
@@ -119,19 +102,7 @@ export function LoginForm() {
 
         <FieldSeparator>or</FieldSeparator>
 
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleGoogle}
-          disabled={busy}
-        >
-          {googleLoading ? (
-            <Spinner data-icon="inline-start" />
-          ) : (
-            <GoogleIcon className="size-4" />
-          )}
-          Continue with Google
-        </Button>
+        <GoogleSignInButton loading={googleLoading} disabled={busy} onClick={handleGoogle} />
 
         <p className="text-center text-sm text-muted-foreground">
           Don&apos;t have an account?{" "}

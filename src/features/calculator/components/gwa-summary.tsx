@@ -1,43 +1,63 @@
-import React from "react";
-import { Badge } from "@/components/ui/badge";
-import { Medal } from "lucide-react";
+import Link from "next/link";
+
+import { HonorBadge } from "@/components/shared/honor-badge";
 import { CopyButton } from "@/components/ui/shadcn-io/copy-button";
+import { countsTowardGwa } from "@/lib/academic";
+import { describeHonorProgress, honorProgress } from "@/lib/gwa-insights";
+import type { Subject } from "@/types";
 
 interface GwaSummaryProps {
-    gwa: number | null;
-    honor: string | null;
-    semestersCount: number;
+  subjects: Subject[];
+  gwa: number | null;
+  honor: string | null;
+  totalUnits: number;
 }
 
-const GwaSummary: React.FC<GwaSummaryProps> = ({
-    gwa,
-    honor,
-    semestersCount,
-}) => (
-    <div
-        className={`flex flex-col gap-2 border border-dashed bg-muted/30 rounded-lg w-full py-12 px-8 ${
-            semestersCount > 0 ? "mt-4" : "mt-8"
-        }`}
-    >
-        <div className="flex justify-end">
-            {honor && (
-                <Badge variant="secondary">
-                    <Medal className="text-primary" />
-                    {honor}
-                </Badge>
-            )}
-        </div>
-        <div className="flex items-center justify-between">
-            <CopyButton
-                variant="default"
-                size="lg"
-                content={gwa !== null && gwa !== 0 ? gwa.toFixed(3) : "0"}
-            />
-            <div className="text-end text-6xl font-mono font-bold">
-                {gwa !== null && gwa !== 0 ? gwa.toFixed(3) : "0"}
-            </div>
-        </div>
-    </div>
-);
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
-export default GwaSummary;
+/** The working set's GWA: readout, what it counts, honor, and how close the next band is. */
+export function GwaSummary({ subjects, gwa, honor, totalUnits }: GwaSummaryProps) {
+  const display = gwa !== null ? gwa.toFixed(3) : "0.000";
+  const counted = subjects.filter(countsTowardGwa).length;
+  const notCounted = subjects.length - counted;
+  const progress = describeHonorProgress(honorProgress(subjects));
+
+  return (
+    <section
+      aria-labelledby="current-gwa"
+      className="mt-4 flex w-full flex-col gap-3 rounded-lg border border-dashed bg-muted/30 px-5 py-6 sm:px-8 sm:py-8"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 id="current-gwa" className="text-sm font-semibold">
+            Current GWA
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            {plural(totalUnits, "unit")} across {plural(counted, "subject")}
+            {notCounted > 0 && `, plus ${notCounted} not counted`}
+          </p>
+        </div>
+        {honor && <HonorBadge honor={honor} />}
+      </div>
+
+      <div className="flex items-center justify-between gap-4">
+        <CopyButton variant="default" size="lg" content={display} aria-label="Copy GWA" />
+        <div
+          className={`text-end font-mono text-5xl font-bold tabular-nums sm:text-6xl ${gwa === null ? "text-muted-foreground/60" : ""}`}
+        >
+          {display}
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-sm">
+        <p className="text-muted-foreground">{progress ?? "Add subjects to see your GWA."}</p>
+        <Link
+          href="/how-to-compute-gwa"
+          className="text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+        >
+          How is this computed?
+        </Link>
+      </div>
+    </section>
+  );
+}

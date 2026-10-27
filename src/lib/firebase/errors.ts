@@ -49,3 +49,20 @@ export function getAuthErrorMessage(error: unknown): string {
 
   return 'An unexpected error occurred. Please try again.';
 }
+
+/**
+ * Message for a failed leaderboard callable: prefers the HttpsError's own
+ * (user-safe) message over Firebase's generic "internal".
+ */
+export function getCallableErrorMessage(err: unknown): string {
+  if (
+    err &&
+    typeof err === 'object' &&
+    'message' in err &&
+    typeof (err as { message: unknown }).message === 'string'
+  ) {
+    const msg = (err as { message: string }).message;
+    if (msg && !/^internal$/i.test(msg)) return msg;
+  }
+  return getAuthErrorMessage(err);
+}

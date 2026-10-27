@@ -31,6 +31,28 @@ const eslintConfig = defineConfig([
       "react/no-unescaped-entities": "off",
     },
   },
+  // Keep every source file small and single-purpose (docs/conventions.md):
+  // at most 200 lines of code, not counting blank lines or comments.
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    rules: {
+      "max-lines": [
+        "error",
+        { max: 200, skipBlankLines: true, skipComments: true },
+      ],
+    },
+  },
+  {
+    // Vendored code, legal prose, data lists, and tests are exempt.
+    files: [
+      "src/components/ui/**",
+      "src/hooks/use-local-storage.ts",
+      "src/app/(legal)/**/page.tsx",
+      "src/config/school-names.ts",
+      "src/**/*.test.ts",
+    ],
+    rules: { "max-lines": "off" },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     ".next/**",

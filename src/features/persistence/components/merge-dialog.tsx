@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import type { MergeConflict } from "@/hooks/use-calculator-data";
+import type { MergeConflict } from "@/features/persistence/hooks/use-calculator-data";
 
 interface MergeDialogProps {
   conflict: MergeConflict | null;
@@ -39,7 +39,7 @@ export function MergeDialog({ conflict, onResolve }: MergeDialogProps) {
           <DialogTitle>Sync your data</DialogTitle>
           <DialogDescription>
             We found data on this device and in your account. Choose which to
-            keep — this only happens once.
+            keep. This only happens once.
           </DialogDescription>
         </DialogHeader>
 

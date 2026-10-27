@@ -1,27 +1,16 @@
 "use client";
 
-import * as React from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import { CameraIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  ImageCrop,
-  ImageCropApply,
-  ImageCropContent,
-  ImageCropReset,
-} from "@/components/ui/image-crop";
 import { Spinner } from "@/components/ui/spinner";
+import { AvatarCropDialog } from "@/features/account/components/avatar-crop-dialog";
 import { cn } from "@/lib/utils";
+
+const MAX_PICK_BYTES = 5 * 1024 * 1024;
 
 export interface AvatarCropperFieldProps {
   /** The currently-shown photo URL (e.g. from Firebase Storage). */
@@ -44,6 +33,7 @@ export interface AvatarCropperFieldProps {
   className?: string;
 }
 
+/** Avatar with a pick → crop → upload flow for the profile photo. */
 export function AvatarCropperField({
   currentUrl,
   initials = "?",
@@ -51,22 +41,20 @@ export function AvatarCropperField({
   aspect = 1,
   maxImageSize = 2 * 1024 * 1024,
   outputType = "image/jpeg",
-  helperText = "JPG, PNG, or WEBP. Max 5 MB — you'll crop it next.",
+  helperText = "JPG, PNG, or WEBP, up to 5 MB. You'll crop it next.",
   busy = false,
   disabled,
   className,
 }: AvatarCropperFieldProps) {
-  const [pendingFile, setPendingFile] = React.useState<File | null>(null);
-  const [dialogOpen, setDialogOpen] = React.useState(false);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const isDisabled = disabled || busy;
 
   function handlePick() {
     fileInputRef.current?.click();
   }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
@@ -74,23 +62,16 @@ export function AvatarCropperField({
       toast.error("Please choose an image file.");
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > MAX_PICK_BYTES) {
       toast.error("Image is larger than 5 MB. Please choose a smaller file.");
       return;
     }
     setPendingFile(file);
-    setDialogOpen(true);
   }
 
   async function handleApply(blob: Blob) {
-    setDialogOpen(false);
     setPendingFile(null);
     await onCrop(blob);
-  }
-
-  function handleCancel() {
-    setDialogOpen(false);
-    setPendingFile(null);
   }
 
   return (
@@ -111,22 +92,12 @@ export function AvatarCropperField({
           <AvatarFallback className="text-xl">{initials}</AvatarFallback>
         </Avatar>
         <span className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-full bg-black/55 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-          {busy ? (
-            <Spinner className="size-6 text-white" />
-          ) : (
-            <CameraIcon className="size-6 text-white" />
-          )}
+          {busy ? <Spinner className="size-6 text-white" /> : <CameraIcon className="size-6 text-white" />}
         </span>
       </button>
 
       <div className="min-w-0 flex-1 space-y-1.5">
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          onClick={handlePick}
-          disabled={isDisabled}
-        >
+        <Button type="button" size="sm" variant="outline" onClick={handlePick} disabled={isDisabled}>
           {busy ? <Spinner data-icon="inline-start" /> : <CameraIcon />}
           {busy ? "Uploading…" : currentUrl ? "Change photo" : "Upload photo"}
         </Button>
@@ -141,46 +112,14 @@ export function AvatarCropperField({
         onChange={handleFileChange}
       />
 
-      <Dialog
-        open={dialogOpen}
-        onOpenChange={(next) => {
-          if (!next) handleCancel();
-          else setDialogOpen(next);
-        }}
-      >
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Crop photo</DialogTitle>
-            <DialogDescription>
-              Drag the corners to frame your photo. The selected area becomes
-              your profile picture.
-            </DialogDescription>
-          </DialogHeader>
-          {pendingFile && (
-            <ImageCrop
-              file={pendingFile}
-              aspect={aspect}
-              circularCrop={aspect === 1}
-              maxImageSize={maxImageSize}
-              outputType={outputType}
-              onCrop={(blob) => handleApply(blob)}
-            >
-              <div className="flex flex-col items-center gap-3">
-                <ImageCropContent />
-                <div className="flex items-center gap-2">
-                  <ImageCropReset />
-                </div>
-              </div>
-              <DialogFooter className="gap-2">
-                <Button type="button" variant="outline" onClick={handleCancel}>
-                  Cancel
-                </Button>
-                <ImageCropApply>Apply</ImageCropApply>
-              </DialogFooter>
-            </ImageCrop>
-          )}
-        </DialogContent>
-      </Dialog>
+      <AvatarCropDialog
+        file={pendingFile}
+        aspect={aspect}
+        maxImageSize={maxImageSize}
+        outputType={outputType}
+        onApply={handleApply}
+        onCancel={() => setPendingFile(null)}
+      />
     </div>
   );
 }

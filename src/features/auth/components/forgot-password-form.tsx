@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { FormRootError } from "@/features/auth/components/shared/form-root-error";
 
 const forgotSchema = z.object({
   email: z
@@ -58,7 +59,7 @@ export function ForgotPasswordForm() {
           </p>
           <ul className="list-disc space-y-0.5 pl-4">
             <li>Check your spam or junk folder.</li>
-            <li>Wait a minute — delivery can take a moment.</li>
+            <li>Wait a minute. Delivery can take a moment.</li>
             <li>Confirm the address is correct and try again.</li>
           </ul>
         </div>
@@ -116,11 +117,7 @@ export function ForgotPasswordForm() {
           <FieldError errors={[errors.email]} />
         </Field>
 
-        {errors.root && (
-          <p className="rounded-md bg-destructive/10 p-3 text-center text-sm text-destructive">
-            {errors.root.message}
-          </p>
-        )}
+        <FormRootError message={errors.root?.message} />
 
         <Field>
           <Button type="submit" disabled={isSubmitting}>
