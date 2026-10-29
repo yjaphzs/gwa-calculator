@@ -1,7 +1,7 @@
 {
   "name": "gwa-calculator",
   "homepage": "https://gwa-calculator.yjaphzs.xyz",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
