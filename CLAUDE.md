@@ -235,6 +235,8 @@ Copy `.env.local.example` to `.env.local` and fill in the `NEXT_PUBLIC_*` values
 Firebase Web SDK config, and the optional App Check reCAPTCHA key. For local function emails,
 copy `functions/.env.example` to `functions/.env` (`RESEND_API_KEY`, `EMAIL_FROM_EMAIL`,
 `APP_URL`).
+To run the Firebase CLI locally, copy `.firebaserc.example` to `.firebaserc` and set your
+project ID. `.firebaserc` is gitignored; CI deploys with `--project` from a repo Variable.
 
 **Never commit** `.env*` files, service-account JSON, `node_modules/`, `.next/`, `out/`,
 `functions/lib/`, or `.claude/settings.local.json`.
