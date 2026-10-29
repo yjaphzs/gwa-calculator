@@ -17,7 +17,7 @@ import { FormRootError } from "@/features/auth/components/shared/form-root-error
 import { GoogleSignInButton } from "@/features/auth/components/shared/google-sign-in-button";
 import { TermsConsentField } from "@/features/auth/components/shared/terms-consent-field";
 import { signInWithGoogle, signUp } from "@/lib/firebase/auth";
-import { requestEmailVerification } from "@/lib/firebase/callable";
+import { deliverVerificationEmail } from "@/lib/firebase/email-delivery";
 import { getAuthErrorMessage } from "@/lib/firebase/errors";
 
 const TERMS_MESSAGE = "You must agree to the Privacy Policy and Terms to continue.";
@@ -48,10 +48,11 @@ export function RegisterForm() {
   async function onSubmit(values: RegisterSchema) {
     try {
       await signUp(values.email, values.password);
-      // Best-effort branded verification email via the Cloud Function; the
-      // profile doc is created by the AuthProvider once auth state updates.
+      // Best-effort verification email (branded, or Firebase's built-in one
+      // when the email quota is used up); the profile doc is created by the
+      // AuthProvider once auth state updates.
       try {
-        await requestEmailVerification();
+        await deliverVerificationEmail();
         toast.success("Account created. Check your email to verify it.");
       } catch {
         toast.success("Account created.");

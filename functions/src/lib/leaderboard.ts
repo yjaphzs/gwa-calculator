@@ -12,6 +12,7 @@ import {
   LEADERBOARD_MIN_UNITS,
   LEADERBOARD_SEMESTER_MIN_UNITS,
 } from "./academic";
+import { rebuildSchoolBoards, schoolsOfHandle } from "./leaderboard-board";
 import { normalizeTerm } from "./term";
 
 const HANDLE_PREFIX = "anonymous";
@@ -80,8 +81,10 @@ async function deleteSemesterEntries(
  */
 export async function deletePublicEntries(handle: string): Promise<void> {
   const db = getFirestore();
+  const schools = await schoolsOfHandle(handle);
   await db.doc(`${SUMMARY_COLLECTION}/${handle}`).delete();
   await deleteSemesterEntries(db, handle);
+  await rebuildSchoolBoards(schools);
 }
 
 /**
@@ -174,6 +177,9 @@ export async function publishLeaderboardEntry(
       ? (settingsSnap.data()!.handle as string)
       : null;
   const handle = existingHandle ?? (await assignHandle(db, uid));
+  // Schools this handle is on now, so a board they leave (e.g. after a school
+  // change) is rebuilt along with the current one.
+  const previousSchools = existingHandle ? await schoolsOfHandle(handle) : new Set<string>();
 
   // Shared identity projection — never leaks uid/email; respects anonymity.
   const identity = {
@@ -240,6 +246,7 @@ export async function publishLeaderboardEntry(
     batch.set(db.collection(SEMESTER_COLLECTION).doc(docId), data);
   }
   await batch.commit();
+  await rebuildSchoolBoards([...previousSchools, schoolId]);
 
   await settingsRef.set(
     {
@@ -271,8 +278,7 @@ export async function removeLeaderboardEntry(uid: string): Promise<void> {
 
   if (handle) {
     try {
-      await db.doc(`${SUMMARY_COLLECTION}/${handle}`).delete();
-      await deleteSemesterEntries(db, handle);
+      await deletePublicEntries(handle);
     } catch (err) {
       logger.warn("[leaderboard] failed to delete public entries (continuing)", {
         uid,

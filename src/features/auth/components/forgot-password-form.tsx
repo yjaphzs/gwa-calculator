@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ArrowLeftIcon, MailCheckIcon, MailQuestionIcon } from "lucide-react";
 
-import { requestPasswordReset } from "@/lib/firebase/callable";
+import { deliverPasswordReset } from "@/lib/firebase/email-delivery";
 import { getAuthErrorMessage } from "@/lib/firebase/errors";
 import {
   Field,
@@ -82,7 +82,7 @@ export function ForgotPasswordForm() {
   async function onSubmit(values: ForgotSchema) {
     const email = values.email.trim().toLowerCase();
     try {
-      await requestPasswordReset({ email });
+      await deliverPasswordReset(email);
       setSubmittedEmail(email);
     } catch (err) {
       setError("root", { message: getAuthErrorMessage(err) });

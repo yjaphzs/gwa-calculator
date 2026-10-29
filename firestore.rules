@@ -56,6 +56,14 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Precomputed per-school boards (the overall + per-term entries above, in
+    // one doc). The leaderboard page reads only this, 1 read per view. Same
+    // read/write policy as the entries it mirrors; rebuilt by Cloud Functions.
+    match /leaderboardBoards/{schoolId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
     // Anonymous-handle reservations. Server-only registry that guarantees handle
     // uniqueness; clients get nothing.
     match /leaderboardHandles/{handle} {

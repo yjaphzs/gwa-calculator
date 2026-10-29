@@ -1,6 +1,7 @@
 import { logger } from "firebase-functions/v2";
 import { APP_NAME } from "../../config";
 import { getResend } from "./client";
+import { quotaErrorFor } from "./quota";
 
 interface SendEmailOptions {
   to: string;
@@ -49,7 +50,8 @@ export async function sendEmail({
 
   if (error) {
     logger.error(`[email] FAILED → to=${to} subject="${finalSubject}"`, error);
-    throw new Error(`Email send failed: ${error.message ?? "unknown error"}`);
+    // Quota/rate refusals get a typed error so callers can fall back.
+    throw quotaErrorFor(error.name) ?? new Error(`Email send failed: ${error.message ?? "unknown error"}`);
   }
 
   logger.info(

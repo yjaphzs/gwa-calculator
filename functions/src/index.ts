@@ -15,6 +15,7 @@ export { sendPasswordResetEmail } from "./callable/auth/send-password-reset-emai
 export { setLeaderboardParticipation } from "./callable/leaderboard/set-leaderboard-participation";
 export { setLeaderboardHandle } from "./callable/leaderboard/set-leaderboard-handle";
 export { refreshLeaderboardStanding } from "./callable/leaderboard/refresh-leaderboard-standing";
+export { ensureLeaderboardBoard } from "./callable/leaderboard/ensure-leaderboard-board";
 
 // ── Firestore triggers ───────────────────────────────────────────────────────
 export { onCalculatorStateWritten } from "./trigger/on-calculator-state-written";

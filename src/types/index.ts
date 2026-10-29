@@ -93,6 +93,19 @@ export interface LeaderboardSemesterEntry extends LeaderboardEntry {
 }
 
 /**
+ * Precomputed board for one school at `leaderboardBoards/{schoolId}`, rebuilt by
+ * Cloud Functions whenever that school's entries change. The page reads this one
+ * doc instead of querying the entry collections (1 read per view, not up to 400).
+ */
+export interface LeaderboardBoard {
+    schoolId: string;
+    /** Top overall entries, best GWA first (max 100). */
+    overall: LeaderboardEntry[];
+    /** Top per-term entries across all terms, best GWA first (max 300). */
+    terms: LeaderboardSemesterEntry[];
+}
+
+/**
  * Per-user private leaderboard state at `users/{uid}/leaderboard/settings`.
  * Owner-readable, written ONLY by Cloud Functions (so the assigned handle and
  * opt-in flag can't be tampered with client-side).

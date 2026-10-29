@@ -157,6 +157,9 @@ sync.**
 
 ### Auth and profile
 
+- **App Check** starts on demand (`ensureAppCheck` in `src/lib/firebase/client.ts`): once a
+  user is signed in, or on the auth pages. Guests never load reCAPTCHA, whose free tier is
+  10,000 assessments a month. Don't start it at import time.
 - [src/context/auth-provider.tsx](src/context/auth-provider.tsx) exposes
   `{ user, profile, loading }` via `useAuth()`. It subscribes live to `users/{uid}` and calls
   `ensureUserProfile` (idempotent) on sign-in.
@@ -172,6 +175,7 @@ sync.**
 | `users/{uid}/calculator/state` | The synced `CalculatorState` ([src/types/index.ts](src/types/index.ts)). A `Subject` may carry optional `excluded` / `mark`; omit these keys when unset, since Firestore rejects `undefined` (see `buildSubject`) |
 | `users/{uid}/leaderboard/settings` | Opt-in and handle. Server-written, owner-readable |
 | `leaderboard/*`, `leaderboardSemesters/*` | Published board entries (server-written) |
+| `leaderboardBoards/{schoolId}` | Precomputed board per school: top overall + per-term entries in one doc. Rebuilt by Functions whenever that school's entries change; the leaderboard page reads only this (1 read per view) |
 | `rateLimits/{bucketId}` | Server-only buckets for the Cloud Functions |
 
 - [firestore.rules](firestore.rules) is **deny-by-default**: users can only read and write their
@@ -183,8 +187,12 @@ sync.**
 - **Runtime:** Node 24, region `asia-southeast1`, `maxInstances: 5`
   ([functions/src/config.ts](functions/src/config.ts)).
 - **Callables:** `deleteAccount`, `sendVerificationEmail`, `sendPasswordResetEmail` (both
-  rate-limited and sent via Resend), `setLeaderboardParticipation`, `setLeaderboardHandle`, and
-  `refreshLeaderboardStanding`.
+  rate-limited and sent via Resend), `setLeaderboardParticipation`, `setLeaderboardHandle`,
+  `refreshLeaderboardStanding`, and `ensureLeaderboardBoard` (builds a missing school board on
+  first view).
+- **Email quota fallback:** when Resend's free quota (100/day) is used up, the email callables
+  signal a fallback and `src/lib/firebase/email-delivery.ts` sends Firebase Auth's built-in
+  email instead. Send verification/reset emails through those helpers, not the raw callables.
 - **Trigger:** `onCalculatorStateWritten` republishes leaderboard entries.
 - **Email HTML** compiles from `.hbs` templates into the committed `generated-templates.ts`.
   **Edit the `.hbs` source and regenerate; don't hand-edit the generated file.**
