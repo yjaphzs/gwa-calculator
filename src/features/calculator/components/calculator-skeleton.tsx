@@ -26,17 +26,18 @@ export function CalculatorSkeleton() {
         <Skeleton className="h-4 w-56" />
       </div>
 
-      {/* Toolbar — action buttons (Add / Reset / more) */}
-      <div className="mt-4 flex flex-wrap justify-end gap-2">
+      {/* Toolbar — action buttons (Add / Reset / more); phones use the FAB and ⋯ sheet */}
+      <div className="mt-4 hidden flex-wrap justify-end gap-2 md:flex">
         <Skeleton className="h-9 w-20" />
         <Skeleton className="h-9 w-24" />
         <Skeleton className="size-9" />
       </div>
 
-      {/* Toolbar — page size + search */}
+      {/* Toolbar — page size + search (phones: search + ⋯) */}
       <div className="flex w-full gap-2">
-        <Skeleton className="h-9 w-20" />
-        <Skeleton className="h-9 flex-1" />
+        <Skeleton className="hidden h-9 w-20 md:block" />
+        <Skeleton className="h-10 flex-1 md:h-9" />
+        <Skeleton className="size-10 md:hidden" />
       </div>
 
       {/* Subject rows — bordered cards */}

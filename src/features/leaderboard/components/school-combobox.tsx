@@ -15,10 +15,19 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useIsMobile } from "@/hooks/use-media-query";
 
 const UNIVERSITIES = SCHOOLS.filter((s) => s.type === "university");
 const COLLEGES = SCHOOLS.filter((s) => s.type === "college");
@@ -47,6 +56,7 @@ export function SchoolCombobox({
   className,
 }: SchoolComboboxProps) {
   const [open, setOpen] = useState(false);
+  const isMobile = useIsMobile();
   const selected = getSchoolById(value);
 
   function handleSelect(school: School) {
@@ -61,6 +71,7 @@ export function SchoolCombobox({
         key={school.id}
         value={school.name}
         onSelect={() => handleSelect(school)}
+        className={cn(isMobile && "min-h-11")}
       >
         <CheckIcon
           className={cn("size-4", isSelected ? "opacity-100" : "opacity-0")}
@@ -70,40 +81,62 @@ export function SchoolCombobox({
     );
   }
 
+  const trigger = (
+    <Button
+      id={id}
+      type="button"
+      variant="outline"
+      role="combobox"
+      aria-expanded={open}
+      disabled={disabled}
+      className={cn("w-full justify-between font-normal", className)}
+    >
+      <span className={cn("truncate", !selected && "text-muted-foreground")}>
+        {selected ? selected.name : placeholder}
+      </span>
+      <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
+    </Button>
+  );
+
+  const list = (
+    <Command>
+      <CommandInput placeholder="Search schools…" />
+      <CommandList className={cn(isMobile && "max-h-[60svh] pb-[env(safe-area-inset-bottom)]")}>
+        <CommandEmpty>No school found.</CommandEmpty>
+        <CommandGroup heading="Universities">
+          {UNIVERSITIES.map(renderItem)}
+        </CommandGroup>
+        <CommandGroup heading="Colleges">
+          {COLLEGES.map(renderItem)}
+        </CommandGroup>
+      </CommandList>
+    </Command>
+  );
+
+  // Phones get a bottom sheet so the on-screen keyboard can't cover the list.
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader className="text-left">
+            <DrawerTitle>Choose your school</DrawerTitle>
+            <DrawerDescription>Search the list, then tap your school.</DrawerDescription>
+          </DrawerHeader>
+          <div className="border-t">{list}</div>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          id={id}
-          type="button"
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          disabled={disabled}
-          className={cn("w-full justify-between font-normal", className)}
-        >
-          <span className={cn("truncate", !selected && "text-muted-foreground")}>
-            {selected ? selected.name : placeholder}
-          </span>
-          <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
+      <PopoverTrigger asChild>{trigger}</PopoverTrigger>
       <PopoverContent
         className="w-(--radix-popover-trigger-width) p-0"
         align="start"
       >
-        <Command>
-          <CommandInput placeholder="Search schools…" />
-          <CommandList>
-            <CommandEmpty>No school found.</CommandEmpty>
-            <CommandGroup heading="Universities">
-              {UNIVERSITIES.map(renderItem)}
-            </CommandGroup>
-            <CommandGroup heading="Colleges">
-              {COLLEGES.map(renderItem)}
-            </CommandGroup>
-          </CommandList>
-        </Command>
+        {list}
       </PopoverContent>
     </Popover>
   );

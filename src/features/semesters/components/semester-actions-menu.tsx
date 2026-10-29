@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { FileTextIcon, MoreHorizontalIcon, Pencil, Trash } from "lucide-react";
 
+import type { MenuGroup } from "@/components/shared/menu-types";
+import { ResponsiveMenu } from "@/components/shared/responsive-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,17 +14,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { CountChip } from "@/features/semesters/components/archived-subjects";
+import { formatTermLabel } from "@/features/semesters/lib/semesters";
 import type { Semester } from "@/types";
 
 interface SemesterActionsMenuProps {
@@ -32,78 +27,64 @@ interface SemesterActionsMenuProps {
   onDelete: (semester: Semester) => void;
 }
 
-/** Per-semester "⋯" menu: Semester Report, Edit, Delete (with confirmation). */
+/** Per-semester "⋯" menu (a sheet on phones): Semester Report, Edit, Delete with confirmation. */
 export function SemesterActionsMenu({ semester, onReport, onEdit, onDelete }: SemesterActionsMenuProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
+  const groups: MenuGroup[] = [
+    {
+      id: "semester",
+      items: [
+        { kind: "action", id: "report", label: "Semester Report", icon: FileTextIcon, onSelect: () => onReport(semester) },
+        { kind: "action", id: "edit", label: "Edit", icon: Pencil, onSelect: () => onEdit(semester) },
+      ],
+    },
+    {
+      id: "danger",
+      items: [
+        { kind: "action", id: "delete", label: "Delete", icon: Trash, destructive: true, onSelect: () => setConfirmOpen(true) },
+      ],
+    },
+  ];
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" aria-label="More Options">
-          <MoreHorizontalIcon />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-52">
-        <DropdownMenuGroup>
-          <DropdownMenuItem
-            onSelect={(e) => {
-              e.preventDefault();
-              onReport(semester);
-            }}
-          >
-            <FileTextIcon className="h-4 w-4" />
-            Semester Report
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={(e) => {
-              e.preventDefault();
-              onEdit(semester);
-            }}
-          >
-            <Pencil className="h-4 w-4" />
-            Edit
-          </DropdownMenuItem>
-          <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-            <AlertDialogTrigger asChild>
-              <DropdownMenuItem
-                variant="destructive"
-                onSelect={(e) => {
-                  e.preventDefault();
-                  setConfirmOpen(true);
-                }}
-              >
-                <Trash className="h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <Trash className="mx-auto size-10 rounded-lg border bg-primary p-2 text-primary-foreground sm:mx-0" />
-                <AlertDialogTitle>Delete this semester?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete all your subjects
-                  under{" "}
-                  <CountChip>
-                    S.Y. {semester.schoolYear} - {semester.semester} Semester.
-                  </CountChip>
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  variant="destructive"
-                  onClick={() => {
-                    onDelete(semester);
-                    setConfirmOpen(false);
-                  }}
-                >
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      <ResponsiveMenu
+        title={formatTermLabel(semester)}
+        groups={groups}
+        trigger={
+          <Button variant="outline" size="icon" className="max-md:size-10" aria-label="More Options">
+            <MoreHorizontalIcon />
+          </Button>
+        }
+      />
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <Trash className="mx-auto size-10 rounded-lg border bg-primary p-2 text-primary-foreground sm:mx-0" />
+            <AlertDialogTitle>Delete this semester?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete all your subjects
+              under{" "}
+              <CountChip>
+                S.Y. {semester.schoolYear} - {semester.semester} Semester.
+              </CountChip>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={() => {
+                onDelete(semester);
+                setConfirmOpen(false);
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

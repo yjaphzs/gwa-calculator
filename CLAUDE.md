@@ -106,7 +106,11 @@ enabled in `.claude/settings.json`, and the shadcn MCP server is configured in `
   `src/config/routes.ts`.
 - **Page frame:** `components/layout/app-shell.tsx` renders the shared `SiteHeader` (brand,
   `MainNav`: Calculator / How it works / Leaderboard, and actions) above a centered content
-  column. Every page uses it except the auth split screens.
+  column. Every page uses it except the auth split screens. Below `md`, the nav moves to a
+  fixed bottom tab bar (`MainNav variant="bar"`, rendered by `AppShell`).
+- **Overlays:** on phones, tasks (forms, menus, pickers) open as bottom sheets via
+  `components/shared/responsive-dialog.tsx` and `responsive-menu.tsx`; confirmations stay
+  `AlertDialog`s. See "Overlays and the mobile shell" in [docs/design-system.md](docs/design-system.md).
 - **Site footer:** `components/layout/site-footer.tsx` (full / compact / minimal variants) links
   to the guide and the legal pages.
 - **SEO:** `src/app/sitemap.ts` and `robots.ts` (`force-static`), and the share image at

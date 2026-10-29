@@ -3,15 +3,16 @@
 import { useEffect, useState } from "react";
 import { SparklesIcon } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+  ResponsiveDialogTrigger,
+} from "@/components/shared/responsive-dialog";
+import { Button } from "@/components/ui/button";
 import { CHANGELOG, LATEST_VERSION } from "@/config/changelog";
 import { ChangelogEntry } from "@/features/changelog/components/changelog-entry";
 
@@ -47,8 +48,8 @@ export function WhatsNewButton() {
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
+    <ResponsiveDialog open={open} onOpenChange={handleOpenChange}>
+      <ResponsiveDialogTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
@@ -60,22 +61,22 @@ export function WhatsNewButton() {
             <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-primary ring-2 ring-background" />
           )}
         </Button>
-      </DialogTrigger>
-      <DialogContent className="flex max-h-[80svh] flex-col gap-0 p-0 sm:max-w-lg">
-        <DialogHeader className="border-b p-5">
-          <DialogTitle className="flex items-center gap-2">
+      </ResponsiveDialogTrigger>
+      <ResponsiveDialogContent className="flex max-h-[80svh] flex-col gap-0 p-0 sm:max-w-lg">
+        <ResponsiveDialogHeader className="border-b p-5">
+          <ResponsiveDialogTitle className="flex items-center gap-2">
             <SparklesIcon className="size-5 text-primary" />
-            What&apos;s new
-          </DialogTitle>
-          <DialogDescription>The latest features and improvements in GWA Calculator.</DialogDescription>
-        </DialogHeader>
+            What's new
+          </ResponsiveDialogTitle>
+          <ResponsiveDialogDescription>The latest features and improvements in GWA Calculator.</ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
 
-        <div className="flex-1 divide-y divide-border/60 overflow-y-auto px-5">
+        <ResponsiveDialogBody className="flex-1 divide-y divide-border/60 overflow-y-auto px-5 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:pb-0">
           {CHANGELOG.map((entry) => (
             <ChangelogEntry key={entry.version} entry={entry} />
           ))}
-        </div>
-      </DialogContent>
-    </Dialog>
+        </ResponsiveDialogBody>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }

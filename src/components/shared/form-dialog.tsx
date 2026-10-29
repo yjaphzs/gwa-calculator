@@ -3,16 +3,19 @@
 import type { ReactNode } from "react";
 import { LoaderCircle } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogClose,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+  useResponsiveDialogIsDrawer,
+} from "@/components/shared/responsive-dialog";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export interface FormDialogProps {
   open: boolean;
@@ -29,48 +32,55 @@ export interface FormDialogProps {
   children: ReactNode;
 }
 
-/** Modal shell for a create/edit form: title, body, Cancel + Submit. */
-export function FormDialog({
-  open,
-  onOpenChange,
-  title,
-  description,
-  submitLabel,
-  onSubmit,
-  processing = false,
-  success = false,
-  dirty = true,
-  children,
-}: FormDialogProps) {
+type ActionsProps = Pick<FormDialogProps, "submitLabel" | "onSubmit" | "processing" | "success" | "dirty">;
+
+/** Desktop: Cancel then Submit, right-aligned. Sheet: Submit on top, both full width. */
+function FormDialogActions({ submitLabel, onSubmit, processing = false, success = false, dirty = true }: ActionsProps) {
+  const drawer = useResponsiveDialogIsDrawer();
   const settled = success && !dirty;
+  const size = drawer ? "h-11" : undefined;
+
+  const cancel = (
+    <ResponsiveDialogClose asChild>
+      <Button variant="outline" className={size} disabled={processing}>
+        Cancel
+      </Button>
+    </ResponsiveDialogClose>
+  );
+  const submit = (
+    <Button
+      type="button"
+      className={cn(size, settled && "text-stone-100")}
+      onClick={onSubmit}
+      disabled={processing || !dirty}
+      variant={settled ? "secondary" : "default"}
+      tabIndex={processing ? -1 : 0}
+    >
+      {processing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+      {submitLabel}
+    </Button>
+  );
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4">{children}</div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline" disabled={processing}>
-              Cancel
-            </Button>
-          </DialogClose>
-          <Button
-            type="button"
-            className={settled ? "text-stone-100" : ""}
-            onClick={onSubmit}
-            disabled={processing || !dirty}
-            variant={settled ? "secondary" : "default"}
-            tabIndex={processing ? -1 : 0}
-          >
-            {processing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
-            {submitLabel}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <ResponsiveDialogFooter>
+      {drawer ? submit : cancel}
+      {drawer ? cancel : submit}
+    </ResponsiveDialogFooter>
+  );
+}
+
+/** Create/edit form shell: a centered dialog on desktop, a bottom sheet on phones. */
+export function FormDialog({ open, onOpenChange, title, description, children, ...actions }: FormDialogProps) {
+  return (
+    <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
+      <ResponsiveDialogContent className="sm:max-w-xl">
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
+          <ResponsiveDialogDescription>{description}</ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
+        <ResponsiveDialogBody className="grid gap-4">{children}</ResponsiveDialogBody>
+        <FormDialogActions {...actions} />
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }

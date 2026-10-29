@@ -3,28 +3,47 @@
 import { useState } from "react";
 
 import { formatTermLabel, shortTermLabel, sortOldestFirst } from "@/features/semesters/lib/semesters";
+import { useElementWidth } from "@/hooks/use-element-width";
 import { computeGwa } from "@/lib/academic";
 import { HONORS_LINE, trendScale } from "@/lib/trend-geometry";
+import { cn } from "@/lib/utils";
 import type { Semester } from "@/types";
 
-const FRAME = { width: 640, height: 200, pad: { top: 24, right: 16, bottom: 30, left: 40 }, inset: 36 };
+const FRAME = { height: 200, pad: { top: 24, right: 16, bottom: 30, left: 40 }, inset: 36 };
+/** Room one x-axis label needs ("1st 2024–25" at 10px), used to thin labels. */
+const LABEL_WIDTH = 64;
+
+/** Every k-th label so none overlap; the newest term is always labelled. */
+function labelVisible(i: number, last: number, every: number): boolean {
+  return i === last || (i % every === 0 && last - i >= every);
+}
+
+/** Keep the tooltip inside the card at the first and last points. */
+function tipAlign(i: number, last: number): string {
+  if (i === 0) return "-translate-x-4";
+  if (i === last) return "-translate-x-[calc(100%-1rem)]";
+  return "-translate-x-1/2";
+}
 
 /**
  * GWA per saved semester, oldest to newest. Single series, so no legend; 1.00
- * sits at the top. Hover or focus a point for its term and exact GWA.
+ * sits at the top. Hover, tap, or focus a point for its term and exact GWA.
+ * The SVG is drawn at the container's real width so text stays legible on phones.
  */
 export function SemesterTrendChart({ semesters }: { semesters: Semester[] }) {
   const [active, setActive] = useState<number | null>(null);
+  const { ref, width: W } = useElementWidth<HTMLDivElement>(640);
 
   const points = sortOldestFirst(semesters)
     .map((s) => ({ short: shortTermLabel(s), full: formatTermLabel(s), gwa: computeGwa(s.subjects).gwa }))
     .filter((p): p is { short: string; full: string; gwa: number } => p.gwa !== null);
   if (points.length < 2) return null;
 
-  const { width: W, height: H, pad } = FRAME;
-  const { ticks, x, y, showHonorsLine } = trendScale(points.map((p) => p.gwa), FRAME);
+  const { height: H, pad } = FRAME;
+  const { ticks, x, y, showHonorsLine } = trendScale(points.map((p) => p.gwa), { ...FRAME, width: W });
   const last = points.length - 1;
-  const step = x(1) - x(0); // spacing between points, for the hover hit areas
+  const step = x(1) - x(0); // spacing between points, for the hit areas
+  const every = Math.max(1, Math.ceil(LABEL_WIDTH / step));
   const path = points.map((p, i) => `${i === 0 ? "M" : "L"}${x(i)} ${y(p.gwa)}`).join(" ");
   const tip = active === null ? null : points[active];
 
@@ -34,7 +53,7 @@ export function SemesterTrendChart({ semesters }: { semesters: Semester[] }) {
         <span className="text-sm font-semibold">GWA by semester</span>
         <span className="text-xs text-muted-foreground">Lower is better, so 1.00 is at the top</span>
       </figcaption>
-      <div className="relative">
+      <div ref={ref} className="relative">
         <svg
           viewBox={`0 0 ${W} ${H}`}
           className="h-auto w-full"
@@ -71,7 +90,7 @@ export function SemesterTrendChart({ semesters }: { semesters: Semester[] }) {
             </text>
           ))}
           {points.map((p, i) =>
-            points.length > 8 && i % 2 === 1 && i !== last ? null : (
+            !labelVisible(i, last, every) ? null : (
               <text key={p.full} x={x(i)} y={H - 8} textAnchor="middle" className="fill-muted-foreground text-[10px]">
                 {p.short}
               </text>
@@ -89,6 +108,7 @@ export function SemesterTrendChart({ semesters }: { semesters: Semester[] }) {
               tabIndex={0}
               aria-label={`${p.full}: ${p.gwa.toFixed(3)}`}
               onMouseEnter={() => setActive(i)}
+              onClick={() => setActive(i)}
               onFocus={() => setActive(i)}
               onBlur={() => setActive(null)}
               className="outline-none"
@@ -97,7 +117,10 @@ export function SemesterTrendChart({ semesters }: { semesters: Semester[] }) {
         </svg>
         {tip && active !== null && (
           <div
-            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-md border bg-popover px-2.5 py-1.5 text-xs shadow-md"
+            className={cn(
+              "pointer-events-none absolute z-10 -translate-y-full rounded-md border bg-popover px-2.5 py-1.5 text-xs shadow-md",
+              tipAlign(active, last),
+            )}
             style={{ left: `${(x(active) / W) * 100}%`, top: `calc(${(y(tip.gwa) / H) * 100}% - 10px)` }}
           >
             <div className="font-medium whitespace-nowrap">{tip.full}</div>

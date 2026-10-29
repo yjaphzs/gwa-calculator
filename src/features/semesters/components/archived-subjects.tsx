@@ -51,7 +51,7 @@ function ArchivedSubjectRow({ subject, onEdit }: ArchivedSubjectRowProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="size-8"
+            className="size-10 md:size-8"
             aria-label={`Edit ${subject.code}`}
             onClick={() => onEdit(subject)}
           >

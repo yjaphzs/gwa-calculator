@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { SearchXIcon } from "lucide-react";
 
 import { PaginationSummary } from "@/components/shared/pagination-summary";
@@ -10,6 +13,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { ItemGroup } from "@/components/ui/item";
+import { SubjectActionSheet } from "@/features/calculator/components/subject-action-sheet";
 import { SubjectListItem } from "@/features/calculator/components/subject-list-item";
 import type { SubjectFilter } from "@/features/calculator/hooks/use-subject-filter";
 import type { Subject } from "@/types";
@@ -24,6 +28,9 @@ interface SubjectsListProps {
 /** The current page of subjects, its pager, and the "no results" state. */
 export function SubjectsList({ subjects, filter, onEdit, onDelete }: SubjectsListProps) {
   const { paginated, filtered, pageSize, currentPage, totalPages, setCurrentPage } = filter;
+  // The tapped subject outlives `open` so the sheet keeps its content while closing.
+  const [tapped, setTapped] = useState<Subject | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   return (
     <>
@@ -36,6 +43,10 @@ export function SubjectsList({ subjects, filter, onEdit, onDelete }: SubjectsLis
                 subject={subject}
                 onEdit={onEdit}
                 onDelete={onDelete}
+                onOpenActions={(next) => {
+                  setTapped(next);
+                  setSheetOpen(true);
+                }}
               />
             ))}
           </ItemGroup>
@@ -70,6 +81,14 @@ export function SubjectsList({ subjects, filter, onEdit, onDelete }: SubjectsLis
           </EmptyHeader>
         </Empty>
       )}
+
+      <SubjectActionSheet
+        subject={tapped}
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
     </>
   );
 }

@@ -23,6 +23,20 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "2.5.0",
+    date: "October 30, 2026",
+    title: "Made for phones",
+    changes: [
+      { type: "new", text: "A phone-friendly layout: forms, menus, and What's new slide up from the bottom of the screen." },
+      { type: "new", text: "An Add subject button that stays within reach on a phone." },
+      { type: "new", text: "On a phone, tap a subject to see its details, then edit or delete it." },
+      { type: "improved", text: "On a phone, navigation sits in a tab bar at the bottom of the screen." },
+      { type: "improved", text: "The GWA-by-semester chart stays readable on small screens, and you can tap a point to see its term and GWA." },
+      { type: "improved", text: "Choosing your school on a phone opens a searchable list the keyboard can't cover." },
+      { type: "improved", text: "Autosave is now a single on/off switch in the subject menu." },
+    ],
+  },
+  {
     version: "2.4.0",
     date: "October 28, 2026",
     title: "Planner, trends & navigation",
