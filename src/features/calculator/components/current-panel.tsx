@@ -1,5 +1,6 @@
 import type { RefObject } from "react";
 
+import { AddSubjectFab } from "@/features/calculator/components/add-subject-fab";
 import { GwaSummary } from "@/features/calculator/components/gwa-summary";
 import { SubjectsList } from "@/features/calculator/components/subjects-list";
 import {
@@ -30,7 +31,8 @@ export function CurrentPanel({ subjects, gwa, honor, totalUnits, onEdit, onDelet
   return (
     <>
       <GwaSummary subjects={subjects} gwa={gwa} honor={honor} totalUnits={totalUnits} />
-      <div className="mt-8 flex flex-col gap-4">
+      {/* Bottom padding on phones keeps the last row clear of the floating Add button. */}
+      <div className="mt-8 flex flex-col gap-4 pb-16 md:pb-0">
         <SubjectsToolbar
           subjectCount={subjects.length}
           gwa={gwa}
@@ -40,6 +42,7 @@ export function CurrentPanel({ subjects, gwa, honor, totalUnits, onEdit, onDelet
         />
         <SubjectsList subjects={subjects} filter={toolbar.filter} onEdit={onEdit} onDelete={onDelete} />
       </div>
+      <AddSubjectFab onAdd={toolbar.actions.onAdd} />
     </>
   );
 }

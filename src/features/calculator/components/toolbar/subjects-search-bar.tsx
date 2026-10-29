@@ -1,6 +1,6 @@
 "use client";
 
-import type { RefObject } from "react";
+import type { ReactNode, RefObject } from "react";
 import { CommandIcon, Search } from "lucide-react";
 
 import {
@@ -22,10 +22,12 @@ import { useIsMac } from "@/hooks/use-is-mac";
 interface SubjectsSearchBarProps {
   filter: SubjectFilter;
   searchInputRef: RefObject<HTMLInputElement | null>;
+  /** Rendered after the search box (the phone "⋯" sheet trigger). */
+  trailing?: ReactNode;
 }
 
 /** Page-size picker and the subject search box with its result count. */
-export function SubjectsSearchBar({ filter, searchInputRef }: SubjectsSearchBarProps) {
+export function SubjectsSearchBar({ filter, searchInputRef, trailing }: SubjectsSearchBarProps) {
   const isMac = useIsMac();
 
   return (
@@ -34,7 +36,7 @@ export function SubjectsSearchBar({ filter, searchInputRef }: SubjectsSearchBarP
         value={String(filter.pageSize)}
         onValueChange={(value) => filter.setPageSize(Number(value))}
       >
-        <SelectTrigger className="w-20" aria-label="Rows per page">
+        <SelectTrigger className="hidden w-20 md:flex" aria-label="Rows per page">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -45,7 +47,7 @@ export function SubjectsSearchBar({ filter, searchInputRef }: SubjectsSearchBarP
           ))}
         </SelectContent>
       </Select>
-      <InputGroup className="sm ml-auto">
+      <InputGroup className="ml-auto h-10 md:h-9">
         <InputGroupInput
           ref={searchInputRef}
           placeholder="Search subjects..."
@@ -64,6 +66,7 @@ export function SubjectsSearchBar({ filter, searchInputRef }: SubjectsSearchBarP
           </KbdGroup>
         </InputGroupAddon>
       </InputGroup>
+      {trailing}
     </div>
   );
 }

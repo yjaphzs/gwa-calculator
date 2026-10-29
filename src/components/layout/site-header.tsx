@@ -8,7 +8,7 @@ import { WhatsNewButton } from "@/features/changelog/components/whats-new";
  * Sticky top bar shared by every page except the auth screens. It's wider than
  * the reading column so brand, navigation, and actions each get room: brand on
  * the left, navigation centered, actions on the right. Below md the navigation
- * drops to its own row.
+ * moves to the bottom tab bar that AppShell renders.
  */
 export function SiteHeader() {
   return (
@@ -22,7 +22,6 @@ export function SiteHeader() {
           <AccountMenu />
         </div>
       </div>
-      <MainNav variant="bar" className="mx-auto max-w-5xl px-4 pb-2 sm:px-6" />
     </header>
   );
 }

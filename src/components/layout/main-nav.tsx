@@ -16,8 +16,10 @@ const NAV_ITEMS = [
 /** trailingSlash export → "/leaderboard/"; compare without it. */
 const normalize = (path: string) => (path.length > 1 ? path.replace(/\/+$/, "") : path);
 
+const FOCUS = "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none";
+
 interface MainNavProps {
-  /** "inline" sits in the header row (md+); "bar" is the full-width row below md. */
+  /** "inline" sits in the header row (md+); "bar" is the bottom tab bar below md. */
   variant: "inline" | "bar";
   className?: string;
 }
@@ -26,11 +28,35 @@ interface MainNavProps {
 export function MainNav({ variant, className }: MainNavProps) {
   const pathname = normalize(usePathname() ?? "/");
 
+  if (variant === "inline") {
+    return (
+      <nav aria-label="Main" className={cn("hidden items-center gap-1.5 md:flex", className)}>
+        {NAV_ITEMS.map(({ href, label }) => {
+          const active = pathname === href;
+          return (
+            <Link
+              key={href}
+              href={href}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
+                FOCUS,
+                active && "bg-accent text-foreground",
+              )}
+            >
+              {label}
+            </Link>
+          );
+        })}
+      </nav>
+    );
+  }
+
   return (
     <nav
       aria-label="Main"
       className={cn(
-        variant === "inline" ? "hidden items-center gap-1.5 md:flex" : "grid grid-cols-3 gap-1 md:hidden",
+        "fixed inset-x-0 bottom-0 z-40 grid grid-cols-3 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-backdrop-filter:bg-background/80 md:hidden",
         className,
       )}
     >
@@ -42,14 +68,19 @@ export function MainNav({ variant, className }: MainNavProps) {
             href={href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "flex items-center justify-center rounded-md font-medium whitespace-nowrap text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
-              variant === "inline" ? "px-3 py-2 text-sm" : "flex-col gap-0.5 px-1 py-1.5 text-xs",
-              "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
-              active && "bg-accent text-foreground",
+              "flex h-14 flex-col items-center justify-center gap-1 text-xs font-medium whitespace-nowrap text-muted-foreground transition-colors",
+              FOCUS,
+              active && "text-foreground",
             )}
           >
-            {/* Icons only in the roomier mobile bar; the inline row stays text-only. */}
-            {variant === "bar" && <Icon aria-hidden className="size-4" />}
+            <span
+              className={cn(
+                "flex h-7 w-14 items-center justify-center rounded-full transition-colors",
+                active && "bg-primary/10 text-primary",
+              )}
+            >
+              <Icon aria-hidden className="size-5" />
+            </span>
             {label}
           </Link>
         );

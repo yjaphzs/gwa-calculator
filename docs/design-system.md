@@ -58,6 +58,8 @@ on `<html>`, so `:root` can resolve them.
 
 - Use the shadcn primitive first (`src/components/ui/`). Add new ones with
   `npx shadcn@latest add <name>`, and don't hand-edit generated files beyond small fixes.
+  Check the imports after adding: CLI 4.23 rewrote `@/lib/utils` to a package named `cn`, so
+  `drawer.tsx` was written by hand. Its header is left-aligned on purpose (shadcn centers it).
 - For app-wide patterns, compose primitives in `src/components/shared/`.
 - **Layout width:** the main content is `max-w-3xl` (account uses `max-w-2xl`) with `px-4`.
   Content pages (legal, guides) use `content-page-layout` and its PROSE typography.
@@ -65,6 +67,37 @@ on `<html>`, so `:root` can resolve them.
   `aria-label`.
 - **Motion:** `motion` is used for small flourishes, and the fireworks run only on the
   congratulations dialog. Respect `prefers-reduced-motion` in anything new.
+
+## Overlays and the mobile shell
+
+Below `md` (768px) the app behaves like a phone app; from `md` up nothing changes.
+
+- **Tasks become bottom sheets, decisions stay dialogs.**
+  - **Tasks** are forms, menus, pickers, and long content. Build them with
+    `ResponsiveDialog` (`components/shared/responsive-dialog.tsx`): a centered `Dialog` on
+    desktop, a `vaul` `Drawer` on phones. `FormDialog` already uses it.
+    - In a sheet the footer stacks full width with the primary action on top. Check
+      `useResponsiveDialogIsDrawer()` to reorder buttons.
+  - **Menus** are a `MenuGroup[]` model (`components/shared/menu-types.ts`) rendered by
+    `ResponsiveMenu`: a `DropdownMenu` on desktop, an action sheet with 48px rows on phones.
+    - Item kinds are `action`, `toggle` (a checkbox item or a `Switch` row), and `link`.
+    - Use `mode="menu"` or `mode="sheet"` when the trigger only shows at one breakpoint.
+  - **Decisions** (reset, delete, merge, celebration, delete account) stay `AlertDialog`s on
+    every screen. When a menu item opens one, keep the dialog's `open` state beside the menu,
+    not nested inside it.
+  - The avatar crop stays a dialog, because dragging to crop would fight the sheet's
+    drag-to-close.
+- **Mobile shell:**
+  - `MainNav variant="bar"` is a fixed bottom tab bar, rendered by `AppShell`, which pads the
+    page bottom to clear it.
+  - The calculator's Current tab adds a floating "Add subject" button (`add-subject-fab.tsx`).
+  - Subject rows open an action sheet on tap, and their inline buttons show from `md` up.
+  - Toasts sit above both, via `--toast-bottom` in `globals.css`.
+- **Safe areas:** `viewportFit: "cover"` is set in `app/layout.tsx`. Anything pinned to the
+  bottom pads with `env(safe-area-inset-bottom)`.
+- **Breakpoints in CSS first:** show or hide layout with `md:hidden` / `hidden md:flex`, so
+  nothing flashes on load. Use `useIsMobile()` only to choose which overlay to open.
+- **Touch targets:** at least 40px on phones, for example `max-md:size-10` on icon buttons.
 
 ## Print and email design language
 

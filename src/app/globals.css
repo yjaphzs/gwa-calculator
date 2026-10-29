@@ -223,3 +223,17 @@ body {
     @apply rounded-full bg-primary;
   }
 }
+
+/*
+ * Toasts on phones sit above the bottom tab bar and the floating Add button
+ * (layout.tsx passes this to <Toaster>); from md up they use Sonner's default.
+ */
+:root {
+  --toast-bottom: calc(7.75rem + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 768px) {
+  :root {
+    --toast-bottom: 24px;
+  }
+}

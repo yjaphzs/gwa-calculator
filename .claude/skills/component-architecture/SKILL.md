@@ -65,6 +65,9 @@ After a split the parent should read as a composition: hooks at the top, a short
 - Accessible by default: `aria-label` on icon-only buttons, labels on inputs. In forms, wrap the
   `SelectTrigger` (not the `Select` root) in `FormControl`, so the label reaches the combobox.
 - Copy: no em dashes in user-facing text (see `docs/conventions.md`).
+- New forms, menus, or pickers: build on `ResponsiveDialog` / `ResponsiveMenu` (bottom sheets on
+  phones) instead of a bare `Dialog` / `DropdownMenu`; confirmations stay `AlertDialog`s. See
+  "Overlays and the mobile shell" in `docs/design-system.md`.
 
 ## Before you finish
 

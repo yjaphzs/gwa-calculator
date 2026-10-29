@@ -64,39 +64,47 @@ export function SubjectsToolbar({
     );
   }
 
+  const menu = { actions, hasSemesters, autosave, onAutosaveChange };
+
   return (
     <>
-      {/* Wraps on narrow screens: the celebration button takes its own row. */}
-      <div className="flex w-full flex-wrap items-center justify-end gap-2">
-          <GwaCelebrationDialog
-            gwa={gwa}
-            honor={honor}
-            totalUnits={totalUnits}
-            open={celebration.open}
-            onOpenChange={celebration.onOpenChange}
-          />
-          <ButtonGroup>
-            {totalUnits >= HONOR_MIN_UNITS && (
-              <Button variant="outline" onClick={actions.onSaveSemester}>
-                <ArchiveIcon className="size-4" />
-                <span className="hidden sm:inline">Save as semester</span>
-                <span className="sm:hidden">Save</span>
-              </Button>
-            )}
-            <Button variant="outline" onClick={actions.onAdd}>
-              <PlusIcon className="size-4" />
-              Add
+      {/*
+        Desktop: celebration + button row. Phones only show this row when the
+        celebration button is present; Add is the floating button and the rest
+        lives in the "⋯" sheet beside search.
+      */}
+      <div className="hidden w-full flex-wrap items-center justify-end gap-2 has-data-celebration:flex md:flex">
+        <GwaCelebrationDialog
+          gwa={gwa}
+          honor={honor}
+          totalUnits={totalUnits}
+          open={celebration.open}
+          onOpenChange={celebration.onOpenChange}
+        />
+        <ButtonGroup className="hidden md:flex">
+          {totalUnits >= HONOR_MIN_UNITS && (
+            <Button variant="outline" onClick={actions.onSaveSemester}>
+              <ArchiveIcon className="size-4" />
+              Save as semester
             </Button>
-            <ResetSubjectsDialog onConfirm={actions.onReset} />
-            <SubjectsMoreMenu
-              actions={actions}
-              hasSemesters={hasSemesters}
-              autosave={autosave}
-              onAutosaveChange={onAutosaveChange}
-            />
-          </ButtonGroup>
+          )}
+          <Button variant="outline" onClick={actions.onAdd}>
+            <PlusIcon className="size-4" />
+            Add
+          </Button>
+          <ResetSubjectsDialog onConfirm={actions.onReset} />
+          <SubjectsMoreMenu variant="menu" {...menu} />
+        </ButtonGroup>
       </div>
-      <SubjectsSearchBar filter={filter} searchInputRef={searchInputRef} />
+      <SubjectsSearchBar
+        filter={filter}
+        searchInputRef={searchInputRef}
+        trailing={
+          <div className="md:hidden">
+            <SubjectsMoreMenu variant="sheet" {...menu} />
+          </div>
+        }
+      />
     </>
   );
 }

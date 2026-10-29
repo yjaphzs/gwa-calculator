@@ -44,7 +44,8 @@ export function GwaCelebrationDialog({
   const gwaText = <code className={GWA_CODE}>{gwa?.toFixed(3)}</code>;
 
   return (
-    <ButtonGroup>
+    // data-celebration lets the toolbar keep this row visible on phones.
+    <ButtonGroup data-celebration>
       <AlertDialog open={open} onOpenChange={onOpenChange}>
         <AlertDialogTrigger asChild>
           <Button variant="default">
