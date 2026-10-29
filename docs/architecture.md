@@ -91,8 +91,8 @@ public API is `printSemesterReport` and `printAcademicSummary` in `index.ts`. Th
 |---|---|
 | Client SDK helpers | `src/lib/firebase/`. Firestore is split into `firestore/{profile,leaderboard,calculator}.ts` behind `firestore/index.ts` |
 | Rules | `firestore.rules` (deny by default; users touch only their own `users/{uid}` subtree), `storage.rules` |
-| Functions | `functions/`, a separate package (Node 24, `asia-southeast1`). Callables: `deleteAccount`, `sendVerificationEmail`, `sendPasswordResetEmail`, `setLeaderboardParticipation`, `setLeaderboardHandle`, `refreshLeaderboardStanding`. Trigger: `onCalculatorStateWritten` (republishes leaderboard entries) |
-| Emails | Handlebars `.hbs` templates, compiled into `generated-templates.ts` with `npm run generate:emails`, sent via Resend |
+| Functions | `functions/`, a separate package (Node 24, `asia-southeast1`). Callables: `deleteAccount`, `sendVerificationEmail`, `sendPasswordResetEmail`, `setLeaderboardParticipation`, `setLeaderboardHandle`, `refreshLeaderboardStanding`, `ensureLeaderboardBoard`. Trigger: `onCalculatorStateWritten` (republishes leaderboard entries). Every change to a school's entries rebuilds its `leaderboardBoards/{schoolId}` doc (`lib/leaderboard-board.ts`) |
+| Emails | Handlebars `.hbs` templates, compiled into `generated-templates.ts` with `npm run generate:emails`, sent via Resend. When Resend's quota is used up, the client falls back to Firebase Auth's built-in emails (`src/lib/firebase/email-delivery.ts`) |
 
 ## Build, test, deploy
 

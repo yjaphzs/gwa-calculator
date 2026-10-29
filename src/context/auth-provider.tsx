@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 import { onAuthChange, type User } from '@/lib/firebase/auth';
+import { ensureAppCheck } from '@/lib/firebase/client';
 import {
   ensureUserProfile,
   userProfileRef,
@@ -57,6 +58,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       unsubProfileRef.current = null;
 
       if (firebaseUser) {
+        // Signed-in users talk to Firestore and Functions, so start App Check
+        // now (guests never need it; see client.ts).
+        ensureAppCheck();
         setUser(firebaseUser);
         try {
           // Make sure the profile doc exists (covers first Google sign-in and

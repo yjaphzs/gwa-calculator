@@ -4,3 +4,4 @@ export * from './firestore';
 export * from './storage';
 export * from './callable';
 export * from './errors';
+export * from './email-delivery';

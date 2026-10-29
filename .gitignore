@@ -37,6 +37,8 @@ lerna-debug.log*
 !.env.local.example
 
 # Firebase
+# Per-machine project alias; copy .firebaserc.example (CI passes --project instead).
+.firebaserc
 .firebase/
 firebase-debug.log
 firestore-debug.log

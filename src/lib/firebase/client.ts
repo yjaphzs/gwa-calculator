@@ -59,9 +59,15 @@ const app = getFirebaseApp();
 
 // ── App Check (optional) ───────────────────────────────────────────────────
 // Verifies requests come from this app. Browser-only; no-op without a key.
+//
+// Started on demand, not at import: every reCAPTCHA token exchange counts
+// against the free 10,000-per-month allowance, and guests (most visitors) never
+// call Firebase. AuthProvider starts it once a user is signed in, and the auth
+// pages start it before any sign-in request. Firestore, Functions and Storage
+// pick it up even when it starts after them.
 export let appCheck: AppCheck | undefined;
 
-function initAppCheck(): void {
+export function ensureAppCheck(): void {
   if (typeof window === 'undefined') return;
   if (appCheck) return; // HMR-safe: don't double-initialize
 
@@ -90,7 +96,6 @@ function initAppCheck(): void {
   }
 }
 
-initAppCheck();
 
 export const auth = app ? getAuth(app) : null!;
 export const db = app ? getFirestore(app) : null!;

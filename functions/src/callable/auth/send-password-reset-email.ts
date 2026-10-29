@@ -4,6 +4,11 @@ import { logger } from "firebase-functions/v2";
 
 import { APP_URL, callableOptions } from "../../config";
 import { buildInAppActionUrl } from "../../lib/action-links";
+import {
+  EmailQuotaError,
+  isEmailQuotaExhausted,
+  markEmailQuotaExhausted,
+} from "../../lib/email/quota";
 import { sendEmail } from "../../lib/email/send";
 import { passwordResetEmailTemplate } from "../../lib/email/templates";
 import { enforceRateLimit, getClientIp } from "../../lib/rate-limit";
@@ -19,6 +24,11 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * Firebase password-reset oobCode, rewrites the link to the in-app
  * /auth/action handler, and emails it over SMTP. Always returns
  * { submitted: true } so it never reveals whether an account exists.
+ *
+ * When Resend's quota is used up it adds `fallback: true`, and the client asks
+ * Firebase Auth to send its built-in reset email instead. The flag is checked
+ * before the account lookup, so while the quota is out every address gets the
+ * same answer.
  */
 export const sendPasswordResetEmail = onCall<SendPasswordResetEmailData>(
   callableOptions,
@@ -45,6 +55,8 @@ export const sendPasswordResetEmail = onCall<SendPasswordResetEmailData>(
       windowSec: 3600,
     });
 
+    if (await isEmailQuotaExhausted()) return { submitted: true, fallback: true };
+
     try {
       const user = await getAuth()
         .getUserByEmail(email)
@@ -60,6 +72,10 @@ export const sendPasswordResetEmail = onCall<SendPasswordResetEmailData>(
         await sendEmail({ to: email, subject, html, text });
       }
     } catch (err) {
+      if (err instanceof EmailQuotaError) {
+        await markEmailQuotaExhausted(err);
+        return { submitted: true, fallback: true };
+      }
       // Swallow errors so the response is identical whether or not the email
       // exists (prevents account enumeration). Failures are logged for ops.
       logger.error("[sendPasswordResetEmail] failed to send:", err);

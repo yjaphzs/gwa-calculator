@@ -18,13 +18,16 @@ functions/src/
   callable/account/              deleteAccount — wipes Firestore + Storage + Auth user (Admin SDK)
   callable/auth/                 sendVerificationEmail, sendPasswordResetEmail
   callable/leaderboard/          setLeaderboardParticipation, setLeaderboardHandle,
-                                 refreshLeaderboardStanding
+                                 refreshLeaderboardStanding, ensureLeaderboardBoard
   trigger/                       onCalculatorStateWritten — republishes leaderboard entries
   lib/academic.ts                server copy of GWA/honor rules (keep in sync with src/lib/academic.ts)
   lib/leaderboard.ts, term.ts    leaderboard publishing, handles, term keys
+  lib/leaderboard-board.ts       per-school board doc (leaderboardBoards/{schoolId}); rebuild it
+                                 after ANY change to a school's public entries
   lib/rate-limit.ts              Firestore fixed-window limiter (rateLimits/{bucket}, server-only)
   lib/action-links.ts            rewrites Firebase action links to the in-app /auth/action
-  lib/email/                     Resend client, send(), templates.ts, generated-templates.ts
+  lib/email/                     Resend client, send(), templates.ts, generated-templates.ts,
+                                 quota.ts (Resend quota → client falls back to Firebase emails)
 ```
 
 ## Rules

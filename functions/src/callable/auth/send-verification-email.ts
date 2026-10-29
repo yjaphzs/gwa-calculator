@@ -4,6 +4,12 @@ import { logger } from "firebase-functions/v2";
 
 import { APP_URL, callableOptions } from "../../config";
 import { buildInAppActionUrl } from "../../lib/action-links";
+import {
+  EmailQuotaError,
+  emailFallbackError,
+  isEmailQuotaExhausted,
+  markEmailQuotaExhausted,
+} from "../../lib/email/quota";
 import { sendEmail } from "../../lib/email/send";
 import { verificationEmailTemplate } from "../../lib/email/templates";
 import { enforceRateLimit } from "../../lib/rate-limit";
@@ -12,7 +18,8 @@ import { enforceRateLimit } from "../../lib/rate-limit";
  * Sends a branded "verify your email" message to the signed-in user. Generates
  * a Firebase verification oobCode, rewrites the link to the in-app
  * /auth/action handler, and emails it over SMTP. No-op (still returns success)
- * if the address is already verified.
+ * if the address is already verified. When Resend's quota is used up it throws
+ * the fallback error so the client sends Firebase's built-in email instead.
  */
 export const sendVerificationEmail = onCall(callableOptions, async (request) => {
   const uid = request.auth?.uid;
@@ -34,6 +41,7 @@ export const sendVerificationEmail = onCall(callableOptions, async (request) => 
 
   // Cap how often a user can trigger verification emails to themselves.
   await enforceRateLimit({ key: `verify_${uid}`, max: 6, windowSec: 3600 });
+  if (await isEmailQuotaExhausted()) throw emailFallbackError();
 
   try {
     const firebaseLink = await getAuth().generateEmailVerificationLink(email, {
@@ -44,6 +52,10 @@ export const sendVerificationEmail = onCall(callableOptions, async (request) => 
     const { subject, html, text } = verificationEmailTemplate(verifyUrl);
     await sendEmail({ to: email, subject, html, text });
   } catch (err) {
+    if (err instanceof EmailQuotaError) {
+      await markEmailQuotaExhausted(err);
+      throw emailFallbackError();
+    }
     logger.error("[sendVerificationEmail] failed:", err);
     throw new HttpsError("internal", "Couldn't send the verification email.");
   }

@@ -5,8 +5,7 @@ import { TrophyIcon } from "lucide-react";
 import { getSchoolById } from "@/config/schools";
 import { BoardEmpty, LoadError, LoadingRows } from "@/features/leaderboard/components/board-states";
 import { RankedList } from "@/features/leaderboard/components/ranked-list";
-import { useBoardEntries } from "@/features/leaderboard/hooks/use-board-entries";
-import { subscribeLeaderboard } from "@/lib/firebase/firestore";
+import { useSchoolBoard } from "@/features/leaderboard/hooks/use-school-board";
 
 interface BoardProps {
   schoolId: string;
@@ -15,7 +14,8 @@ interface BoardProps {
 
 /** Overall (cumulative) board for a school — live. */
 export function OverallBoard({ schoolId, ownHandle }: BoardProps) {
-  const { entries, error } = useBoardEntries(schoolId, subscribeLeaderboard);
+  const { board, error } = useSchoolBoard(schoolId);
+  const entries = board?.overall ?? null;
   const schoolName = getSchoolById(schoolId)?.name ?? "this school";
 
   if (entries === null) return <LoadingRows />;

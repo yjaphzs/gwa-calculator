@@ -5,6 +5,7 @@ import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions/v2";
 
 import { callableOptions } from "../../config";
+import { rebuildSchoolBoards, schoolsOfHandle } from "../../lib/leaderboard-board";
 import { enforceRateLimit } from "../../lib/rate-limit";
 
 /**
@@ -27,6 +28,7 @@ export const deleteAccount = onCall(callableOptions, async (request) => {
   await enforceRateLimit({ key: `delacct_${uid}`, max: 5, windowSec: 3600 });
 
   const db = getFirestore();
+  const affectedSchools = new Set<string>();
 
   // 1. Firestore — calculator + leaderboard subcollections, the public
   //    leaderboard entry + its handle reservation, and the profile doc.
@@ -45,6 +47,9 @@ export const deleteAccount = onCall(callableOptions, async (request) => {
         ? (settingsSnap.data()!.handle as string)
         : null;
     if (handle) {
+      // Remember which school boards this user appears on so they're rebuilt
+      // without them once the entries are gone.
+      (await schoolsOfHandle(handle)).forEach((id) => affectedSchools.add(id));
       batch.delete(db.doc(`leaderboard/${handle}`));
       batch.delete(db.doc(`leaderboardHandles/${handle}`));
       const semSnap = await db
@@ -56,6 +61,7 @@ export const deleteAccount = onCall(callableOptions, async (request) => {
 
     batch.delete(db.doc(`users/${uid}`));
     await batch.commit();
+    await rebuildSchoolBoards(affectedSchools);
   } catch (err) {
     logger.error("[deleteAccount] Firestore cleanup failed", { uid, err });
     throw new HttpsError("internal", "Failed to delete your data.");

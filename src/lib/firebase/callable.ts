@@ -28,11 +28,12 @@ export const requestEmailVerification = httpsCallable<void, { submitted: boolean
 /**
  * Sends a branded password-reset email. Public (used from /forgot-password while
  * signed out). Always resolves with { submitted: true } — it never reveals
- * whether an account exists for the address.
+ * whether an account exists for the address. `fallback` is set when the email
+ * provider's quota is used up (see email-delivery.ts).
  */
 export const requestPasswordReset = httpsCallable<
   { email: string },
-  { submitted: boolean }
+  { submitted: boolean; fallback?: boolean }
 >(functions, 'sendPasswordResetEmail');
 
 /**
@@ -64,3 +65,13 @@ export const refreshLeaderboardStanding = httpsCallable<void, { handle: string }
   functions,
   'refreshLeaderboardStanding',
 );
+
+/**
+ * Builds a school's precomputed leaderboard board when it doesn't exist yet.
+ * Called by the leaderboard page only when the board snapshot comes back
+ * missing; a no-op on the server when the board already exists.
+ */
+export const ensureLeaderboardBoard = httpsCallable<
+  { schoolId: string },
+  { built: boolean }
+>(functions, 'ensureLeaderboardBoard');
