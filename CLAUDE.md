@@ -157,9 +157,12 @@ sync.**
 
 ### Auth and profile
 
-- **App Check** starts on demand (`ensureAppCheck` in `src/lib/firebase/client.ts`): once a
-  user is signed in, or on the auth pages. Guests never load reCAPTCHA, whose free tier is
-  10,000 assessments a month. Don't start it at import time.
+- **App Check** starts on demand (`ensureAppCheck` in `src/lib/firebase/client.ts`): on the
+  auth pages, once a user is signed in, and at load **before `getAuth()`** when the browser had
+  a signed-in session (the `gwa_session_hint` flag that `AuthProvider` keeps). That early start
+  is required: with App Check enforced, Auth's session re-check on load (`accounts:lookup`)
+  fails without a token and Firebase signs the user out. Guests never load reCAPTCHA, whose
+  free tier is 10,000 assessments a month, so don't start it unconditionally at import time.
 - [src/context/auth-provider.tsx](src/context/auth-provider.tsx) exposes
   `{ user, profile, loading }` via `useAuth()`. It subscribes live to `users/{uid}` and calls
   `ensureUserProfile` (idempotent) on sign-in.

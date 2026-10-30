@@ -60,12 +60,36 @@ const app = getFirebaseApp();
 // ── App Check (optional) ───────────────────────────────────────────────────
 // Verifies requests come from this app. Browser-only; no-op without a key.
 //
-// Started on demand, not at import: every reCAPTCHA token exchange counts
-// against the free 10,000-per-month allowance, and guests (most visitors) never
-// call Firebase. AuthProvider starts it once a user is signed in, and the auth
-// pages start it before any sign-in request. Firestore, Functions and Storage
-// pick it up even when it starts after them.
+// Started on demand, not for every visitor: every reCAPTCHA token exchange
+// counts against the free 10,000-per-month allowance, and guests (most
+// visitors) never call Firebase. It starts:
+//   - at load, before Firebase Auth, when this browser had a signed-in session
+//     (the session hint below). Auth re-checks a stored user on every page load
+//     (accounts:lookup), and with App Check enforced that request is rejected
+//     without a token, which makes Firebase sign the user out;
+//   - once a user is signed in (AuthProvider), and on the auth pages.
+// Firestore, Functions and Storage pick it up even when it starts after them.
 export let appCheck: AppCheck | undefined;
+
+const SESSION_HINT_KEY = 'gwa_session_hint';
+
+/** Remembers whether someone is signed in here, so the next load starts App Check early. */
+export function rememberSession(signedIn: boolean): void {
+  try {
+    if (signedIn) localStorage.setItem(SESSION_HINT_KEY, '1');
+    else localStorage.removeItem(SESSION_HINT_KEY);
+  } catch {
+    /* storage unavailable: Auth can't persist the session here either */
+  }
+}
+
+function hadSession(): boolean {
+  try {
+    return localStorage.getItem(SESSION_HINT_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
 
 export function ensureAppCheck(): void {
   if (typeof window === 'undefined') return;
@@ -96,6 +120,9 @@ export function ensureAppCheck(): void {
   }
 }
 
+// Must run before getAuth(): the stored session is re-checked right after Auth
+// initializes, and that request needs the App Check token.
+if (typeof window !== 'undefined' && hadSession()) ensureAppCheck();
 
 export const auth = app ? getAuth(app) : null!;
 export const db = app ? getFirestore(app) : null!;
