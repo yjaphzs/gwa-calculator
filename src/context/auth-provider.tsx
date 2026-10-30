@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 import { onAuthChange, type User } from '@/lib/firebase/auth';
-import { ensureAppCheck } from '@/lib/firebase/client';
+import { ensureAppCheck, rememberSession } from '@/lib/firebase/client';
 import {
   ensureUserProfile,
   userProfileRef,
@@ -56,6 +56,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Tear down the previous user's profile subscription.
       unsubProfileRef.current?.();
       unsubProfileRef.current = null;
+
+      // Lets the next page load start App Check before Auth restores the
+      // session (see client.ts).
+      rememberSession(firebaseUser !== null);
 
       if (firebaseUser) {
         // Signed-in users talk to Firestore and Functions, so start App Check
