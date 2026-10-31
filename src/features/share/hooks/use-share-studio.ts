@@ -49,7 +49,7 @@ export function useShareStudio({ open, preset, subjects, semesters, templateRef 
   const variant = variants[Math.min(options.variant, variants.length - 1)];
   const caption = content ? captionFor(options.mood, options.language, content.result, options.captionIndex) : "";
   const text = content
-    ? buildShareText(content, { appName: APP_NAME, appUrl: APP_URL, caption, showHonor: options.show.honor })
+    ? buildShareText(content, { appName: APP_NAME, appUrl: APP_URL, caption, showHonor: options.show.honor, exact: options.show.exact })
     : "";
   const fileName = content ? imageFileName(content, options.mood) : "gwa-calculator.png";
 

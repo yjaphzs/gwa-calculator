@@ -218,7 +218,9 @@ sync.**
 - **Share images:** `features/share/`. Post (1080×1350) and Story (1080×1920) images in 8
   moods with English/Taglish captions, rendered on the device (`modern-screenshot`, lazy) and
   shared through the Web Share API, or downloaded. Defaults show only the GWA and honor;
-  subjects, grades, name and school are opt-in. Images carry "Unofficial, just for fun", and
+  subjects, grades, name and school are opt-in, and "Exact GWA" off shows `1.**` on the image
+  and in the shared text (`shareGwa`). `lib/share-layout.ts` budgets every block so nothing
+  overflows. Images carry "Unofficial, just for fun", and
   the legal pages describe them (Terms §2/§5, Privacy §2/§9).
 
 ## Printable grade documents

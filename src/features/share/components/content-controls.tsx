@@ -5,16 +5,23 @@ import { OptionChips } from "@/features/share/components/option-chips";
 import { SubjectChecklist } from "@/features/share/components/subject-checklist";
 import type { ShareStudio } from "@/features/share/hooks/use-share-studio";
 import type { ShareShow, SubjectFilter } from "@/features/share/lib/share-options";
+import { shareGwa } from "@/features/share/lib/share-text";
 
 interface Toggle {
   key: keyof ShareShow;
   label: string;
-  hint?: string;
+  hint?: string | ((studio: ShareStudio) => string);
   /** Only offered when it has something to show. */
   when?: (studio: ShareStudio) => boolean;
 }
 
 const TOGGLES: Toggle[] = [
+  {
+    key: "exact",
+    label: "Exact GWA",
+    hint: (s) => `Off shows ${shareGwa(s.content?.gwa ?? 1, false)}`,
+    when: (s) => s.content?.gwa != null,
+  },
   { key: "honor", label: "Honor" },
   { key: "units", label: "Units" },
   { key: "trend", label: "Semester trend", when: (s) => (s.content?.trend.length ?? 0) >= 2 },
@@ -44,7 +51,13 @@ export function ContentControls({ studio }: { studio: ShareStudio }) {
       <fieldset className="flex flex-col">
         <legend className="mb-2 text-sm font-medium text-muted-foreground">Show</legend>
         {TOGGLES.filter((t) => !t.when || t.when(studio)).map((t) => (
-          <SwitchRow key={t.key} label={t.label} hint={t.hint} checked={options.show[t.key]} onToggle={() => toggle(t.key)} />
+          <SwitchRow
+            key={t.key}
+            label={t.label}
+            hint={typeof t.hint === "function" ? t.hint(studio) : t.hint}
+            checked={options.show[t.key]}
+            onToggle={() => toggle(t.key)}
+          />
         ))}
       </fieldset>
 

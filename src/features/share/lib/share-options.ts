@@ -14,6 +14,8 @@ export type CaptionLanguage = "en" | "tl";
 
 /** What appears on the image. Personal details and individual grades are opt-in. */
 export interface ShareShow {
+  /** The GWA's decimals; off shows only the whole number ("1.**"). */
+  exact: boolean;
   honor: boolean;
   units: boolean;
   subjects: boolean;
@@ -42,6 +44,7 @@ export interface ShareOptions {
 }
 
 export const DEFAULT_SHOW: ShareShow = {
+  exact: true,
   honor: true,
   units: false,
   subjects: false,

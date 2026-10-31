@@ -6,16 +6,23 @@ interface ShareTextOptions {
   /** The line printed on the image. */
   caption: string;
   showHonor: boolean;
+  /** The exact GWA, or only its whole number ("1.**"). */
+  exact: boolean;
+}
+
+/** The GWA as shared: exact ("1.438"), or with the decimals hidden ("1.**"). */
+export function shareGwa(gwa: number | null, exact: boolean): string {
+  if (gwa === null) return "N/A";
+  return exact ? gwa.toFixed(3) : `${Math.trunc(gwa)}.**`;
 }
 
 /**
  * The words that go with the image when it's shared: the caption, the result
  * (only what the image shows), and where to calculate your own.
  */
-export function buildShareText(content: ShareContent, { appName, appUrl, caption, showHonor }: ShareTextOptions): string {
-  const gwa = content.gwa === null ? null : content.gwa.toFixed(3);
+export function buildShareText(content: ShareContent, { appName, appUrl, caption, showHonor, exact }: ShareTextOptions): string {
   const honor = showHonor && content.honor ? ` (${content.honor})` : "";
-  const result = gwa ? `${content.heading}: ${gwa}${honor}` : content.heading;
+  const result = content.gwa === null ? content.heading : `${content.heading}: ${shareGwa(content.gwa, exact)}${honor}`;
   return [caption, result, `Compute yours with ${appName}: ${appUrl}`, "#GWA #GWACalculator"].join("\n\n");
 }
 
