@@ -6,7 +6,7 @@ import { MOODS, variantsFor } from "./moods";
 import { availableScopes, buildShareContent } from "./share-content";
 import { templateLayout } from "./share-layout";
 import { chosenSubjects, defaultOptions } from "./share-options";
-import { buildShareText, imageFileName, shareLink } from "./share-text";
+import { buildShareText, imageFileName, shareGwa, shareLink } from "./share-text";
 
 let n = 0;
 const sub = (grade: number, units = 3, extra: Partial<Subject> = {}): Subject => ({
@@ -133,10 +133,20 @@ describe("share text and links", () => {
   const content = buildShareContent({ kind: "current" }, current, [])!;
 
   it("describes only what the image shows", () => {
-    const text = buildShareText(content, { appName: "GWA Calculator", appUrl: "https://gwa.example", caption: "Done.", showHonor: true });
+    const text = buildShareText(content, { appName: "GWA Calculator", appUrl: "https://gwa.example", caption: "Done.", showHonor: true, exact: true });
     expect(text).toContain("My GWA: 1.375 (University Scholar)");
     expect(text).toContain("https://gwa.example");
-    expect(buildShareText(content, { appName: "A", appUrl: "u", caption: "c", showHonor: false })).not.toContain("Scholar");
+    expect(buildShareText(content, { appName: "A", appUrl: "u", caption: "c", showHonor: false, exact: true })).not.toContain("Scholar");
+  });
+
+  it("hides the decimals everywhere when asked", () => {
+    expect(shareGwa(1.375, true)).toBe("1.375");
+    expect(shareGwa(1.375, false)).toBe("1.**");
+    expect(shareGwa(2, false)).toBe("2.**");
+    expect(shareGwa(null, false)).toBe("N/A");
+    const text = buildShareText(content, { appName: "A", appUrl: "u", caption: "c", showHonor: true, exact: false });
+    expect(text).toContain("My GWA: 1.** (University Scholar)");
+    expect(text).not.toContain("375");
   });
 
   it("encodes intent links", () => {

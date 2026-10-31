@@ -29,6 +29,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     changes: [
       { type: "new", text: "Share your GWA as an image for your feed or story, with 8 moods like Proud, Fun, Sad, and Rock." },
       { type: "new", text: "Choose what the image shows: your GWA, honor, units, semester trend, and any of your subjects and grades." },
+      { type: "new", text: "Keep your exact GWA private: hide the decimals and share it as 1.** instead." },
       { type: "new", text: "Share from the Congratulations screen, your GWA card, a saved semester, or your overall result." },
       { type: "new", text: "Captions in English or Taglish, with a Shuffle button for a new line." },
       { type: "new", text: "Color schemes: Amber, Pink, Red, Green, Teal, Blue, Purple, Black, or any color you pick." },

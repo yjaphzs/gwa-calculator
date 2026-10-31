@@ -10,9 +10,8 @@ const MONO = "var(--font-mono)";
 const HERO_EM_PER_CHAR = 0.66;
 const HERO_MAX_WIDTH = 860;
 
-/** The headline number: always monospaced with tabular figures, like the app. */
-export function GwaHero({ gwa, size, variant }: { gwa: number | null; size: number; variant: MoodVariant }) {
-  const text = gwa === null ? "N/A" : gwa.toFixed(3);
+/** The headline number ("1.438", "1.**", or "N/A"): monospaced with tabular figures, like the app. */
+export function GwaHero({ text, size, variant }: { text: string; size: number; variant: MoodVariant }) {
   const fitted = Math.min(size, Math.floor(HERO_MAX_WIDTH / (text.length * HERO_EM_PER_CHAR)));
   return (
     <div style={{ fontFamily: MONO, fontVariantNumeric: "tabular-nums", fontWeight: 800, fontSize: fitted, lineHeight: 1, letterSpacing: "-0.04em", color: variant.accent, whiteSpace: "nowrap" }}>

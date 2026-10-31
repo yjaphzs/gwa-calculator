@@ -70,6 +70,14 @@ Inline pixel styles, the GWA in mono with tabular figures, stickers only in the 
 always the footer "GWA Calculator · host · Unofficial, just for fun". Copy rules apply to the
 captions (`lib/captions.ts`): short, no em dashes, English and Taglish.
 
+- **Sizes:** `lib/share-layout.ts` holds the size table per format (roomy, or compact when
+  subjects or the trend show) and works out how many subject rows fit under everything else;
+  the rest become "+N more". Text uses explicit line heights so the budget holds in every font.
+  The GWA's size is capped by its length, since Martian Mono figures are wide.
+- **Exact GWA:** on by default. Off shows only the whole number (`1.**`), on the image and in
+  the shared text, through `shareGwa` in `lib/share-text.ts`. Never format the shared GWA
+  another way.
+
 ## Typography
 
 These fonts are loaded with `next/font/google` in `src/app/layout.tsx`. The font variables sit

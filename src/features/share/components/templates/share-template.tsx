@@ -6,6 +6,7 @@ import type { Mood, MoodVariant } from "@/features/share/lib/moods";
 import type { ShareContent } from "@/features/share/lib/share-content";
 import { CAPTION_LINE, FOOTER_GAP, LINE, SIDE, WHO, templateLayout } from "@/features/share/lib/share-layout";
 import { FORMAT_SIZE, chosenSubjects, type ShareOptions } from "@/features/share/lib/share-options";
+import { shareGwa } from "@/features/share/lib/share-text";
 
 const FONTS = { sans: "var(--font-sans)", serif: "var(--font-serif)", mono: "var(--font-mono)" };
 
@@ -61,7 +62,7 @@ export function ShareTemplate({ ref, content, options, mood, variant, caption, i
         <div style={{ maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: z.heading, lineHeight: LINE, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: variant.muted }}>
           {content.heading}
         </div>
-        <GwaHero gwa={content.gwa} size={z.hero} variant={variant} />
+        <GwaHero text={shareGwa(content.gwa, options.show.exact)} size={z.hero} variant={variant} />
         {showHonor && <HonorRibbon honor={content.honor!} size={z.ribbon} pad={z.ribbonPad} variant={variant} />}
         {options.show.units && (
           <div style={{ fontSize: z.units, lineHeight: LINE, color: variant.muted }}>{content.units} units</div>
