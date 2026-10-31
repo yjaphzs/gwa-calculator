@@ -1,13 +1,14 @@
 import {
   ArchiveIcon,
   DownloadIcon,
-  FilesIcon,
   FileTextIcon,
+  FilesIcon,
   ImportIcon,
   QrCodeIcon,
   RotateCcw,
   SaveAllIcon,
   SaveIcon,
+  Share2Icon,
 } from "lucide-react";
 
 import type { MenuGroup, MenuItem } from "@/components/shared/menu-types";
@@ -58,6 +59,11 @@ export function buildSubjectMenuGroups({
       items: [
         { kind: "action", id: "save-semester", label: "Save as semester", icon: ArchiveIcon, onSelect: actions.onSaveSemester },
       ],
+    },
+    {
+      id: "share",
+      label: heading("Share"),
+      items: [{ kind: "action", id: "share", label: "Share image", icon: Share2Icon, onSelect: () => actions.onShare() }],
     },
     { id: "transfer", label: heading("Move your data"), items: transfer },
     { id: "reports", label: heading("Print or save as PDF"), items: reports },

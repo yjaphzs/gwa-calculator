@@ -1,12 +1,11 @@
 import { displayHost, escapeHtml } from "@/features/reports/lib/format";
-import { PRINT } from "@/features/reports/lib/theme";
 
 // The app's calculator mark (Lucide "calculator") in amber on a dark tile —
 // inline SVG so the print never waits on an image request.
 const LOGO_SVG = `
 <svg viewBox="0 0 32 32" aria-hidden="true">
   <rect width="32" height="32" rx="7" fill="#27272a" />
-  <g transform="translate(4 4)" fill="none" stroke="${PRINT.amber}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <g transform="translate(4 4)" fill="none" style="stroke: var(--report-mark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <rect width="16" height="20" x="4" y="2" rx="2" />
     <line x1="8" x2="16" y1="6" y2="6" />
     <line x1="16" x2="16" y1="14" y2="18" />

@@ -8,11 +8,14 @@ Tailwind utilities (`bg-primary`, `text-muted-foreground`, …).
 ## Brand
 
 - **Primary: amber**, `oklch(0.812 0.165 78.2)` (≈ `#FBB217`). Text on primary is black, in
-  both themes.
-- **Everything else is neutral grayscale.** Amber is the only hue, so use it sparingly for
-  primary actions, focus, highlights and the GWA accent.
-- **Logo:** an amber line-art calculator on black (`src/assets/images/gwa-calculator.jpg`,
-  100×100).
+  both themes. This is the default color scheme; users can pick another (see "Color schemes").
+- **Everything else is neutral grayscale.** The accent is the only hue, so use it sparingly for
+  primary actions, focus, highlights and the GWA accent. Always use the tokens (`bg-primary`,
+  `text-primary`, `var(--chart-line)`), never a fixed amber, so every scheme works.
+- **Logo:** a line-art calculator on a black tile, drawn as SVG in
+  `components/layout/brand-mark.tsx` with `--logo-tile` and `--logo-mark`, so it follows the
+  scheme. The original artwork (`src/assets/images/gwa-calculator.jpg`) and the PNG app icons
+  stay amber.
 
 | Token | Light | Dark |
 |---|---|---|
@@ -38,6 +41,34 @@ colors:
 
 Show honors only through `HonorBadge`. Its `compact` prop shows just the medal on phones while
 keeping the name available to screen readers.
+
+## Color schemes
+
+`src/features/appearance/` lets users pick **Amber** (default), **Pink**, **Red**, **Green**,
+**Teal**, **Blue**, **Purple**, **Black**, or a **custom** accent, in light, dark, or system mode.
+
+- **Only the accent changes.** A scheme overrides `--primary`, `--primary-foreground`,
+  `--sidebar-primary(-foreground)`, `--chart-line`, `--chart-1 … 5`, `--logo-tile` and
+  `--logo-mark`. Surfaces, text, destructive and semantic colors stay the same.
+- **Honors stay gold** in every scheme: the `--honor*` tokens are the achievement color.
+- **Derived, never hand-tuned:** `lib/derive-scheme.ts` computes each mode from one seed color
+  and guarantees WCAG AA: button text ≥ 4.5:1 on the accent (white preferred in light mode when
+  the color only needs a small darkening, black otherwise), the trend line ≥ 3:1 on the page,
+  and a visible logo (when the accent is too dark for the black tile, tile and glyph swap).
+  Tests check every preset and a spread of custom colors.
+- **No flash:** an inline script in `<head>` restores the saved scheme's stylesheet before the
+  first paint (`lib/scheme-script.ts`); next-themes does the same for `.dark`.
+- **Saved** on the device, and on the signed-in user's profile (`appearance`) so other devices
+  match. The browser-tab favicon is recolored too; PNG app icons can't be.
+- **Printed reports** use the scheme's light-mode shades on paper (`reports/lib/palette.ts`).
+
+## Share images
+
+`src/features/share/` renders a 1080×1350 (post) or 1080×1920 (story) image from one template
+(`components/templates/`) in one of eight moods, each with color variants plus "My theme".
+Inline pixel styles, the GWA in mono with tabular figures, stickers only in the top band, and
+always the footer "GWA Calculator · host · Unofficial, just for fun". Copy rules apply to the
+captions (`lib/captions.ts`): short, no em dashes, English and Taglish.
 
 ## Typography
 
@@ -106,7 +137,9 @@ Printable reports (`src/features/reports/`) and transactional emails
 
 - **Header band:** a dark `zinc-900` band (`#18181b`) with the logomark and app name, an amber
   dot accent, and white text.
-- **Accent:** a 4 px amber stripe (`#eab308`) under the header.
+- **Accent:** a 4 px amber stripe (`#eab308`) under the header. In reports the accent, stripe,
+  trend ink and logo glyph follow the user's color scheme (`--report-*` variables); emails stay
+  amber.
 - **Surfaces:** white paper with `zinc-50` (`#fafafa`) callouts and panels, and `zinc-200`
   (`#e4e4e7`) hairlines.
 - **Ink:** `zinc-900` for body text, `zinc-500` for labels and captions.

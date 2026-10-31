@@ -30,7 +30,13 @@ interface CurrentPanelProps {
 export function CurrentPanel({ subjects, gwa, honor, totalUnits, onEdit, onDelete, ...toolbar }: CurrentPanelProps) {
   return (
     <>
-      <GwaSummary subjects={subjects} gwa={gwa} honor={honor} totalUnits={totalUnits} />
+      <GwaSummary
+        subjects={subjects}
+        gwa={gwa}
+        honor={honor}
+        totalUnits={totalUnits}
+        onShare={() => toolbar.actions.onShare()}
+      />
       {/* Bottom padding on phones keeps the last row clear of the floating Add button. */}
       <div className="mt-8 flex flex-col gap-4 pb-16 md:pb-0">
         <SubjectsToolbar

@@ -37,6 +37,20 @@ export interface CalculatorState {
 /** Whether a curated school is a full university or a standalone college. */
 export type SchoolType = "university" | "college";
 
+/** Light, dark, or follow the device. */
+export type ThemeMode = "light" | "dark" | "system";
+
+/**
+ * Saved look (synced across the user's devices). `scheme` is a preset id from
+ * features/appearance/lib/schemes.ts or "custom" with an `accent` "#rrggbb".
+ * Optional keys are left out when unset (Firestore rejects `undefined`).
+ */
+export interface AppearancePreference {
+    scheme: string;
+    accent?: string;
+    mode?: ThemeMode;
+}
+
 /** Profile document stored at `users/{uid}`. */
 export interface UserProfile {
     uid: string;
@@ -50,6 +64,8 @@ export interface UserProfile {
     schoolType?: SchoolType | null;
     /** Optional free-text college/program within the school (e.g. "College of Engineering"). */
     program?: string | null;
+    /** Color scheme and light/dark choice; see AppearancePreference. */
+    appearance?: AppearancePreference | null;
     createdAt: Timestamp | FieldValue;
     updatedAt?: Timestamp | FieldValue;
 }

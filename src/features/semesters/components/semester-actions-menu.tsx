@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FileTextIcon, MoreHorizontalIcon, Pencil, Trash } from "lucide-react";
+import { FileTextIcon, MoreHorizontalIcon, Pencil, Share2Icon, Trash } from "lucide-react";
 
 import type { MenuGroup } from "@/components/shared/menu-types";
 import { ResponsiveMenu } from "@/components/shared/responsive-menu";
@@ -23,12 +23,13 @@ import type { Semester } from "@/types";
 interface SemesterActionsMenuProps {
   semester: Semester;
   onReport: (semester: Semester) => void;
+  onShare: (semester: Semester) => void;
   onEdit: (semester: Semester) => void;
   onDelete: (semester: Semester) => void;
 }
 
-/** Per-semester "⋯" menu (a sheet on phones): Semester Report, Edit, Delete with confirmation. */
-export function SemesterActionsMenu({ semester, onReport, onEdit, onDelete }: SemesterActionsMenuProps) {
+/** Per-semester "⋯" menu (a sheet on phones): Semester Report, Share, Edit, Delete with confirmation. */
+export function SemesterActionsMenu({ semester, onReport, onShare, onEdit, onDelete }: SemesterActionsMenuProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const groups: MenuGroup[] = [
@@ -36,6 +37,7 @@ export function SemesterActionsMenu({ semester, onReport, onEdit, onDelete }: Se
       id: "semester",
       items: [
         { kind: "action", id: "report", label: "Semester Report", icon: FileTextIcon, onSelect: () => onReport(semester) },
+        { kind: "action", id: "share", label: "Share image", icon: Share2Icon, onSelect: () => onShare(semester) },
         { kind: "action", id: "edit", label: "Edit", icon: Pencil, onSelect: () => onEdit(semester) },
       ],
     },

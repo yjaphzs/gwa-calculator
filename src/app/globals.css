@@ -66,6 +66,10 @@
   --honor-foreground: oklch(0.414 0.112 45.904);
   --honor-border: oklch(0.879 0.169 91.605);
   --chart-line: oklch(0.555 0.163 48.998);
+  /* The logo (components/layout/brand-mark.tsx): accent glyph on a black tile.
+     Color schemes override these when the accent is too dark for black. */
+  --logo-tile: oklch(0 0 0);
+  --logo-mark: var(--primary);
   --status-new: oklch(0.696 0.17 162.48);
   --status-improved: oklch(0.685 0.169 237.323);
   --status-fixed: oklch(0.552 0.016 285.938);

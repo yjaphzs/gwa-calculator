@@ -1,4 +1,5 @@
 import type { StatTile } from "@/features/reports/lib/blocks/summary";
+import type { ReportPalette } from "@/features/reports/lib/theme";
 import { HONOR_MIN_UNITS } from "@/lib/academic";
 
 /** Who and what the document is for. Every personal field is optional (guests have none). */
@@ -9,6 +10,8 @@ export interface ReportIdentity {
   studentName?: string | null;
   schoolName?: string | null;
   program?: string | null;
+  /** Brand colors from the user's color scheme; amber when omitted. */
+  palette?: ReportPalette;
 }
 
 export interface BuiltDocument {

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { BrandLogo } from "@/components/layout/brand-logo";
 import { SiteFooter } from "@/components/layout/site-footer";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { AppearanceButton } from "@/features/appearance/components/appearance-button";
 import { AppCheckActivator } from "@/features/auth/components/app-check-activator";
 import { AuthBanner } from "@/features/auth/components/auth-banner";
 
@@ -20,7 +20,7 @@ export function AuthSplitLayout({
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex items-center justify-between">
           <BrandLogo />
-          <ThemeToggle />
+          <AppearanceButton />
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className={contentClassName}>{children}</div>

@@ -6,6 +6,7 @@ import type { Semester, Subject } from "@/types";
 
 export interface SemesterCardActions {
   onReport: (semester: Semester) => void;
+  onShare: (semester: Semester) => void;
   onEdit: (semester: Semester) => void;
   onDelete: (semester: Semester) => void;
   /** Edit one subject of this saved semester (grade, status, units). */
@@ -34,6 +35,7 @@ export function SemesterCard({ semester, expanded, onToggle, actions }: Semester
           <SemesterActionsMenu
             semester={semester}
             onReport={actions.onReport}
+            onShare={actions.onShare}
             onEdit={actions.onEdit}
             onDelete={actions.onDelete}
           />

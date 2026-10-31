@@ -6,6 +6,8 @@ import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/context/auth-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { ServiceWorkerCleanup } from "@/components/shared/service-worker-cleanup";
+import { AppearanceSync } from "@/features/appearance/components/appearance-sync";
+import { SCHEME_SCRIPT } from "@/features/appearance/lib/scheme-script";
 
 const fontSans = Roboto({
   subsets: ["latin"],
@@ -88,6 +90,10 @@ export default function RootLayout({
       className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        {/* Restores a saved color scheme before the first paint (no amber flash). */}
+        <script dangerouslySetInnerHTML={{ __html: SCHEME_SCRIPT }} />
+      </head>
       <body className="antialiased">
         <ServiceWorkerCleanup />
         <NextTopLoader
@@ -102,7 +108,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <AppearanceSync />
+            {children}
+          </AuthProvider>
           <Toaster
             offset={{ bottom: "var(--toast-bottom)" }}
             mobileOffset={{ bottom: "var(--toast-bottom)" }}

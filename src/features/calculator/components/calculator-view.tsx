@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 
 import { SiteFooter } from "@/components/layout/site-footer";
 import { AppShell } from "@/components/layout/app-shell";
@@ -16,6 +17,7 @@ import { useCalculatorData } from "@/features/persistence/hooks/use-calculator-d
 import { useReportActions } from "@/features/reports/hooks/use-report-actions";
 import { SemesterEditorDialog } from "@/features/semesters/components/semester-editor-dialog";
 import { SemestersPanel } from "@/features/semesters/components/semesters-panel";
+import { useShareDialog } from "@/features/share/hooks/use-share-dialog";
 import { useSavedSubjectEditor } from "@/features/semesters/hooks/use-saved-subject-editor";
 import { useSemesterActions } from "@/features/semesters/hooks/use-semester-actions";
 import { formatTermLabel } from "@/features/semesters/lib/semesters";
@@ -25,6 +27,9 @@ import { useEditorDialog } from "@/hooks/use-editor-dialog";
 import { useFocusShortcut } from "@/hooks/use-focus-shortcut";
 import { computeGwa, getHonorFor } from "@/lib/academic";
 import type { Semester, Subject } from "@/types";
+
+// The share studio (templates, image rendering) loads the first time Share is used.
+const ShareStudio = dynamic(() => import("@/features/share/components/share-studio"), { ssr: false });
 
 /** The calculator page: Current and Semesters tabs, plus the dialogs they open. */
 export function CalculatorView() {
@@ -50,6 +55,7 @@ export function CalculatorView() {
   const semesterActions = useSemesterActions(data);
   const transfer = useFileTransfer({ state: { subjects, semesters, autosave }, replaceAll: data.replaceAll });
   const reports = useReportActions(subjects, semesters);
+  const share = useShareDialog();
 
   const toggleSemester = useCallback(
     (id: string) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] })),
@@ -92,6 +98,7 @@ export function CalculatorView() {
                     onSemesterReport: reports.printWorkingSet,
                     onAcademicSummary: reports.printSummary,
                     onSave: subjectActions.saveNow,
+                    onShare: (preset) => share.openShare({ ...preset, scope: { kind: "current" } }),
                   }}
                 />
               </TabsContent>
@@ -101,10 +108,12 @@ export function CalculatorView() {
                   expanded={expanded}
                   onToggle={toggleSemester}
                   onAcademicSummary={reports.printSummary}
+                  onShareOverall={() => share.openShare({ scope: { kind: "overall" } })}
                   onSaveCurrent={semesterEditor.openCreate}
                   hasCurrentSubjects={subjects.length > 0}
                   actions={{
                     onReport: reports.printSemester,
+                    onShare: (semester) => share.openShare({ scope: { kind: "semester", id: semester.id } }),
                     onEdit: semesterEditor.openEdit,
                     onDelete: semesterActions.deleteSemester,
                     onEditSubject: savedSubject.openEdit,
@@ -149,6 +158,15 @@ export function CalculatorView() {
         autosave={autosave}
         onImport={transfer.handleQrImport}
       />
+      {share.used && (
+        <ShareStudio
+          open={share.open}
+          onOpenChange={share.setOpen}
+          preset={share.preset}
+          subjects={subjects}
+          semesters={semesters}
+        />
+      )}
       <MergeDialog conflict={data.pendingMerge} onResolve={data.resolveMerge} />
     </AppShell>
   );

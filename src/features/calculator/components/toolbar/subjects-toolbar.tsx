@@ -6,6 +6,7 @@ import { ArchiveIcon, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { GwaCelebrationDialog } from "@/features/calculator/components/toolbar/gwa-celebration-dialog";
+import type { ShareOptions } from "@/features/share/lib/share-options";
 import { ResetSubjectsDialog } from "@/features/calculator/components/toolbar/reset-subjects-dialog";
 import { SubjectsEmptyState } from "@/features/calculator/components/toolbar/subjects-empty-state";
 import { SubjectsMoreMenu } from "@/features/calculator/components/toolbar/subjects-more-menu";
@@ -23,6 +24,8 @@ export interface SubjectsToolbarActions {
   onSemesterReport: () => void;
   onAcademicSummary: () => void;
   onSave: () => void;
+  /** Opens the share studio; the celebration presets a mood. */
+  onShare: (preset?: Partial<ShareOptions>) => void;
 }
 
 interface SubjectsToolbarProps {
@@ -69,17 +72,25 @@ export function SubjectsToolbar({
   return (
     <>
       {/*
-        Desktop: celebration + button row. Phones only show this row when the
-        celebration button is present; Add is the floating button and the rest
-        lives in the "⋯" sheet beside search.
+        Desktop: celebration + button row. Phones only show this row when it has
+        something marked data-phone-row (Save as semester, the celebration);
+        Add is the floating button and the rest lives in the "⋯" sheet.
       */}
-      <div className="hidden w-full flex-wrap items-center justify-end gap-2 has-data-celebration:flex md:flex">
+      <div className="hidden w-full flex-wrap items-center justify-end gap-2 has-data-phone-row:flex md:flex">
+        {totalUnits >= HONOR_MIN_UNITS && (
+          // Phones only: the desktop button group below is hidden there.
+          <Button variant="outline" className="h-10 md:hidden" data-phone-row onClick={actions.onSaveSemester}>
+            <ArchiveIcon className="size-4" />
+            Save as semester
+          </Button>
+        )}
         <GwaCelebrationDialog
           gwa={gwa}
           honor={honor}
           totalUnits={totalUnits}
           open={celebration.open}
           onOpenChange={celebration.onOpenChange}
+          onShare={() => actions.onShare({ mood: honor ? "proud" : "chill" })}
         />
         <ButtonGroup className="hidden md:flex">
           {totalUnits >= HONOR_MIN_UNITS && (

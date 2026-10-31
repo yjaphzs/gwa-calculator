@@ -23,6 +23,21 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "2.6.0",
+    date: "October 31, 2026",
+    title: "Share and make it yours",
+    changes: [
+      { type: "new", text: "Share your GWA as an image for your feed or story, with 8 moods like Proud, Fun, Sad, and Rock." },
+      { type: "new", text: "Choose what the image shows: your GWA, honor, units, semester trend, and any of your subjects and grades." },
+      { type: "new", text: "Share from the Congratulations screen, your GWA card, a saved semester, or your overall result." },
+      { type: "new", text: "Captions in English or Taglish, with a Shuffle button for a new line." },
+      { type: "new", text: "Color schemes: Amber, Pink, Red, Green, Teal, Blue, Purple, Black, or any color you pick." },
+      { type: "new", text: "Every color scheme works in light and dark mode, and you can follow your device's setting again." },
+      { type: "improved", text: "The logo, browser tab icon, and printed reports follow your color scheme." },
+      { type: "improved", text: "When you're signed in, your color scheme and mode follow you to your other devices." },
+    ],
+  },
+  {
     version: "2.5.0",
     date: "October 30, 2026",
     title: "Made for phones",

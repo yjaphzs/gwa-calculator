@@ -27,6 +27,8 @@ src/
 │  ├─ persistence/            useCalculatorData + guest/cloud stores, merge dialog
 │  ├─ transfer/               JSON import/export, QR transfer (codec in lib/qr-frames.ts)
 │  ├─ reports/                printable Semester Report / Academic Summary (lib/ builds HTML)
+│  ├─ share/                  share images: studio dialog, templates, moods/captions, render + share
+│  ├─ appearance/             color schemes + mode: dialog, derivation, store, pre-paint script
 │  ├─ guide/                  the how-to-compute guide: content/ data + sections + try-it widget
 │  ├─ leaderboard/            boards, school picker, settings subscription
 │  ├─ account/                profile, security cards, leaderboard opt-in settings
@@ -34,7 +36,7 @@ src/
 │  └─ changelog/              "What's new" dialog
 ├─ components/
 │  ├─ ui/                     shadcn primitives (generated)
-│  ├─ layout/                 site header/footer, subpage header, content layout, brand, theme toggle
+│  ├─ layout/                 site header/footer, subpage header, content layout, brand + mark
 │  └─ shared/                 form-dialog, form-select-field, paginator, pagination-summary, …
 ├─ hooks/                     generic hooks (local storage, latest ref, editor dialog, focus shortcut, …)
 ├─ lib/                       academic.ts (GWA + honors), pagination, initials, firebase/
@@ -84,6 +86,25 @@ The calculator, semester tiles, reports and the guide page all read from it.
 and prints it through a hidden iframe. Blocks (`blocks/`) are composed by `documents/`; the
 public API is `printSemesterReport` and `printAcademicSummary` in `index.ts`. The rules
 (disclaimer, naming, legal-page sync, print CSS) are in `.claude/skills/printable-reports`.
+Their brand colors follow the user's color scheme (`lib/palette.ts`, `--report-*` variables).
+
+## Share images
+
+`features/share` builds a `ShareContent` from one scope (the working set, a saved semester, or
+all semesters, with `getHonorFor` / `getLatinHonorFor`), applies the user's options (format,
+mood, what to show, subject filter), and renders the template to a PNG on the device with
+`modern-screenshot` (loaded on first use). Sharing uses the Web Share API with the file (the
+phone's share sheet reaches Instagram, Facebook, X…); otherwise the image downloads. Site
+links (X, Threads, Facebook) carry the caption and app link only. The studio opens from the
+Congratulations dialog, the GWA card, the subjects menu, a semester's menu, and "Share overall".
+
+## Appearance
+
+`features/appearance` keeps the color scheme in a small store (`lib/scheme-store.ts`): it sets
+`data-scheme` and the scheme's stylesheet on `<html>`, saves to localStorage, and an inline
+script in the root layout restores both before paint. `AppearanceSync` (in the root layout)
+applies the signed-in profile's `appearance` and adopts the device's choice for accounts that
+have none. Firestore rules validate the field (scheme list, hex accent, mode).
 
 ## Firebase
 

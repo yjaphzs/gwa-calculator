@@ -1,4 +1,4 @@
-import { ArchiveIcon, FilesIcon } from "lucide-react";
+import { ArchiveIcon, FilesIcon, Share2Icon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +21,8 @@ interface SemestersPanelProps {
   onToggle: (id: string) => void;
   actions: SemesterCardActions;
   onAcademicSummary: () => void;
+  /** Opens the share studio on the overall (cumulative) result. */
+  onShareOverall: () => void;
   /** Opens the save-semester form for the working subjects. */
   onSaveCurrent: () => void;
   hasCurrentSubjects: boolean;
@@ -33,6 +35,7 @@ export function SemestersPanel({
   onToggle,
   actions,
   onAcademicSummary,
+  onShareOverall,
   onSaveCurrent,
   hasCurrentSubjects,
 }: SemestersPanelProps) {
@@ -64,8 +67,12 @@ export function SemestersPanel({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
-        <Button variant="outline" size="sm" onClick={onAcademicSummary}>
+      <div className="flex justify-end gap-2">
+        <Button variant="outline" size="sm" className="max-md:h-10" onClick={onShareOverall}>
+          <Share2Icon className="size-4" />
+          Share overall
+        </Button>
+        <Button variant="outline" size="sm" className="max-md:h-10" onClick={onAcademicSummary}>
           <FilesIcon className="size-4" />
           Academic Summary
         </Button>

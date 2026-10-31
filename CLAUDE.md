@@ -84,8 +84,8 @@ enabled in `.claude/settings.json`, and the shadcn MCP server is configured in `
 - `src/app/` holds **routes only**: thin `page.tsx` / `layout.tsx` files that compose feature
   components.
 - Feature code lives in `src/features/<feature>/{components,hooks,lib}`. The features are:
-  `calculator`, `semesters`, `persistence`, `transfer`, `reports`, `guide`, `leaderboard`,
-  `account`, `auth`, `changelog`.
+  `calculator`, `semesters`, `persistence`, `transfer`, `reports`, `share`, `appearance`,
+  `guide`, `leaderboard`, `account`, `auth`, `changelog`.
 - Shared UI lives in `src/components/{ui,layout,shared}`.
 - Generic hooks go in `src/hooks/`, and cross-feature logic in `src/lib/`.
 - The full map is in [docs/architecture.md](docs/architecture.md).
@@ -143,7 +143,8 @@ and have unit tests. **Read the `calculator-persistence` skill before changing a
 - `computeGwa`: Σ(grade × units) ÷ Σ units, rounded to 3 decimals, over subjects that
   `countsTowardGwa`. A subject is skipped when it is `excluded` (e.g. NSTP) or carries a `mark`
   (INC / DRP / W / IP, where IP means in progress); its units don't count either
-- `getHonorFor`, which applies the `HONOR_MIN_UNITS = 12` gate
+- `getHonorFor`, which applies the `HONOR_MIN_UNITS = 12` gate, and `getLatinHonorFor` (the same
+  gate, Latin honors, for cumulative results only)
 - the band tables `ACADEMIC_HONOR_BANDS` and `LATIN_HONOR_BANDS`
 - `GRADE_OPTIONS` and `UNIT_OPTIONS`
 
@@ -174,7 +175,7 @@ sync.**
 
 | Path | Contents |
 |---|---|
-| `users/{uid}` | Profile: `email`, `displayName`, `photoURL`, optional `schoolId` / `schoolName` / `schoolType` / `program`, timestamps |
+| `users/{uid}` | Profile: `email`, `displayName`, `photoURL`, optional `schoolId` / `schoolName` / `schoolType` / `program` / `appearance` (`{ scheme, accent?, mode? }`, validated by the rules), timestamps |
 | `users/{uid}/calculator/state` | The synced `CalculatorState` ([src/types/index.ts](src/types/index.ts)). A `Subject` may carry optional `excluded` / `mark`; omit these keys when unset, since Firestore rejects `undefined` (see `buildSubject`) |
 | `users/{uid}/leaderboard/settings` | Opt-in and handle. Server-written, owner-readable |
 | `leaderboard/*`, `leaderboardSemesters/*` | Published board entries (server-written) |
@@ -208,6 +209,17 @@ sync.**
   `lib/calculator-io.ts`.
 - **Profile photo:** cropped and compressed client-side, stored in Cloud Storage
   (`storage.rules`).
+- **Color schemes:** `features/appearance/`. Presets (Amber default, Pink, Red, Green, Teal,
+  Blue, Purple, Black) or a custom accent, in light/dark/system. Only accent tokens change, and
+  `lib/derive-scheme.ts` derives them with WCAG checks; honors stay gold. An inline `<head>`
+  script restores the scheme before paint; signed-in users' choice syncs via the profile.
+  Never hard-code amber in new UI: use `primary` / `--chart-line` tokens. The scheme ids in
+  `firestore.rules` must match `SCHEME_IDS` (a test checks it).
+- **Share images:** `features/share/`. Post (1080×1350) and Story (1080×1920) images in 8
+  moods with English/Taglish captions, rendered on the device (`modern-screenshot`, lazy) and
+  shared through the Web Share API, or downloaded. Defaults show only the GWA and honor;
+  subjects, grades, name and school are opt-in. Images carry "Unofficial, just for fun", and
+  the legal pages describe them (Terms §2/§5, Privacy §2/§9).
 
 ## Printable grade documents
 
@@ -226,6 +238,8 @@ How they're built:
 - The public API is `printSemesterReport` / `printAcademicSummary`, called from
   `features/reports/hooks/use-report-actions.ts`.
 - The documents show the signed-in user's name, school, and program when set.
+- Their accent, stripe, trend ink and logo glyph follow the user's color scheme
+  (`lib/palette.ts` → `--report-*` CSS variables, hex only).
 
 **These are personal-reference copies only, not official records.** Every document renders the
 disclaimer and "Personal copy" marks, and the wording matches the legal pages: Terms §2 and §5,

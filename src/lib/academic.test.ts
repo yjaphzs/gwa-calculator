@@ -7,6 +7,7 @@ import {
   getAcademicHonor,
   getHonorFor,
   getLatinHonor,
+  getLatinHonorFor,
 } from "@/lib/academic";
 
 describe("computeGwa", () => {
@@ -93,5 +94,23 @@ describe("getHonorFor", () => {
 
   it("returns null without subjects", () => {
     expect(getHonorFor([])).toBeNull();
+  });
+});
+
+describe("getLatinHonorFor", () => {
+  it("applies the units gate to the cumulative standing", () => {
+    expect(getLatinHonorFor([{ grade: 1.0, units: 11 }])).toBeNull();
+    expect(getLatinHonorFor([{ grade: 1.25, units: 12 }])).toBe("Magna Cum Laude");
+    expect(getLatinHonorFor([])).toBeNull();
+  });
+
+  it("weights by units across every subject and skips uncounted ones", () => {
+    const subjects = [
+      { grade: 1.0, units: 9 },
+      { grade: 2.0, units: 3 },
+      { grade: 5.0, units: 3, excluded: true },
+    ];
+    // (9 + 6) / 12 = 1.25
+    expect(getLatinHonorFor(subjects)).toBe("Magna Cum Laude");
   });
 });

@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { Share2Icon } from "lucide-react";
 
 import { HonorBadge } from "@/components/shared/honor-badge";
+import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/ui/shadcn-io/copy-button";
 import { countsTowardGwa } from "@/lib/academic";
 import { describeHonorProgress, honorProgress } from "@/lib/gwa-insights";
@@ -11,12 +13,14 @@ interface GwaSummaryProps {
   gwa: number | null;
   honor: string | null;
   totalUnits: number;
+  /** Opens the share studio for this result. */
+  onShare?: () => void;
 }
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
 /** The working set's GWA: readout, what it counts, honor, and how close the next band is. */
-export function GwaSummary({ subjects, gwa, honor, totalUnits }: GwaSummaryProps) {
+export function GwaSummary({ subjects, gwa, honor, totalUnits, onShare }: GwaSummaryProps) {
   const display = gwa !== null ? gwa.toFixed(3) : "0.000";
   const counted = subjects.filter(countsTowardGwa).length;
   const notCounted = subjects.length - counted;
@@ -37,7 +41,14 @@ export function GwaSummary({ subjects, gwa, honor, totalUnits }: GwaSummaryProps
             {notCounted > 0 && `, plus ${notCounted} not counted`}
           </p>
         </div>
-        {honor && <HonorBadge honor={honor} />}
+        <div className="flex shrink-0 items-center gap-2">
+          {honor && <HonorBadge honor={honor} />}
+          {onShare && gwa !== null && (
+            <Button variant="ghost" size="icon" className="max-md:size-10" aria-label="Share your GWA" onClick={onShare}>
+              <Share2Icon />
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="flex items-center justify-between gap-4">

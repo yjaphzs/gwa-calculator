@@ -17,7 +17,7 @@ import {
 import { formatDate, formatGwa, formatUnits } from "@/features/reports/lib/format";
 import { renderDocument } from "@/features/reports/lib/render-document";
 import { formatTermLabel, shortTermLabel, sortOldestFirst } from "@/features/semesters/lib/semesters";
-import { HONOR_MIN_UNITS, computeGwa, countsTowardGwa, getHonorFor, getLatinHonor } from "@/lib/academic";
+import { computeGwa, countsTowardGwa, getHonorFor, getLatinHonorFor } from "@/lib/academic";
 import type { Semester } from "@/types";
 
 export interface AcademicSummaryOptions extends ReportIdentity {
@@ -40,10 +40,9 @@ export function buildAcademicSummary(opts: AcademicSummaryOptions, now = new Dat
 
   const allSubjects = ordered.flatMap((s) => s.subjects);
   const cumulative = computeGwa(allSubjects);
-  // Latin (graduation) honors for the cumulative standing — distinct from the
+  // Latin (graduation) honors for the cumulative standing, distinct from the
   // per-semester scholarship honors.
-  const latin =
-    cumulative.gwa !== null && cumulative.totalUnits >= HONOR_MIN_UNITS ? getLatinHonor(cumulative.gwa) : null;
+  const latin = getLatinHonorFor(allSubjects);
   const generatedOn = formatDate(now);
 
   const sections = terms
@@ -88,5 +87,5 @@ export function buildAcademicSummary(opts: AcademicSummaryOptions, now = new Dat
   ].join("");
 
   const title = "Academic Summary";
-  return { title, html: renderDocument({ title, body, footer: renderRunningFooter(appName, appUrl) }) };
+  return { title, html: renderDocument({ title, body, footer: renderRunningFooter(appName, appUrl), palette: opts.palette }) };
 }

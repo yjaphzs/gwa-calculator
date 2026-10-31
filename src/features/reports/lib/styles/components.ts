@@ -9,7 +9,7 @@ export const COMPONENT_STYLES = `
 .chip { border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 999px; padding: 2px 10px; font-size: 7.5pt; color: #e4e4e7; white-space: nowrap; }
 .doc-title { margin: 14px 0 0; font-size: 21pt; font-weight: 800; line-height: 1.15; letter-spacing: -0.01em; }
 .doc-subtitle { margin: 4px 0 0; font-size: 10.5pt; color: #d4d4d8; }
-.stripe { height: 4px; background: ${PRINT.stripe}; border-radius: 0 0 4px 4px; }
+.stripe { height: 4px; background: var(--report-stripe); border-radius: 0 0 4px 4px; }
 
 .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px 20px; margin: 16px 0 0; }
 .meta dt { margin: 0; font-size: 7.5pt; color: ${PRINT.muted}; }
@@ -17,7 +17,7 @@ export const COMPONENT_STYLES = `
 
 .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
 .tile { border: 1px solid ${PRINT.hairline}; border-radius: 8px; background: ${PRINT.panel}; padding: 10px 12px; }
-.tile--hero { border-color: ${PRINT.amber}; box-shadow: inset 0 3px 0 ${PRINT.amber}; }
+.tile--hero { border-color: var(--report-accent); box-shadow: inset 0 3px 0 var(--report-accent); }
 .tile-label { font-size: 7.5pt; color: ${PRINT.muted}; }
 .tile-value { margin-top: 2px; font-size: 15pt; font-weight: 700; line-height: 1.2; }
 .tile--hero .tile-value { font-size: 20pt; }
@@ -41,7 +41,7 @@ export const COMPONENT_STYLES = `
 
 .honor { display: inline-block; padding: 1px 8px; border: 1px solid #fcd34d; border-radius: 999px; background: #fef3c7; color: #78350f; font-size: 7.5pt; font-weight: 600; white-space: nowrap; }
 
-.panel { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 24px; padding: 14px 16px; border: 1px solid ${PRINT.hairline}; border-left: 4px solid ${PRINT.amber}; border-radius: 8px; background: ${PRINT.panel}; }
+.panel { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 24px; padding: 14px 16px; border: 1px solid ${PRINT.hairline}; border-left: 4px solid var(--report-accent); border-radius: 8px; background: ${PRINT.panel}; }
 .panel-title { margin: 0; font-size: 12pt; font-weight: 700; }
 .panel-text { margin: 2px 0 0; font-size: 8.5pt; color: ${PRINT.muted}; }
 .panel-figure { text-align: right; }

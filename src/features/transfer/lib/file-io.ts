@@ -1,6 +1,10 @@
 /** Trigger a browser download of `data` as pretty-printed JSON. */
 export function downloadJson(data: unknown, filename: string): void {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  downloadBlob(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }), filename);
+}
+
+/** Trigger a browser download of any file (JSON backups, share images). */
+export function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
 
   const link = document.createElement("a");

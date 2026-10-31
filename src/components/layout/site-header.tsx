@@ -1,7 +1,7 @@
 import { AccountMenu } from "@/components/layout/account-menu";
 import { BrandLogo } from "@/components/layout/brand-logo";
 import { MainNav } from "@/components/layout/main-nav";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { AppearanceButton } from "@/features/appearance/components/appearance-button";
 import { WhatsNewButton } from "@/features/changelog/components/whats-new";
 
 /**
@@ -18,7 +18,7 @@ export function SiteHeader() {
         <MainNav variant="inline" />
         <div className="flex items-center gap-1 justify-self-end">
           <WhatsNewButton />
-          <ThemeToggle />
+          <AppearanceButton />
           <AccountMenu />
         </div>
       </div>
