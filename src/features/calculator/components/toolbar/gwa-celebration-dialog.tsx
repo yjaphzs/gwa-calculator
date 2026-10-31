@@ -1,6 +1,6 @@
 "use client";
 
-import { HeartIcon, PartyPopper } from "lucide-react";
+import { HeartIcon, PartyPopper, Share2Icon } from "lucide-react";
 
 import {
   AlertDialog,
@@ -22,6 +22,8 @@ interface GwaCelebrationDialogProps {
   totalUnits: number;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Share this moment: closes the dialog, then opens the share studio. */
+  onShare?: () => void;
 }
 
 const GWA_CODE = "relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-xs font-semibold";
@@ -36,6 +38,7 @@ export function GwaCelebrationDialog({
   totalUnits,
   open,
   onOpenChange,
+  onShare,
 }: GwaCelebrationDialogProps) {
   const encourage = !honor && gwa !== null && gwa > 0 && totalUnits >= HONOR_MIN_UNITS;
   if (!honor && !encourage) return null;
@@ -44,8 +47,8 @@ export function GwaCelebrationDialog({
   const gwaText = <code className={GWA_CODE}>{gwa?.toFixed(3)}</code>;
 
   return (
-    // data-celebration lets the toolbar keep this row visible on phones.
-    <ButtonGroup data-celebration>
+    // data-phone-row lets the toolbar keep this row visible on phones.
+    <ButtonGroup data-phone-row>
       <AlertDialog open={open} onOpenChange={onOpenChange}>
         <AlertDialogTrigger asChild>
           <Button variant="default">
@@ -77,6 +80,17 @@ export function GwaCelebrationDialog({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Close</AlertDialogCancel>
+            {onShare && (
+              <Button
+                onClick={() => {
+                  onOpenChange(false);
+                  onShare();
+                }}
+              >
+                <Share2Icon className="size-4" />
+                Share
+              </Button>
+            )}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

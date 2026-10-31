@@ -49,5 +49,5 @@ export function buildSemesterReport(opts: SemesterReportOptions, now = new Date(
   ].join("");
 
   const title = periodLabel ? `Semester Report, ${periodLabel}` : "Semester Report";
-  return { title, html: renderDocument({ title, body, footer: renderRunningFooter(appName, appUrl) }) };
+  return { title, html: renderDocument({ title, body, footer: renderRunningFooter(appName, appUrl), palette: opts.palette }) };
 }

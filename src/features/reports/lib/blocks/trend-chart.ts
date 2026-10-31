@@ -38,7 +38,7 @@ export function renderTrendChart(points: TrendPoint[]): string {
 
   const path = points.map((p, i) => `${i === 0 ? "M" : "L"}${x(i)} ${y(p.gwa)}`).join(" ");
   const dots = points
-    .map((p, i) => `<circle cx="${x(i)}" cy="${y(p.gwa)}" r="4" fill="${PRINT.amberInk}" stroke="${PRINT.white}" stroke-width="2" />`)
+    .map((p, i) => `<circle cx="${x(i)}" cy="${y(p.gwa)}" r="4" style="fill: var(--report-ink)" stroke="${PRINT.white}" stroke-width="2" />`)
     .join("");
 
   const last = points.length - 1;
@@ -64,7 +64,7 @@ export function renderTrendChart(points: TrendPoint[]): string {
 <figure class="chart">
   <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${escapeHtml(`GWA by semester: ${summary}`)}">
     ${grid}${honors}
-    <path d="${path}" fill="none" stroke="${PRINT.amberInk}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+    <path d="${path}" fill="none" style="stroke: var(--report-ink)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
     ${dots}${valueLabels}${xLabels}
   </svg>
   <figcaption class="chart-caption">

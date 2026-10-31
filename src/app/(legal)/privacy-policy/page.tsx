@@ -11,7 +11,7 @@ export default function PrivacyPolicyPage() {
     <>
       <h1>Privacy Policy</h1>
       <p>
-        <strong>Last updated: October 28, 2026</strong>
+        <strong>Last updated: October 31, 2026</strong>
       </p>
 
       <p>
@@ -55,6 +55,10 @@ export default function PrivacyPolicyPage() {
         <li>
           <strong>Your calculator data:</strong> the subjects, grades, units,
           and semesters you save, so they can sync across your devices.
+        </li>
+        <li>
+          <strong>Your appearance setting:</strong> the color scheme and
+          light or dark mode you pick, so your other devices match.
         </li>
         <li>
           <strong>Technical metadata:</strong> standard sign-in metadata such
@@ -106,8 +110,8 @@ export default function PrivacyPolicyPage() {
       <p>
         We don&apos;t use tracking or advertising cookies. We use your
         browser&apos;s local storage to keep guest data and remember your theme
-        preference, and Firebase Authentication uses local storage to keep you
-        signed in. These are strictly functional.
+        and color scheme, and Firebase Authentication uses local storage to keep
+        you signed in. These are strictly functional.
       </p>
 
       <h2>6. Data retention and deletion</h2>
@@ -148,6 +152,10 @@ export default function PrivacyPolicyPage() {
           (one semester) or an Academic Summary (all semesters), for your own
           personal reference.
         </li>
+        <li>
+          Make a share image of your results to post or send, choosing what it
+          includes.
+        </li>
         <li>Delete your account and all associated data.</li>
       </ul>
       <p>
@@ -162,6 +170,14 @@ export default function PrivacyPolicyPage() {
         including saving, printing, or sharing it, is entirely up to you. These
         summaries are for personal reference only and are not official academic
         records; see our <a href="/terms-and-conditions">Terms and Conditions</a>.
+      </p>
+      <p>
+        A share image is made the same way: <strong>on your device</strong>,
+        from data already on it, and it shows only what you switch on (your
+        name and school are off unless you turn them on). We do not upload or
+        store it. If you share it, it goes through your device&apos;s share
+        sheet or a link to the app you choose, and that app&apos;s own privacy
+        policy applies to what you post.
       </p>
       <p>
         Depending on where you live, you may have additional rights under laws

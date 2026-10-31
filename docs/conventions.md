@@ -34,7 +34,7 @@ After a split, the parent should read as a composition: hooks at the top, then a
 src/app/                  Routes only: page.tsx and layout.tsx, metadata, guards.
 src/features/<feature>/   components/  hooks/  lib/  (content/ for static copy and data)
 src/components/ui/        shadcn primitives. Add with `npx shadcn@latest add <name>`.
-src/components/layout/    App shell: site header/footer, brand, theme toggle, account menu, content layout
+src/components/layout/    App shell: site header/footer, brand + mark, account menu, content layout
 src/components/shared/    Generic reusable UI with no feature knowledge
 src/hooks/                Generic hooks only
 src/lib/                  Cross-feature pure logic (academic.ts, utils.ts, firebase/)

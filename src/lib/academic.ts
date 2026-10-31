@@ -120,3 +120,14 @@ export function getHonorFor(subjects: GwaInput[]): string | null {
     if (gwa === null || totalUnits < HONOR_MIN_UNITS) return null;
     return getAcademicHonor(gwa);
 }
+
+/**
+ * Latin honor for a cumulative standing (all subjects of all semesters), with
+ * the same units gate as semester honors. Graduation honors, so use it only
+ * for cumulative results, never for a single term.
+ */
+export function getLatinHonorFor(subjects: GwaInput[]): string | null {
+    const { gwa, totalUnits } = computeGwa(subjects);
+    if (gwa === null || totalUnits < HONOR_MIN_UNITS) return null;
+    return getLatinHonor(gwa);
+}

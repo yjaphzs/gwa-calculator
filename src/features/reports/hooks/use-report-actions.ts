@@ -5,15 +5,19 @@ import { toast } from "sonner";
 
 import { APP_NAME, APP_URL } from "@/config/app";
 import { useAuth } from "@/context/auth-provider";
+import { useScheme } from "@/features/appearance/lib/scheme-store";
 import { printAcademicSummary, printSemesterReport } from "@/features/reports/lib";
+import { paletteForScheme } from "@/features/reports/lib/palette";
 import { formatTermLabel } from "@/features/semesters/lib/semesters";
 import type { Semester, Subject } from "@/types";
 
 /** Print handlers for the Semester Report and Academic Summary, with toasts. */
 export function useReportActions(subjects: Subject[], semesters: Semester[]) {
   const { profile } = useAuth();
+  const scheme = useScheme();
 
-  // Personal details printed on the documents — all optional (guests have none).
+  // Personal details printed on the documents (all optional; guests have none),
+  // plus the colors of the user's scheme.
   const identity = useMemo(
     () => ({
       appName: APP_NAME,
@@ -21,8 +25,10 @@ export function useReportActions(subjects: Subject[], semesters: Semester[]) {
       studentName: profile?.displayName ?? null,
       schoolName: profile?.schoolName ?? null,
       program: profile?.program ?? null,
+      // The documents follow the user's color scheme.
+      palette: paletteForScheme(scheme),
     }),
-    [profile?.displayName, profile?.schoolName, profile?.program],
+    [profile?.displayName, profile?.schoolName, profile?.program, scheme],
   );
 
   // The current (working) subjects as a one-semester report.

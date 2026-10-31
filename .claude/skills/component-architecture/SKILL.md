@@ -27,14 +27,14 @@ src/app/                  Routes only: page.tsx / layout.tsx, metadata, guards. 
                           feature components; no business logic, no big JSX.
 src/features/<feature>/   components/  hooks/  lib/   (+ content/ for static copy/data)
 src/components/ui/        shadcn primitives — add via `npx shadcn@latest add <name>`; avoid edits
-src/components/layout/    App shell: headers, footers, brand, theme toggle, account menu
+src/components/layout/    App shell: headers, footers, brand + mark, account menu
 src/components/shared/    Generic reusable UI with no feature knowledge (form-dialog, paginator)
 src/hooks/                Generic hooks only (event listener, local storage, …)
 src/lib/                  Cross-feature pure logic: academic.ts (GWA/honors), utils, firebase/
 src/config/ context/ types/
 ```
 
-Features: `calculator`, `semesters`, `persistence`, `transfer`, `reports`, `leaderboard`,
+Features: `calculator`, `semesters`, `persistence`, `transfer`, `reports`, `share`, `appearance`, `leaderboard`,
 `account`, `auth`, `changelog`, `guide`. A feature may import from `components/`, `hooks/`,
 `lib/`, `config/`, `types/`, and another feature's files by path. Never import from `src/app/`.
 
