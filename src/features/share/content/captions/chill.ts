@@ -1,0 +1,73 @@
+import type { MoodCaptions } from "@/features/share/lib/captions";
+
+/** Chill: calm, balance, and one step at a time. */
+export const CHILL: MoodCaptions = {
+  en: {
+    honor: [
+      "Calm mind, good grades.",
+      "Did my best. It showed.",
+      "Quietly winning.",
+      "Stayed calm, made honors.",
+      "Low stress, high marks.",
+      "Steady pace, honors earned.",
+    ],
+    progress: [
+      "Breathe. One sem at a time.",
+      "Doing my best, and that's enough.",
+      "Slow progress is still progress.",
+      "No rush. I'm getting there.",
+      "Rest, then keep going.",
+      "Okay is okay too.",
+    ],
+    any: [
+      "Tea, tunes, and study time.",
+      "Balance over burnout.",
+      "Took breaks, still made it.",
+      "Steady wins the race.",
+      "Studied, slept, survived.",
+      "Done stressing. Now resting.",
+      "Calm is my study hack.",
+      "Soft days, steady work.",
+      "Small steps every day.",
+      "Good sleep, clear mind.",
+      "Proud, calm, and caffeinated.",
+      "No panic, just progress.",
+      "Easy breaths, earned results.",
+      "Rested and ready for more.",
+    ],
+  },
+  tl: {
+    honor: [
+      "Chill lang, pero pasok sa honors.",
+      "Tahimik pero panalo.",
+      "Kalmado lang, honors pa rin.",
+      "Easy lang, pero honors.",
+      "Walang stress, may honors.",
+      "Steady lang, at nagbunga.",
+    ],
+    progress: [
+      "Chill lang, kaya natin 'to.",
+      "Hinga muna, tapos laban ulit.",
+      "Isang sem at a time.",
+      "Dahan-dahan lang, aabot din.",
+      "Pahinga muna, 'di pagsuko.",
+      "Okay lang, babawi tayo.",
+    ],
+    any: [
+      "Kape, music, at aral.",
+      "Hindi nagmamadali, pero umaabot.",
+      "Tulog muna bago review.",
+      "Relax lang, tapos na ang sem.",
+      "Ginawa ko ang best ko.",
+      "Peace of mind muna.",
+      "Balanse ang buhay at aral.",
+      "Petiks pero may resulta.",
+      "Walang pressure, puro effort.",
+      "Chill na estudyante, here.",
+      "Tahimik lang, pero umaarangkada.",
+      "Sa sariling pace, panalo.",
+      "Hinga, aral, ulit.",
+      "Good vibes lang sa grades.",
+    ],
+  },
+};

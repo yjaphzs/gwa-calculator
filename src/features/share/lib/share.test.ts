@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import type { Semester, Subject } from "@/types";
-import { CAPTIONS, captionFor } from "./captions";
+import { captionLines } from "./caption-lines";
+import { CAPTIONS, captionFor, captionPool } from "./captions";
 import { MOODS, variantsFor } from "./moods";
 import { availableScopes, buildShareContent } from "./share-content";
 import { templateLayout } from "./share-layout";
@@ -77,16 +78,30 @@ describe("chosenSubjects", () => {
 });
 
 describe("templateLayout", () => {
-  const all = { honor: true, units: true, trend: true, who: true };
+  const caption = { caption: "All that hard work paid off.", font: "serif" as const };
+  const all = { honor: true, units: true, trend: true, who: true, ...caption };
+  const OWN = [
+    "",
+    "Done.",
+    "Grabe 'yung sem na 'to pero kinaya ko kahit ilang beses akong umiyak sa CR.",
+    "SOBRANG SAYA KO NGAYONG SEM KASI PASADO AKO SA LAHAT NG SUBJECTS KO, SALAMAT!",
+    "a".repeat(80),
+  ];
 
   it("never budgets more than the image has room for", () => {
     for (const format of ["post", "story"] as const) {
       for (let mask = 0; mask < 16; mask++) {
         const [honor, units, trend, who] = [1, 2, 4, 8].map((bit) => (mask & bit) > 0);
         for (const subjects of [0, 1, 3, 5, 8, 12, 40]) {
-          const layout = templateLayout(format, { honor, units, trend, who, subjects });
-          expect(layout.height).toBeLessThanOrEqual(layout.room);
-          expect(layout.rows).toBeLessThanOrEqual(subjects);
+          for (const font of ["sans", "serif", "mono"] as const) {
+            for (const text of OWN) {
+              const layout = templateLayout(format, { honor, units, trend, who, subjects, caption: text, font });
+              // A hundredth of a pixel for float rounding.
+              expect(layout.height).toBeLessThanOrEqual(layout.room + 0.01);
+              expect(layout.rows).toBeLessThanOrEqual(subjects);
+              if (subjects > 0) expect(layout.rows).toBeGreaterThan(0);
+            }
+          }
         }
       }
     }
@@ -103,29 +118,66 @@ describe("templateLayout", () => {
   });
 
   it("keeps the GWA big when nothing else competes for room", () => {
-    const roomy = templateLayout("post", { honor: true, units: false, trend: false, who: false, subjects: 0 });
-    const busy = templateLayout("post", { honor: true, units: false, trend: false, who: false, subjects: 5 });
+    const roomy = templateLayout("post", { honor: true, units: false, trend: false, who: false, subjects: 0, ...caption });
+    const busy = templateLayout("post", { honor: true, units: false, trend: false, who: false, subjects: 5, ...caption });
     expect(roomy.sizes.hero).toBeGreaterThan(busy.sizes.hero);
+  });
+
+  it("gives a long caption room: subject rows first, then a smaller caption", () => {
+    const parts = { ...all, subjects: 12, font: "mono" as const };
+    const short = templateLayout("post", { ...parts, caption: "Mic drop." });
+    const long = templateLayout("post", { ...parts, caption: OWN[3] });
+    expect(long.rows).toBeLessThan(short.rows);
+    expect(long.rows).toBeGreaterThan(0);
+    // With no list to give way, a caption too long for the room is set smaller.
+    const alone = { honor: true, units: true, trend: false, who: true, subjects: 0, font: "serif" as const };
+    expect(templateLayout("post", { ...alone, caption: OWN[4] }).sizes.caption).toBeLessThan(
+      templateLayout("post", { ...alone, caption: "Done." }).sizes.caption,
+    );
+  });
+});
+
+describe("captionLines", () => {
+  it("counts wrapped lines, erring high", () => {
+    expect(captionLines("Done.", "sans", 68)).toBe(1);
+    expect(captionLines("Natulog lang sa class pero pasado.", "sans", 80)).toBeGreaterThanOrEqual(2);
+    // Monospace is exact: 25 characters at 50px is 875px, over the 880px box less slack.
+    expect(captionLines("x".repeat(25), "mono", 50)).toBe(2);
+    // A word wider than the box breaks anywhere.
+    expect(captionLines("a".repeat(80), "mono", 46)).toBe(4);
+    // Wide letters and emoji count at their own width.
+    expect(captionLines("W".repeat(80), "serif", 60)).toBeGreaterThan(captionLines("a".repeat(80), "serif", 60));
+    expect(captionLines("\u{1F389}".repeat(20), "mono", 60)).toBeGreaterThan(captionLines("a".repeat(20), "mono", 60));
   });
 });
 
 describe("moods and captions", () => {
-  it("gives every mood captions in both languages, without em dashes", () => {
+  it("gives every mood 20 different captions per language and result, without em dashes", () => {
     for (const mood of MOODS) {
       for (const language of ["en", "tl"] as const) {
         for (const result of ["honor", "progress"] as const) {
-          const lines = CAPTIONS[mood.id][language][result];
-          expect(lines.length).toBeGreaterThan(0);
-          for (const line of lines) expect(line).not.toContain("—");
+          const pool = captionPool(mood.id, language, result);
+          expect(pool).toHaveLength(20);
+          expect(new Set(pool).size).toBe(20);
+          for (const line of pool) {
+            expect(line).not.toContain("—");
+            expect(line).toBe(line.trim());
+            expect(line.length).toBeLessThanOrEqual(42);
+          }
         }
+        // An honor line never shows for a result without one, and the reverse.
+        const set = CAPTIONS[mood.id][language];
+        expect(set.honor.some((l) => set.progress.includes(l))).toBe(false);
       }
       expect(variantsFor(mood, "#ff00aa").at(-1)?.label).toBe("My theme");
     }
   });
 
-  it("wraps the caption index for Shuffle", () => {
-    expect(captionFor("rock", "en", "honor", 3)).toBe(captionFor("rock", "en", "honor", 0));
-    expect(captionFor("rock", "tl", "progress", -1)).toBe(CAPTIONS.rock.tl.progress.at(-1));
+  it("starts with the result's own lines and wraps for Shuffle", () => {
+    expect(captionFor("rock", "en", "honor", 0)).toBe(CAPTIONS.rock.en.honor[0]);
+    expect(captionFor("rock", "en", "honor", 20)).toBe(captionFor("rock", "en", "honor", 0));
+    expect(captionFor("rock", "tl", "progress", -1)).toBe(CAPTIONS.rock.tl.any.at(-1));
+    expect(CAPTIONS.fun.tl.any).toContain("Natulog lang sa class pero pasado.");
   });
 });
 

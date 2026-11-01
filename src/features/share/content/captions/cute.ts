@@ -1,0 +1,73 @@
+import type { MoodCaptions } from "@/features/share/lib/captions";
+
+/** Cute: soft, wholesome, and baby steps. */
+export const CUTE: MoodCaptions = {
+  en: {
+    honor: [
+      "Soft heart, strong grades.",
+      "Proud of my little self.",
+      "Tiny steps, big wins.",
+      "Cute and on the honor roll.",
+      "Sparkly grades, sparkly me.",
+      "Honors with a side of hugs.",
+    ],
+    progress: [
+      "Tiny steps, big dreams.",
+      "Baby steps still count.",
+      "Be gentle, keep going.",
+      "Growing like a little plant.",
+      "Slowly blooming.",
+      "Little by little, I'll get there.",
+    ],
+    any: [
+      "Sending hugs to past me.",
+      "Gold star for trying.",
+      "Studied with my teddy bear.",
+      "Hearts, stars, and grades.",
+      "Pastel pens did their job.",
+      "Snack, study, smile, repeat.",
+      "Soft but determined.",
+      "A little proud, a lot happy.",
+      "Cozy study days.",
+      "Headpats for me, please.",
+      "Sweet like this semester.",
+      "My plushies believed in me.",
+      "Smiling at my grades.",
+      "Tiny notebook, big effort.",
+    ],
+  },
+  tl: {
+    honor: [
+      "Cute na, matalino pa. Charot!",
+      "Proud ako sa sarili ko.",
+      "Baby steps, big win!",
+      "Honor na ang baby!",
+      "Gold star para sa'kin.",
+      "Pa-hug naman, may honor ako!",
+    ],
+    progress: [
+      "Baby steps lang, pero tuloy.",
+      "Dahan-dahan, makakarating din.",
+      "Kaya mo 'yan, bes.",
+      "Unti-unti, lalago rin ako.",
+      "Konting tiis pa, cutie.",
+      "Next time, mas bongga.",
+    ],
+    any: [
+      "Pa-headpat naman diyan.",
+      "Kasama ko si teddy mag-aral.",
+      "Ang cute ng grades ko, 'di ba?",
+      "Pastel pens, pang-swerte.",
+      "Smile lang, kinaya ko.",
+      "Pahinga, meryenda, aral, ulit.",
+      "Soft pero palaban.",
+      "Para sa'yo 'to, self.",
+      "Cute pa rin kahit puyat.",
+      "Kilig sa grades ko.",
+      "Bongga ka, self!",
+      "Yakap para sa sarili.",
+      "Pinaghirapan ng puso ko 'to.",
+      "Ganda ng araw, ganda ng grades.",
+    ],
+  },
+};

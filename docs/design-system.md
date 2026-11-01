@@ -67,8 +67,17 @@ keeping the name available to screen readers.
 `src/features/share/` renders a 1080×1350 (post) or 1080×1920 (story) image from one template
 (`components/templates/`) in one of eight moods, each with color variants plus "My theme".
 Inline pixel styles, the GWA in mono with tabular figures, stickers only in the top band, and
-always the footer "GWA Calculator · host · Unofficial, just for fun". Copy rules apply to the
-captions (`lib/captions.ts`): short, no em dashes, English and Taglish.
+always the footer "GWA Calculator · host · Unofficial, just for fun".
+
+- **Captions:** one file per mood in `content/captions/`, each with English and Taglish lines
+  in three groups: `honor` (shown only with an honor), `progress` (only without one), and
+  `any`. Shuffle steps through the result's own lines, then the `any` ones: 20 per mood,
+  language and result (a test checks the count). Copy rules apply: short (42 characters at
+  most), playful but kind, no em dashes.
+- **The user's own caption:** "My own" takes up to 80 characters and is remembered on the
+  device (`gwa_share_caption`). The layout estimates its lines (`lib/caption-lines.ts`, from
+  measured font widths) and gives a long one room: subject rows go first, then the caption is
+  set smaller.
 
 - **Sizes:** `lib/share-layout.ts` holds the size table per format (roomy, or compact when
   subjects or the trend show) and works out how many subject rows fit under everything else;

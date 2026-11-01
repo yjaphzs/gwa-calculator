@@ -1,0 +1,73 @@
+import type { MoodCaptions } from "@/features/share/lib/captions";
+
+/** Fun: jokes, snacks, and main character energy. */
+export const FUN: MoodCaptions = {
+  en: {
+    honor: [
+      "Plot twist: I actually studied.",
+      "Brain cells: still working.",
+      "Main character energy.",
+      "Honors? In this economy?",
+      "Somehow, honors. Don't ask.",
+      "Smart era: activated.",
+    ],
+    progress: [
+      "Survived. That's the flex.",
+      "Powered by coffee and vibes.",
+      "Still standing, still snacking.",
+      "Passed the vibe check.",
+      "Not top, but not flop.",
+      "Loading... better grades soon.",
+    ],
+    any: [
+      "Slept in class, still passed.",
+      "My brain did a thing.",
+      "Running on snacks and hope.",
+      "New grades just dropped.",
+      "10% studying, 90% vibes.",
+      "Brain: loading... done!",
+      "Teacher's pet? Coffee's pet.",
+      "Group project survivor.",
+      "Fueled by milk tea.",
+      "Fridge-worthy grades.",
+      "Certified crammer.",
+      "Lucky pen strikes again.",
+      "Highlighters did the heavy lifting.",
+      "Studied once. It counted.",
+    ],
+  },
+  tl: {
+    honor: [
+      "Sino'ng nag-aral? Ako pala!",
+      "Utak ko, may pa-bonus.",
+      "Charot lang, pero totoo 'to.",
+      "Honors? Para sa'kin? Sige na nga!",
+      "Sabi ko sa'yo, may utak ako.",
+      "From tulog to honors, grabe!",
+    ],
+    progress: [
+      "Pasado ang vibes, 'yun ang mahalaga.",
+      "Kape pa more, sem pa more.",
+      "Buhay pa naman, 'di ba?",
+      "Hindi top, pero hindi flop.",
+      "Basta pasado, masaya na.",
+      "Next sem, babawi ako. Promise.",
+    ],
+    any: [
+      "Natulog lang sa class pero pasado.",
+      "Lodi ko ang sarili ko.",
+      "Kape at milk tea ang sikreto.",
+      "Puyat? Sanay na 'ko.",
+      "Group project survivor, beh.",
+      "Utak ko, nag-level up!",
+      "Aral konti, dasal marami.",
+      "'Di ako nag-cram, promise. Slight lang.",
+      "Sipag mode: on (minsan).",
+      "Ganda ng grades, parang ako.",
+      "Kinabahan pero kinaya.",
+      "Stock knowledge lang 'yan, beh.",
+      "Lucky ballpen, ikaw na!",
+      "Si crush, nakita kaya 'to?",
+    ],
+  },
+};

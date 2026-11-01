@@ -1,3 +1,4 @@
+import { captionLines, type CaptionFont } from "@/features/share/lib/caption-lines";
 import { FORMAT_SIZE, type ShareFormat } from "@/features/share/lib/share-options";
 
 /** Line height for one-line text, set explicitly so the budget below holds in every font. */
@@ -11,8 +12,8 @@ export const SMALL = 26;
 /** Vertical padding of the subject list box. */
 export const LIST_PAD = 14;
 export const WHO = 30;
-/** Captions are budgeted at two lines; the longest ones wrap to two at these sizes. */
-const CAPTION_LINES = 2;
+/** A long caption shrinks toward this size before anything else gives way. */
+const MIN_CAPTION = 28;
 
 /** Every size in image pixels. */
 export interface TemplateSizes {
@@ -47,7 +48,7 @@ const SIZES: Record<ShareFormat, { roomy: TemplateSizes; compact: TemplateSizes 
   },
 };
 
-/** What the image shows besides the GWA and caption. */
+/** What the image shows besides the GWA. */
 export interface LayoutParts {
   honor: boolean;
   units: boolean;
@@ -55,9 +56,13 @@ export interface LayoutParts {
   who: boolean;
   /** Subject rows wanted after filtering (0: no list). */
   subjects: number;
+  /** The caption and the mood's face, to work out how many lines it takes. */
+  caption: string;
+  font: CaptionFont;
 }
 
 export interface TemplateLayout {
+  /** The sizes to draw with; `caption` may be smaller than the table's for a long caption. */
   sizes: TemplateSizes;
   /** Subject rows that fit; the rest become "+N more". */
   rows: number;
@@ -71,24 +76,35 @@ const moreHeight = (z: TemplateSizes) => SMALL * LINE + 2 * z.rowPad;
 const listHeight = (z: TemplateSizes, rows: number, more: boolean) =>
   rows || more ? 2 * LIST_PAD + rows * rowHeight(z) + (more ? moreHeight(z) : 0) : 0;
 
-/**
- * Sizes for the image and how many subject rows fit under everything else
- * that's switched on, so the column never runs into the footer.
- */
-export function templateLayout(format: ShareFormat, parts: LayoutParts): TemplateLayout {
-  const compact = parts.subjects > 0 || parts.trend;
-  const z = SIZES[format][compact ? "compact" : "roomy"];
-  const room = FORMAT_SIZE[format].height - z.top - z.bottom - SMALL * LINE - FOOTER_GAP;
+/** Height of everything above the subject list, gaps included. */
+function blocksHeight(z: TemplateSizes, parts: LayoutParts): number {
   const blocks = [
     z.heading * LINE,
     z.hero,
     parts.honor ? z.ribbon * LINE + 2 * z.ribbonPad : 0,
     parts.units ? z.units * LINE : 0,
-    z.caption * CAPTION_LINE * CAPTION_LINES,
+    z.caption * CAPTION_LINE * captionLines(parts.caption, parts.font, z.caption),
     parts.trend ? z.trend + SMALL * LINE + 4 : 0,
     parts.who ? WHO * LINE : 0,
   ].filter((h) => h > 0);
-  const fixed = blocks.reduce((sum, h) => sum + h, 0) + z.gap * (blocks.length - 1);
+  return blocks.reduce((sum, h) => sum + h, 0) + z.gap * (blocks.length - 1);
+}
+
+/**
+ * Sizes for the image and how many subject rows fit under everything else
+ * that's switched on, so the column never runs into the footer. A caption too
+ * long for the room (the user's own) is set smaller, keeping one subject row.
+ */
+export function templateLayout(format: ShareFormat, parts: LayoutParts): TemplateLayout {
+  const compact = parts.subjects > 0 || parts.trend;
+  let z = SIZES[format][compact ? "compact" : "roomy"];
+  const room = FORMAT_SIZE[format].height - z.top - z.bottom - SMALL * LINE - FOOTER_GAP;
+  const least = parts.subjects > 0 ? z.gap + listHeight(z, 1, parts.subjects > 1) : 0;
+  let fixed = blocksHeight(z, parts);
+  while (fixed + least > room && z.caption > MIN_CAPTION) {
+    z = { ...z, caption: Math.max(MIN_CAPTION, Math.floor(z.caption * 0.9)) };
+    fixed = blocksHeight(z, parts);
+  }
   // The list sits one gap below the last block.
   const free = room - fixed - z.gap;
   let rows = parts.subjects;

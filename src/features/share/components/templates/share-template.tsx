@@ -4,6 +4,7 @@ import { GwaHero, HonorRibbon, SubjectRows, TemplateFooter, TrendLine } from "@/
 import { TemplateStickers } from "@/features/share/components/templates/template-stickers";
 import type { Mood, MoodVariant } from "@/features/share/lib/moods";
 import type { ShareContent } from "@/features/share/lib/share-content";
+import { CAPTION_WIDTH } from "@/features/share/lib/caption-lines";
 import { CAPTION_LINE, FOOTER_GAP, LINE, SIDE, WHO, templateLayout } from "@/features/share/lib/share-layout";
 import { FORMAT_SIZE, chosenSubjects, type ShareOptions } from "@/features/share/lib/share-options";
 import { shareGwa } from "@/features/share/lib/share-text";
@@ -38,6 +39,8 @@ export function ShareTemplate({ ref, content, options, mood, variant, caption, i
     trend: showTrend,
     who: !!who,
     subjects: list.length,
+    caption,
+    font: mood.font,
   });
 
   return (
@@ -67,7 +70,7 @@ export function ShareTemplate({ ref, content, options, mood, variant, caption, i
         {options.show.units && (
           <div style={{ fontSize: z.units, lineHeight: LINE, color: variant.muted }}>{content.units} units</div>
         )}
-        <div style={{ maxWidth: 880, fontSize: z.caption, fontWeight: 800, lineHeight: CAPTION_LINE }}>{caption}</div>
+        <div style={{ maxWidth: CAPTION_WIDTH, fontSize: z.caption, fontWeight: 800, lineHeight: CAPTION_LINE, overflowWrap: "anywhere" }}>{caption}</div>
         {showTrend && <TrendLine points={content.trend} height={z.trend} variant={variant} />}
         {rows > 0 && (
           <SubjectRows

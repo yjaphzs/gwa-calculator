@@ -1,0 +1,73 @@
+import type { MoodCaptions } from "@/features/share/lib/captions";
+
+/** Rock: loud, stage-sized, and shown in capitals. */
+export const ROCK: MoodCaptions = {
+  en: {
+    honor: [
+      "Crushed it. Loud.",
+      "Grades turned up to eleven.",
+      "Encore earned.",
+      "Honors on the main stage.",
+      "Headlining the honor roll.",
+      "Sold out. Honors only.",
+    ],
+    progress: [
+      "Not done yet. Encore.",
+      "Still standing. Still loud.",
+      "Turn it up next sem.",
+      "Warm-up act. Main show next.",
+      "Broken strings, still playing.",
+      "Louder next semester.",
+    ],
+    any: [
+      "Rock and roll report card.",
+      "Studied to heavy metal.",
+      "Grades so loud, neighbors called.",
+      "Headbanged through finals.",
+      "Amp it up!",
+      "Mic drop.",
+      "No covers, all original.",
+      "Loud and proud.",
+      "Turned the volume up on effort.",
+      "Finals stage: conquered.",
+      "Air guitar for this one.",
+      "Rock on, brain.",
+      "Played finals like a solo.",
+      "Backstage pass to next sem.",
+    ],
+  },
+  tl: {
+    honor: [
+      "Basag ang sem na 'to!",
+      "Rakrakan sa honors!",
+      "Lakas ng tugtog ng grades.",
+      "Headliner sa honor roll!",
+      "Sold out ang honors, beh!",
+      "Lakasan pa! Honors 'to!",
+    ],
+    progress: [
+      "Rakrakan pa rin next sem!",
+      "Hindi pa tapos ang tugtugan.",
+      "Laban, lakasan pa!",
+      "Sound check pa lang 'to.",
+      "Putol ang string, tuloy ang tugtog.",
+      "Next sem, mas malakas!",
+    ],
+    any: [
+      "Rakrakan na 'to!",
+      "Headbang hanggang finals.",
+      "Lakas maka-rakista ng grades.",
+      "Air guitar para sa sem na 'to.",
+      "Mic drop, mga pare!",
+      "Tugtog ng tagumpay!",
+      "Walang atrasan, rakrakan!",
+      "Iingay ko 'to, sorry na.",
+      "Malakas ang loob, malakas ang tugtog.",
+      "Finals? Parang concert lang.",
+      "Rak en rol ang sem!",
+      "Pasabog 'tong grades!",
+      "Sigaw ng sem: kaya ko!",
+      "Volume max, kaba zero.",
+    ],
+  },
+};

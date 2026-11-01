@@ -1,21 +1,19 @@
 "use client";
 
-import { ShuffleIcon } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CaptionControls } from "@/features/share/components/caption-controls";
 import { OptionChips } from "@/features/share/components/option-chips";
 import type { ShareStudio } from "@/features/share/hooks/use-share-studio";
 import { MOODS, type MoodId } from "@/features/share/lib/moods";
 import { scopeKey, type ShareScope } from "@/features/share/lib/share-content";
-import type { CaptionLanguage, ShareFormat } from "@/features/share/lib/share-options";
+import type { ShareFormat } from "@/features/share/lib/share-options";
 
 interface LookControlsProps {
   studio: ShareStudio;
   scopes: { scope: ShareScope; label: string }[];
 }
 
-/** What to share, the format, the mood and its colors, and the caption. */
+/** What to share, the format, the mood and its colors, and the caption (CaptionControls). */
 export function LookControls({ studio, scopes }: LookControlsProps) {
   const { options, update, variants } = studio;
   const byKey = new Map(scopes.map((s) => [scopeKey(s.scope), s.scope]));
@@ -79,31 +77,7 @@ export function LookControls({ studio, scopes }: LookControlsProps) {
           ),
         }))}
       />
-      <div className="flex flex-col gap-2">
-        <OptionChips<CaptionLanguage>
-          label="Caption"
-          value={options.language}
-          onChange={(language) => update({ language })}
-          options={[
-            { value: "en", label: "English" },
-            { value: "tl", label: "Taglish" },
-          ]}
-        />
-        <div className="flex items-center gap-2 rounded-lg border bg-muted/30 p-2 pl-3">
-          <p className="min-w-0 flex-1 text-sm italic" aria-live="polite">
-            &ldquo;{studio.caption}&rdquo;
-          </p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="shrink-0 max-md:h-10"
-            onClick={() => update({ captionIndex: options.captionIndex + 1 })}
-          >
-            <ShuffleIcon className="size-4" />
-            Shuffle
-          </Button>
-        </div>
-      </div>
+      <CaptionControls studio={studio} />
     </div>
   );
 }
