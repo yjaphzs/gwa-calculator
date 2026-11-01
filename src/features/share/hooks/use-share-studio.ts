@@ -7,7 +7,7 @@ import { APP_NAME, APP_URL } from "@/config/app";
 import { useAuth } from "@/context/auth-provider";
 import { brightAccent } from "@/features/appearance/lib/favicon";
 import { useScheme } from "@/features/appearance/lib/scheme-store";
-import { captionFor } from "@/features/share/lib/captions";
+import { OWN_CAPTION_MAX, captionPool, wrapIndex } from "@/features/share/lib/captions";
 import { moodById, variantsFor } from "@/features/share/lib/moods";
 import { renderShareImage } from "@/features/share/lib/render-image";
 import { buildShareContent } from "@/features/share/lib/share-content";
@@ -15,7 +15,10 @@ import { defaultOptions, type ShareOptions, type ShareShow } from "@/features/sh
 import { shareImage } from "@/features/share/lib/share-targets";
 import { buildShareText, imageFileName } from "@/features/share/lib/share-text";
 import { downloadBlob } from "@/features/transfer/lib/file-io";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import type { Semester, Subject } from "@/types";
+
+const OWN_CAPTION_KEY = "gwa_share_caption";
 
 interface ShareStudioInput {
   open: boolean;
@@ -33,6 +36,7 @@ export function useShareStudio({ open, preset, subjects, semesters, templateRef 
   const scheme = useScheme();
   const [options, setOptions] = useState(() => defaultOptions(preset));
   const [busy, setBusy] = useState<"share" | "download" | null>(null);
+  const [savedCaption, setSavedCaption] = useLocalStorage(OWN_CAPTION_KEY, "");
   const presetRef = useRef(preset);
   useEffect(() => {
     presetRef.current = preset;
@@ -47,7 +51,10 @@ export function useShareStudio({ open, preset, subjects, semesters, templateRef 
   const mood = moodById(options.mood);
   const variants = variantsFor(mood, brightAccent(scheme));
   const variant = variants[Math.min(options.variant, variants.length - 1)];
-  const caption = content ? captionFor(options.mood, options.language, content.result, options.captionIndex) : "";
+  const pool = content ? captionPool(options.mood, options.language, content.result) : [];
+  const captionNumber = pool.length ? wrapIndex(options.captionIndex, pool.length) + 1 : 0;
+  // The user's own caption wins once they've typed something.
+  const caption = options.ownCaption?.trim() || (pool.length ? pool[captionNumber - 1] : "");
   const text = content
     ? buildShareText(content, { appName: APP_NAME, appUrl: APP_URL, caption, showHonor: options.show.honor, exact: options.show.exact })
     : "";
@@ -55,6 +62,14 @@ export function useShareStudio({ open, preset, subjects, semesters, templateRef 
 
   const update = (patch: Partial<ShareOptions>) => setOptions((prev) => ({ ...prev, ...patch }));
   const toggle = (key: keyof ShareShow) => setOptions((prev) => ({ ...prev, show: { ...prev.show, [key]: !prev.show[key] } }));
+  // The last caption the user wrote is kept on this device for next time.
+  const startOwnCaption = () => update({ ownCaption: savedCaption });
+  const writeOwnCaption = (value: string) => {
+    // One flowing line on the image: Enter becomes a space.
+    const next = value.replace(/\s*\n\s*/g, " ").slice(0, OWN_CAPTION_MAX);
+    update({ ownCaption: next });
+    setSavedCaption(next);
+  };
 
   const withImage = async (kind: "share" | "download", consume: (blob: Blob) => Promise<void> | void) => {
     if (!templateRef.current) return;
@@ -97,6 +112,10 @@ export function useShareStudio({ open, preset, subjects, semesters, templateRef 
     variants,
     variant,
     caption,
+    captionNumber,
+    captionCount: pool.length,
+    startOwnCaption,
+    writeOwnCaption,
     text,
     identity: { name: profile?.displayName ?? null, school: profile?.schoolName ?? null },
     busy,

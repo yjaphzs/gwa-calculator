@@ -1,0 +1,73 @@
+import type { MoodCaptions } from "@/features/share/lib/captions";
+
+/** Proud: hard work, family, and earned results. */
+export const PROUD: MoodCaptions = {
+  en: {
+    honor: [
+      "All that hard work paid off.",
+      "Sleepless nights, worth it.",
+      "Honors unlocked. Mom, look!",
+      "Earned every bit of this.",
+      "Hard work, now with honors.",
+      "Late nights, high marks.",
+    ],
+    progress: [
+      "Progress is still progress.",
+      "Proud of how far I've come.",
+      "Not there yet, but getting close.",
+      "Every grade is a step up.",
+      "Still climbing, still proud.",
+      "Growth looks good on me.",
+    ],
+    any: [
+      "Proud of this one.",
+      "For my family, with love.",
+      "Worked hard for this number.",
+      "Coffee, prayers, and effort.",
+      "Mom, I did my best.",
+      "Built one grade at a time.",
+      "Earned, not given.",
+      "This one's for my parents.",
+      "Showed up and did the work.",
+      "Small wins count too.",
+      "Trust the process. It worked.",
+      "Every all-nighter led here.",
+      "Proud student, prouder family.",
+      "Effort looks like this.",
+    ],
+  },
+  tl: {
+    honor: [
+      "Puyat pero worth it.",
+      "Laban lang, at nagbunga!",
+      "Ma, Pa, may honor na ako!",
+      "Nagbunga rin ang puyat at kape.",
+      "Hindi sayang ang pagod.",
+      "Pasok sa honors, salamat Lord!",
+    ],
+    progress: [
+      "Kaya pa, tuloy lang.",
+      "Hindi perfect, pero lumalaban.",
+      "Hindi pa tapos ang laban.",
+      "Dahan-dahan, pero paakyat.",
+      "Malayo pa, pero malayo na.",
+      "Hindi pa honors, pero proud ako.",
+    ],
+    any: [
+      "Para sa pamilya 'to.",
+      "Proud ako sa sarili ko.",
+      "Pinaghirapan ko 'to, promise.",
+      "Kape, dasal, at sipag.",
+      "Para sa inyo 'to, Ma at Pa.",
+      "Isang grade at a time.",
+      "Hindi tsamba, pinaghirapan.",
+      "Puyat na may resulta.",
+      "Laban para sa pangarap.",
+      "Sulit ang bawat sakripisyo.",
+      "Galing mo, self!",
+      "Ginawa ko ang best ko.",
+      "Tiwala lang sa proseso.",
+      "Kahit pagod, tuloy ang laban.",
+    ],
+  },
+};

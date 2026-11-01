@@ -1,0 +1,73 @@
+import type { MoodCaptions } from "@/features/share/lib/captions";
+
+/** Retro: arcade, cartridges, and mixtapes. Shown in capitals. */
+export const RETRO: MoodCaptions = {
+  en: {
+    honor: [
+      "High score saved.",
+      "Level up unlocked.",
+      "Rewind: a classic sem.",
+      "Bonus stage: cleared.",
+      "Boss level: cleared.",
+      "Achievement unlocked: honors.",
+    ],
+    progress: [
+      "Press start for next sem.",
+      "Continue? Yes.",
+      "Loading next level.",
+      "Extra life collected.",
+      "Checkpoint reached.",
+      "Respawning stronger.",
+    ],
+    any: [
+      "Game saved. Do not turn off.",
+      "Player 1 is ready.",
+      "Insert coin for next sem.",
+      "Power-up: coffee.",
+      "Combo: study plus sleep.",
+      "Side quest: survive finals.",
+      "XP gained.",
+      "Pixel-perfect effort.",
+      "Blew on the cartridge. It worked.",
+      "Mixtape for finals week.",
+      "Rewind, replay, review.",
+      "Arcade mode: survived.",
+      "Cheat code: hard work.",
+      "8-bit brain, full power.",
+    ],
+  },
+  tl: {
+    honor: [
+      "High score, saved na!",
+      "Level up ang sem na 'to.",
+      "Classic na sem 'to.",
+      "Boss level, tapos na!",
+      "Achievement unlocked: honors!",
+      "Bonus stage, nalampasan!",
+    ],
+    progress: [
+      "Press start, next sem na.",
+      "Continue? Oo naman.",
+      "Loading ang next level.",
+      "May extra life pa 'ko.",
+      "Checkpoint muna, tuloy mamaya.",
+      "Respawn, mas malakas na.",
+    ],
+    any: [
+      "Game saved, 'wag i-off!",
+      "Player 1, ready na!",
+      "Hulog barya, next sem na.",
+      "Power-up: kape.",
+      "Side quest: makaraos sa finals.",
+      "Dagdag XP, dagdag galing.",
+      "Cheat code: sipag at tiyaga.",
+      "Arcade mode: nakaraos!",
+      "Rewind, replay, review ulit.",
+      "Mixtape ng finals week.",
+      "8-bit utak, full power.",
+      "Combo: aral plus tulog.",
+      "Hinipan ang cartridge, gumana!",
+      "Retro vibes, bagong grades.",
+    ],
+  },
+};

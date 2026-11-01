@@ -1,0 +1,73 @@
+import type { MoodCaptions } from "@/features/share/lib/captions";
+
+/** Sad: tears, a little humor, and still going. Kind, never mocking. */
+export const SAD: MoodCaptions = {
+  en: {
+    honor: [
+      "Cried a lot. Still made it.",
+      "From tears to honors.",
+      "It hurt, but look.",
+      "Crying, but make it honors.",
+      "Worth every tear.",
+      "Broke down, still got honors.",
+    ],
+    progress: [
+      "Not the grade I wanted. Still here.",
+      "It hurt. I'm still going.",
+      "Tired, not done.",
+      "Rough sem, still standing.",
+      "Bruised, not beaten.",
+      "Hard sem. Harder me.",
+    ],
+    any: [
+      "Tears included, no refunds.",
+      "Cried in the library. Twice.",
+      "My pillow knows everything.",
+      "Survived on tissues and hope.",
+      "Emotionally tired, academically okay.",
+      "Sad songs got me through.",
+      "Crying is part of studying.",
+      "Rain outside, rain inside.",
+      "Exam season took my soul.",
+      "Overthinking, but surviving.",
+      "Tears dried. Grades in.",
+      "Still a little sad. Still proud.",
+      "Somehow, still here.",
+      "Heartbroken by math.",
+    ],
+  },
+  tl: {
+    honor: [
+      "Iniyakan ko 'to, pero worth it.",
+      "Mula iyak hanggang honor.",
+      "Masakit pero sulit.",
+      "Umiyak muna bago mag-honor.",
+      "Luha ang puhunan, honor ang balik.",
+      "Sulit ang bawat iyak.",
+    ],
+    progress: [
+      "Masakit, pero tuloy pa rin.",
+      "Iyak lang, tapos aral ulit.",
+      "Pagod, pero 'di pa tapos.",
+      "Hindi pa ito ang ending ko.",
+      "Babawi ako next sem, promise.",
+      "Mabigat, pero kaya pa.",
+    ],
+    any: [
+      "Iniyakan ko 'to nang slight.",
+      "Kasama ko si tissue buong sem.",
+      "Unan ko lang ang nakakaalam.",
+      "Hugot ng sem: grabe ka.",
+      "Sad songs ang study playlist.",
+      "Iyak sa CR, tapos exam ulit.",
+      "Pagod na pagod, pero buhay.",
+      "Puso ko, sumuko na. Utak, hindi.",
+      "Luha't pawis ang ambag ko.",
+      "Iyak muna, mamaya na ulit aral.",
+      "Grabe ang sem, grabe rin ako.",
+      "Sinaktan ako ng math.",
+      "Hanggang dito na lang ba? Hindi!",
+      "Malungkot pero proud.",
+    ],
+  },
+};

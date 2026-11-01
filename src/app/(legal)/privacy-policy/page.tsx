@@ -11,7 +11,7 @@ export default function PrivacyPolicyPage() {
     <>
       <h1>Privacy Policy</h1>
       <p>
-        <strong>Last updated: October 31, 2026</strong>
+        <strong>Last updated: November 1, 2026</strong>
       </p>
 
       <p>
@@ -109,8 +109,9 @@ export default function PrivacyPolicyPage() {
       <h2>5. Cookies and local storage</h2>
       <p>
         We don&apos;t use tracking or advertising cookies. We use your
-        browser&apos;s local storage to keep guest data and remember your theme
-        and color scheme, and Firebase Authentication uses local storage to keep
+        browser&apos;s local storage to keep guest data and remember your theme,
+        your color scheme, and the last caption you wrote for a share image, and
+        Firebase Authentication uses local storage to keep
         you signed in. These are strictly functional.
       </p>
 

@@ -36,6 +36,8 @@ export interface ShareOptions {
   language: CaptionLanguage;
   /** Which of the mood's captions (wraps around). */
   captionIndex: number;
+  /** The user's own caption; null uses the mood's captions. */
+  ownCaption: string | null;
   show: ShareShow;
   filter: SubjectFilter;
   /** Subject ids, for the "choose" filter. */
@@ -63,6 +65,7 @@ export function defaultOptions(preset: Partial<ShareOptions> = {}): ShareOptions
     variant: 0,
     language: "en",
     captionIndex: 0,
+    ownCaption: null,
     filter: "all",
     chosen: [],
     sort: "best",
