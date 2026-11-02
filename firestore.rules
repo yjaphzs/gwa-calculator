@@ -79,6 +79,14 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Barkada challenges: one doc per friend group. Only its members can read it
+    // (the app lists them with an array-contains query on memberUids, which this
+    // rule allows); every write goes through the barkada Cloud Functions.
+    match /barkadas/{groupId} {
+      allow read: if isAuthenticated() && request.auth.uid in resource.data.memberUids;
+      allow write: if false;
+    }
+
     // Anonymous-handle reservations. Server-only registry that guarantees handle
     // uniqueness; clients get nothing.
     match /leaderboardHandles/{handle} {

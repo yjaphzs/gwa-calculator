@@ -4,20 +4,21 @@ import { HttpsError } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions/v2";
 
 import { REGION } from "../config";
+import { syncBarkadaEntries } from "../lib/barkada/sync";
 import {
   deletePublicEntries,
   publishLeaderboardEntry,
 } from "../lib/leaderboard";
 
 /**
- * Keeps the leaderboard live: whenever a participant's saved semesters change
- * (e.g. they save or edit a semester), their public board entries are
- * recomputed automatically — no manual "refresh" needed.
+ * Keeps the leaderboard and barkadas live: whenever a user's saved semesters
+ * change (e.g. they save or edit a semester), their public board entries and
+ * their entries in every barkada are recomputed automatically.
  *
- * Leaderboard standings derive only from saved `semesters`, so we skip the
- * frequent working-set / single-subject edits that don't affect them, and we
- * skip non-participants entirely — both before any extra reads, to keep this
- * cheap on the common path.
+ * Both derive only from saved `semesters`, so we skip the frequent working-set
+ * / single-subject edits that don't affect them before any extra reads, to
+ * keep this cheap on the common path. The two run side by side, each handling
+ * its own errors, so one never skips the other.
  */
 export const onCalculatorStateWritten = onDocumentWritten(
   { document: "users/{uid}/calculator/state", region: REGION, maxInstances: 5 },
@@ -31,8 +32,19 @@ export const onCalculatorStateWritten = onDocumentWritten(
     if (before && beforeSems === afterSems) return; // semesters unchanged
 
     const uid = event.params.uid;
-    const db = getFirestore();
-    const settingsSnap = await db.doc(`users/${uid}/leaderboard/settings`).get();
+    await Promise.all([
+      republishLeaderboard(uid),
+      syncBarkadaEntries(uid, after.semesters ?? []).catch((err) =>
+        logger.error("[onCalculatorStateWritten] barkada sync failed", { uid, err }),
+      ),
+    ]);
+  },
+);
+
+/** Republishes the user's leaderboard entries, if they take part. */
+async function republishLeaderboard(uid: string): Promise<void> {
+  try {
+    const settingsSnap = await getFirestore().doc(`users/${uid}/leaderboard/settings`).get();
     const settings = settingsSnap.exists ? settingsSnap.data() : null;
     if (!settings?.optIn) return; // not participating
 
@@ -49,7 +61,9 @@ export const onCalculatorStateWritten = onDocumentWritten(
         }
         return;
       }
-      logger.error("[onCalculatorStateWritten] republish failed", { uid, err });
+      throw err;
     }
-  },
-);
+  } catch (err) {
+    logger.error("[onCalculatorStateWritten] republish failed", { uid, err });
+  }
+}

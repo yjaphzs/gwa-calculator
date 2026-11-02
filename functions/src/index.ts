@@ -16,6 +16,12 @@ export { setLeaderboardParticipation } from "./callable/leaderboard/set-leaderbo
 export { setLeaderboardHandle } from "./callable/leaderboard/set-leaderboard-handle";
 export { refreshLeaderboardStanding } from "./callable/leaderboard/refresh-leaderboard-standing";
 export { ensureLeaderboardBoard } from "./callable/leaderboard/ensure-leaderboard-board";
+export { createBarkada } from "./callable/barkada/create-barkada";
+export { previewBarkada } from "./callable/barkada/preview-barkada";
+export { joinBarkada } from "./callable/barkada/join-barkada";
+export { updateBarkadaMember } from "./callable/barkada/update-barkada-member";
+export { leaveBarkada } from "./callable/barkada/leave-barkada";
+export { manageBarkada } from "./callable/barkada/manage-barkada";
 
 // ── Firestore triggers ───────────────────────────────────────────────────────
 export { onCalculatorStateWritten } from "./trigger/on-calculator-state-written";

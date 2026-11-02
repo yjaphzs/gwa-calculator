@@ -4,10 +4,10 @@ import {
   ReCaptchaV3Provider,
   type AppCheck,
 } from 'firebase/app-check';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getFunctions } from 'firebase/functions';
-import { getStorage } from 'firebase/storage';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
+import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
+import { connectStorageEmulator, getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -57,6 +57,10 @@ function getFirebaseApp(): FirebaseApp {
 
 const app = getFirebaseApp();
 
+// Local testing only: talk to `firebase emulators:start` instead of the real
+// project. Never set in deployed builds. Ports default to firebase.json's.
+const USE_EMULATORS = process.env.NEXT_PUBLIC_FIREBASE_EMULATORS === 'true';
+
 // ── App Check (optional) ───────────────────────────────────────────────────
 // Verifies requests come from this app. Browser-only; no-op without a key.
 //
@@ -94,6 +98,7 @@ function hadSession(): boolean {
 export function ensureAppCheck(): void {
   if (typeof window === 'undefined') return;
   if (appCheck) return; // HMR-safe: don't double-initialize
+  if (USE_EMULATORS) return; // the emulators don't check App Check tokens
 
   const siteKey = process.env.NEXT_PUBLIC_FIREBASE_APP_CHECK_RECAPTCHA_KEY;
   if (!siteKey) return;
@@ -133,4 +138,21 @@ export const functions = app
       process.env.NEXT_PUBLIC_FIREBASE_FUNCTIONS_REGION ?? 'asia-southeast1',
     )
   : null!;
+
+function connectEmulators(): void {
+  const scope = globalThis as { __gwaEmulators?: boolean };
+  if (scope.__gwaEmulators) return; // HMR: connecting twice throws
+  scope.__gwaEmulators = true;
+  const host = '127.0.0.1';
+  const port = (value: string | undefined, fallback: number) => Number(value) || fallback;
+  connectAuthEmulator(auth, `http://${host}:${port(process.env.NEXT_PUBLIC_FIREBASE_EMULATOR_AUTH_PORT, 9099)}`, {
+    disableWarnings: true,
+  });
+  connectFirestoreEmulator(db, host, port(process.env.NEXT_PUBLIC_FIREBASE_EMULATOR_FIRESTORE_PORT, 8080));
+  connectFunctionsEmulator(functions, host, port(process.env.NEXT_PUBLIC_FIREBASE_EMULATOR_FUNCTIONS_PORT, 5001));
+  connectStorageEmulator(storage, host, port(process.env.NEXT_PUBLIC_FIREBASE_EMULATOR_STORAGE_PORT, 9199));
+}
+
+if (app && USE_EMULATORS) connectEmulators();
+
 export default app;

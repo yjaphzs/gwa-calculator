@@ -5,13 +5,15 @@ import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions/v2";
 
 import { callableOptions } from "../../config";
+import { leaveAllBarkadas } from "../../lib/barkada/store";
 import { rebuildSchoolBoards, schoolsOfHandle } from "../../lib/leaderboard-board";
 import { enforceRateLimit } from "../../lib/rate-limit";
 
 /**
  * Permanently deletes the calling user's account:
- *   1. Firestore — the `users/{uid}/calculator/*` subdocs and the `users/{uid}`
- *      profile document.
+ *   1. Firestore — the user's place in every barkada (ownership passes on, an
+ *      empty group is deleted), the `users/{uid}/calculator/*` subdocs and the
+ *      `users/{uid}` profile document.
  *   2. Storage   — everything under `users/{uid}/` (the profile photo).
  *   3. Auth      — the Firebase Auth user itself.
  *
@@ -33,6 +35,7 @@ export const deleteAccount = onCall(callableOptions, async (request) => {
   // 1. Firestore — calculator + leaderboard subcollections, the public
   //    leaderboard entry + its handle reservation, and the profile doc.
   try {
+    await leaveAllBarkadas(uid);
     const [calcSnap, leaderboardSnap, settingsSnap] = await Promise.all([
       db.collection(`users/${uid}/calculator`).get(),
       db.collection(`users/${uid}/leaderboard`).get(),
