@@ -57,6 +57,12 @@ export default function PrivacyPolicyPage() {
           and semesters you save, so they can sync across your devices.
         </li>
         <li>
+          <strong>Barkada entries</strong> (only if you start or join a
+          barkada): the nickname you choose, your honor band for the
+          barkada&apos;s term, how your GWA is shown, and your badge count. See
+          section 11.
+        </li>
+        <li>
           <strong>Your appearance setting:</strong> the color scheme and
           light or dark mode you pick, so your other devices match.
         </li>
@@ -79,6 +85,10 @@ export default function PrivacyPolicyPage() {
         <li>
           To show your entry on the leaderboard, <strong>only if you opt
           in</strong> (see section 10).
+        </li>
+        <li>
+          To show your entry to the members of a barkada you start or join (see
+          section 11).
         </li>
         <li>
           To send essential account emails (verification and password reset).
@@ -111,8 +121,10 @@ export default function PrivacyPolicyPage() {
         We don&apos;t use tracking or advertising cookies. We use your
         browser&apos;s local storage to keep guest data and remember your theme,
         your color scheme, the last caption you wrote for a share image, whether
-        you have seen the share studio tip, which badges you have already seen,
-        and whether you hid the Wrapped banner, and
+        you have seen the share studio tip, which badges you have already seen
+        and how many you have earned, whether you hid the Wrapped banner, and,
+        if you are in a barkada, the badge count it has for you and whether you
+        have seen its goal celebration, and
         Firebase Authentication uses local storage to keep
         you signed in. These are strictly functional.
       </p>
@@ -124,7 +136,10 @@ export default function PrivacyPolicyPage() {
         <strong>Account → Security</strong> page. Deleting your account{" "}
         <strong>permanently removes</strong> your profile, your saved
         subjects and semesters, your profile photo, and your authentication
-        record. Guest data is removed by clearing your browser storage.
+        record, and it removes you from every barkada (ownership passes to
+        another member, and a barkada with no one left is deleted). Leaving a
+        barkada removes your entry from it. Guest data is removed by clearing
+        your browser storage.
       </p>
 
       <h2>7. Security</h2>
@@ -208,7 +223,25 @@ export default function PrivacyPolicyPage() {
         your consent is informed before you decide to take part.
       </p>
 
-      <h2>11. Changes to this policy</h2>
+      <h2>11. Barkada challenges (optional)</h2>
+      <p>
+        A barkada is a small private group (up to 10 people) that you start or
+        join with an invite link or code. Nothing is shared until you join one.
+        Its members can see the nickname you choose, your semester honor band
+        for the barkada&apos;s term (worked out from the semester you saved for
+        it), your badge count, and your GWA <strong>only if you choose to show
+        it</strong>, either as the whole number (for example 1.**) or in full.
+        They never see your subjects, grades, email address, or your other
+        semesters. So that only members can open a barkada, we keep its
+        members&apos; account identifiers with it; they are never shown in the
+        app. Anyone with the invite link or code can see the barkada&apos;s
+        name, its owner&apos;s nickname, its term and goal, and how many members
+        it has before deciding to join. You can change your nickname or how
+        your GWA is shown, or leave, at any time, and the owner can remove
+        members or delete the barkada.
+      </p>
+
+      <h2>12. Changes to this policy</h2>
       <p>
         We may update this Privacy Policy from time to time. Material changes
         will be reflected by updating the &ldquo;Last updated&rdquo; date above.
@@ -216,10 +249,10 @@ export default function PrivacyPolicyPage() {
         policy.
       </p>
 
-      <h2>12. Contact</h2>
+      <h2>13. Contact</h2>
       <p>
         Questions about this policy or your data? Email{" "}
-        <a href="mailto:yjaphzs@gmail.com">yjaphzs@gmail.com</a>.
+        <a href="mailto:jan@yjaphzs.xyz">jan@yjaphzs.xyz</a>.
       </p>
     </>
   );

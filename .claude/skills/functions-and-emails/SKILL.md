@@ -19,7 +19,12 @@ functions/src/
   callable/auth/                 sendVerificationEmail, sendPasswordResetEmail
   callable/leaderboard/          setLeaderboardParticipation, setLeaderboardHandle,
                                  refreshLeaderboardStanding, ensureLeaderboardBoard
-  trigger/                       onCalculatorStateWritten — republishes leaderboard entries
+  callable/barkada/              createBarkada, previewBarkada, joinBarkada, updateBarkadaMember,
+                                 leaveBarkada, manageBarkada (owner only)
+  trigger/                       onCalculatorStateWritten — republishes leaderboard entries and
+                                 recomputes barkada entries (only when saved semesters change)
+  lib/barkada/                   types, input checks, member entries (pure, tested by the root
+                                 npm test), store helpers, sync
   lib/academic.ts                server copy of GWA/honor rules (keep in sync with src/lib/academic.ts)
   lib/leaderboard.ts, term.ts    leaderboard publishing, handles, term keys
   lib/leaderboard-board.ts       per-school board doc (leaderboardBoards/{schoolId}); rebuild it
@@ -64,7 +69,7 @@ footer `© {{year}} {{appName}}. {{appUrl}}`.
 |---|---|
 | Typecheck | `cd functions && npx tsc --noEmit` |
 | Build | `cd functions && npm run build` |
-| Emulators | `firebase emulators:start` (copy `functions/.env.example` → `functions/.env`) |
+| Emulators | `firebase emulators:start` (Java 21+; copy `functions/.env.example` → `functions/.env`) |
 
 Env: `RESEND_API_KEY` (secret), `EMAIL_FROM_EMAIL`, `EMAIL_FROM_NAME`, `APP_URL`, `APP_NAME`,
 `FUNCTIONS_ENV`. CI writes `functions/.env` from repo Variables/Secrets on deploy.

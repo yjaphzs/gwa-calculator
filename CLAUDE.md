@@ -56,7 +56,7 @@ Run from the repo root unless noted.
 | Functions build | `cd functions && npm run build` |
 | Functions typecheck | `cd functions && npx tsc --noEmit` |
 | Regenerate email HTML | `cd functions && npm run generate:emails` |
-| Local Firebase emulators | `firebase emulators:start` |
+| Local Firebase emulators (Java 21+) | `firebase emulators:start` |
 
 Before committing, run `npm run lint`, `npm run typecheck`, and `npm test`. If `functions/`
 changed, also run its typecheck. CI runs lint, typecheck, and tests on every push.
@@ -85,7 +85,7 @@ enabled in `.claude/settings.json`, and the shadcn MCP server is configured in `
   components.
 - Feature code lives in `src/features/<feature>/{components,hooks,lib}`. The features are:
   `calculator`, `semesters`, `persistence`, `transfer`, `reports`, `share`, `appearance`,
-  `achievements`, `wrapped`, `guide`, `leaderboard`, `account`, `auth`, `changelog`.
+  `achievements`, `wrapped`, `barkada`, `guide`, `leaderboard`, `account`, `auth`, `changelog`.
 - Shared UI lives in `src/components/{ui,layout,shared}`.
 - Generic hooks go in `src/hooks/`, and cross-feature logic in `src/lib/`.
 - The full map is in [docs/architecture.md](docs/architecture.md).
@@ -100,7 +100,7 @@ enabled in `.claude/settings.json`, and the shadcn MCP server is configured in `
 | `(legal)/` | Public | `/terms-and-conditions`, `/privacy-policy`. Shares `ContentPageLayout` with guides |
 | `(auth)/` | Guest-only (`GuestGuard`) | `/login`, `/register`, `/forgot-password` |
 | `/account` | Auth-only (`AuthGuard`) | Profile, leaderboard opt-in, and security |
-| `/leaderboard` | Auth-only (`AuthGuard`) | Per-school overall and per-semester boards |
+| `/leaderboard` | Auth-only (`AuthGuard`) | Tabs: My school (overall and per-semester boards) and Barkada (`?tab=barkada`; invites open `?join=CODE`) |
 | `/auth/action` | Public | Handles Firebase email-action links in-app |
 
 - **Guards** live in `src/features/auth/components/`. The layouts apply them, not
@@ -170,7 +170,7 @@ sync.**
   `ensureUserProfile` (idempotent) on sign-in.
 - Supported flows: email/password, Google, email verification, and password reset.
 - Firebase client helpers live in [src/lib/firebase/](src/lib/firebase/). Firestore is split into
-  `firestore/{profile,leaderboard,calculator}.ts` behind `firestore/index.ts`.
+  `firestore/{profile,leaderboard,calculator,barkada}.ts` behind `firestore/index.ts`.
 
 ### Firestore data model and rules
 
@@ -181,6 +181,7 @@ sync.**
 | `users/{uid}/leaderboard/settings` | Opt-in and handle. Server-written, owner-readable |
 | `leaderboard/*`, `leaderboardSemesters/*` | Published board entries (server-written) |
 | `leaderboardBoards/{schoolId}` | Precomputed board per school: top overall + per-term entries in one doc. Rebuilt by Functions whenever that school's entries change; the leaderboard page reads only this (1 read per view) |
+| `barkadas/{groupId}` | A barkada: name, invite `code`, owner, goal, term, `memberUids`, and each member's nickname, honor band, GWA (only if shown; the whole number when masked) and badge count. Readable by its members only; written only by Functions |
 | `rateLimits/{bucketId}` | Server-only buckets for the Cloud Functions |
 
 - [firestore.rules](firestore.rules) is **deny-by-default**: users can only read and write their
@@ -193,12 +194,17 @@ sync.**
   ([functions/src/config.ts](functions/src/config.ts)).
 - **Callables:** `deleteAccount`, `sendVerificationEmail`, `sendPasswordResetEmail` (both
   rate-limited and sent via Resend), `setLeaderboardParticipation`, `setLeaderboardHandle`,
-  `refreshLeaderboardStanding`, and `ensureLeaderboardBoard` (builds a missing school board on
-  first view).
+  `refreshLeaderboardStanding`, `ensureLeaderboardBoard` (builds a missing school board on
+  first view), and the barkada ones: `createBarkada`, `previewBarkada`, `joinBarkada`,
+  `updateBarkadaMember`, `leaveBarkada`, `manageBarkada` (owner only). They need sign-in, not a
+  verified email.
 - **Email quota fallback:** when Resend's free quota (100/day) is used up, the email callables
   signal a fallback and `src/lib/firebase/email-delivery.ts` sends Firebase Auth's built-in
   email instead. Send verification/reset emails through those helpers, not the raw callables.
-- **Trigger:** `onCalculatorStateWritten` republishes leaderboard entries.
+- **Trigger:** `onCalculatorStateWritten` republishes leaderboard entries and recomputes the
+  user's barkada entries, only when saved semesters change.
+- **Tests:** pure helpers (`lib/barkada/*.test.ts`) run with the root `npm test`;
+  `functions/tsconfig.json` leaves test files out of the build.
 - **Email HTML** compiles from `.hbs` templates into the committed `generated-templates.ts`.
   **Edit the `.hbs` source and regenerate; don't hand-edit the generated file.**
 
@@ -226,6 +232,13 @@ sync.**
 - **GWA Wrapped:** `features/wrapped/`. A school year with 2+ saved semesters becomes six
   story slides that export like share images. A banner from March to June
   (`gwa_wrapped_banner_<year>` hides it).
+- **Barkada challenge (2.8.0):** `features/barkada/`, the Leaderboard page's second tab. A
+  group of up to 10 (5 groups per user) shares a goal for a term ("everyone Dean's Lister or
+  better") and a ranking by honor band, then badges; a GWA never decides the order. Entries
+  come from each member's saved semester for the term (`functions/src/lib/barkada/`), and the
+  badge count is reported by the member's app (`useBarkadaBadgeSync`). Invites are
+  `/leaderboard/?join=CODE`; `AuthGuard` keeps the query string through sign-in and
+  `safeRedirect` only follows same-site paths.
 - **Share images:** `features/share/`. Post (1080×1350) and Story (1080×1920) images in 8
   moods (plus 4 seasonal ones, `lib/seasons.ts`), each with 20 English and 20 Taglish captions
   per result (`content/captions/`) or the user's own, in four styles (classic, receipt, trading
@@ -269,6 +282,8 @@ Copy `.env.local.example` to `.env.local` and fill in the `NEXT_PUBLIC_*` values
 Firebase Web SDK config, and the optional App Check reCAPTCHA key. For local function emails,
 copy `functions/.env.example` to `functions/.env` (`RESEND_API_KEY`, `EMAIL_FROM_EMAIL`,
 `APP_URL`).
+To test against the emulators, set `NEXT_PUBLIC_FIREBASE_EMULATORS=true` and a `demo-*` project
+ID in `.env.local` (ports in `.env.local.example`); App Check is skipped then.
 To run the Firebase CLI locally, copy `.firebaserc.example` to `.firebaserc` and set your
 project ID. `.firebaserc` is gitignored; CI deploys with `--project` from a repo Variable.
 

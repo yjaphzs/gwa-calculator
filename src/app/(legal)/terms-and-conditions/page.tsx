@@ -117,7 +117,8 @@ export default function TermsPage() {
         </li>
         <li>
           Submit false information to, impersonate another person on, or
-          otherwise manipulate the leaderboard.
+          otherwise manipulate the leaderboard or a barkada, or use an abusive
+          or impersonating nickname or barkada name.
         </li>
         <li>
           Reverse engineer or misuse the Service in ways that harm us or other
@@ -125,7 +126,7 @@ export default function TermsPage() {
         </li>
       </ul>
 
-      <h2>6. Leaderboards (optional)</h2>
+      <h2>6. Leaderboards and barkadas (optional)</h2>
       <p>
         The leaderboard is an <strong>optional, opt-in</strong> feature. We do
         not publish any of your information to it unless you explicitly choose to
@@ -141,6 +142,17 @@ export default function TermsPage() {
         an accurate ranking. We may remove any entry that is abusive,
         impersonating, or otherwise violates these Terms. See our{" "}
         <a href="/privacy-policy">Privacy Policy</a> for how this data is handled.
+      </p>
+      <p>
+        A <strong>barkada</strong> is a private group of up to 10 people that you
+        start or join with an invite link or code. Its members see your
+        nickname, your honor band for the group&apos;s term, your badge count,
+        and your GWA only if you choose to show it, never your subjects or
+        grades. The barkada&apos;s owner can rename it, change its term and goal,
+        make a new invite link, remove members, or delete it, and you can leave
+        whenever you like. Barkada goals and rankings are a friendly game based
+        on figures you enter yourself, <strong>not an official ranking</strong>.
+        Please be kind to your barkada.
       </p>
 
       <h2>7. Availability and changes</h2>
@@ -188,7 +200,7 @@ export default function TermsPage() {
       <h2>12. Contact</h2>
       <p>
         Questions about these Terms? Email{" "}
-        <a href="mailto:yjaphzs@gmail.com">yjaphzs@gmail.com</a>.
+        <a href="mailto:jan@yjaphzs.xyz">jan@yjaphzs.xyz</a>.
       </p>
     </>
   );

@@ -23,6 +23,19 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "2.8.0",
+    date: "November 2, 2026",
+    title: "Barkada challenge",
+    changes: [
+      { type: "new", text: "Barkada: start a group with up to 10 friends, share the invite link, and take on the term together." },
+      { type: "new", text: "Pick a shared goal, like everyone Dean's Lister or better, and see who has made it so far." },
+      { type: "new", text: "A friendly ranking by honor and badges. Friends see your honor band, and your GWA only if you choose to show it." },
+      { type: "improved", text: "The Leaderboard page now has two tabs: My school and Barkada." },
+      { type: "improved", text: "Signing in from a link brings you right back to the page it was for." },
+      { type: "fixed", text: "Sign-in links only ever send you to pages on this site." },
+    ],
+  },
+  {
     version: "2.7.0",
     date: "November 2, 2026",
     title: "Badges, Wrapped, and more fun",

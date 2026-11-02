@@ -103,7 +103,7 @@ always the footer "GWA Calculator · host · Unofficial, just for fun".
   Jun 30), Spooky (Oct 15 to Nov 2), from `lib/seasons.ts`. The picker shows them only in
   season; they follow the same caption rules.
 
-## Achievements and Wrapped
+## Achievements, Wrapped and Barkada
 
 - **Badges:** an earned badge is the accent color with its icon on `bg-primary`; a locked one is
   grey with a lock, its hint, and a progress bar ("15 of 21 units"). Keep names short and
@@ -111,6 +111,11 @@ always the footer "GWA Calculator · host · Unofficial, just for fun".
 - **Wrapped slides:** dark backgrounds lit by one color, the user's scheme accent for the big
   numbers, light Taglish copy, and the share footer on every slide. Term bars carry no
   numbers, so they never reveal a GWA.
+- **Barkada:** the goal card on top (a progress bar in the accent, confetti once when everyone
+  makes it), then members as rows: place (medals for the top three with an honor), initials,
+  nickname, `HonorBadge` or a plain status ("Waiting for grades"), the GWA in mono only when
+  shown, and the badge count. Your own row has an accent tint. Before anyone joins or starts
+  one, "What your barkada sees" lists what's shared and what never is.
 
 ## Typography
 
