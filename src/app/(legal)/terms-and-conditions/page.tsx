@@ -11,7 +11,7 @@ export default function TermsPage() {
     <>
       <h1>Terms and Conditions</h1>
       <p>
-        <strong>Last updated: October 31, 2026</strong>
+        <strong>Last updated: November 2, 2026</strong>
       </p>
 
       <p>
@@ -64,6 +64,14 @@ export default function TermsPage() {
         &ldquo;Unofficial, just for fun&rdquo;. It is not an official academic
         record. Once you share it, it is subject to the terms of the platform or
         app you share it on.
+      </p>
+      <p>
+        Some share images use playful designs, like a receipt, a trading card,
+        or a boarding pass, and <strong>GWA Wrapped</strong> turns a school year
+        into a set of story images. These are fun formats for your own numbers:
+        they are not real receipts, tickets, or certificates, and the same rules
+        apply. Badges on the Achievements page are earned from the figures you
+        enter, are just for fun, and are not awards from any school.
       </p>
 
       <h2>3. Accounts</h2>
@@ -180,7 +188,7 @@ export default function TermsPage() {
       <h2>12. Contact</h2>
       <p>
         Questions about these Terms? Email{" "}
-        <a href="mailto:jan@yjaphzs.xyz">jan@yjaphzs.xyz</a>.
+        <a href="mailto:yjaphzs@gmail.com">yjaphzs@gmail.com</a>.
       </p>
     </>
   );

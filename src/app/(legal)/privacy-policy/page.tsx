@@ -11,7 +11,7 @@ export default function PrivacyPolicyPage() {
     <>
       <h1>Privacy Policy</h1>
       <p>
-        <strong>Last updated: November 1, 2026</strong>
+        <strong>Last updated: November 2, 2026</strong>
       </p>
 
       <p>
@@ -110,7 +110,9 @@ export default function PrivacyPolicyPage() {
       <p>
         We don&apos;t use tracking or advertising cookies. We use your
         browser&apos;s local storage to keep guest data and remember your theme,
-        your color scheme, and the last caption you wrote for a share image, and
+        your color scheme, the last caption you wrote for a share image, whether
+        you have seen the share studio tip, which badges you have already seen,
+        and whether you hid the Wrapped banner, and
         Firebase Authentication uses local storage to keep
         you signed in. These are strictly functional.
       </p>
@@ -155,7 +157,7 @@ export default function PrivacyPolicyPage() {
         </li>
         <li>
           Make a share image of your results to post or send, choosing what it
-          includes.
+          includes, or a GWA Wrapped story of a school year.
         </li>
         <li>Delete your account and all associated data.</li>
       </ul>
@@ -175,8 +177,9 @@ export default function PrivacyPolicyPage() {
       <p>
         A share image is made the same way: <strong>on your device</strong>,
         from data already on it, and it shows only what you switch on (your
-        name and school are off unless you turn them on). We do not upload or
-        store it. If you share it, it goes through your device&apos;s share
+        name and school are off unless you turn them on). GWA Wrapped images and
+        your badges are worked out and made on your device too. We do not upload
+        or store them. If you share one, it goes through your device&apos;s share
         sheet or a link to the app you choose, and that app&apos;s own privacy
         policy applies to what you post.
       </p>
@@ -216,7 +219,7 @@ export default function PrivacyPolicyPage() {
       <h2>12. Contact</h2>
       <p>
         Questions about this policy or your data? Email{" "}
-        <a href="mailto:jan@yjaphzs.xyz">jan@yjaphzs.xyz</a>.
+        <a href="mailto:yjaphzs@gmail.com">yjaphzs@gmail.com</a>.
       </p>
     </>
   );

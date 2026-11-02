@@ -85,7 +85,7 @@ enabled in `.claude/settings.json`, and the shadcn MCP server is configured in `
   components.
 - Feature code lives in `src/features/<feature>/{components,hooks,lib}`. The features are:
   `calculator`, `semesters`, `persistence`, `transfer`, `reports`, `share`, `appearance`,
-  `guide`, `leaderboard`, `account`, `auth`, `changelog`.
+  `achievements`, `wrapped`, `guide`, `leaderboard`, `account`, `auth`, `changelog`.
 - Shared UI lives in `src/components/{ui,layout,shared}`.
 - Generic hooks go in `src/hooks/`, and cross-feature logic in `src/lib/`.
 - The full map is in [docs/architecture.md](docs/architecture.md).
@@ -95,6 +95,7 @@ enabled in `.claude/settings.json`, and the shadcn MCP server is configured in `
 | Route | Access | Notes |
 |---|---|---|
 | `/` | Public; login optional | The calculator (`features/calculator/components/calculator-view.tsx`) |
+| `/achievements` | Public | Badges from the user's own data (`features/achievements`); a nav dot for new ones |
 | `/how-to-compute-gwa` | Public | `(guides)` route group: formula, worked example, try-it widget, grade scale, honors, FAQ |
 | `(legal)/` | Public | `/terms-and-conditions`, `/privacy-policy`. Shares `ContentPageLayout` with guides |
 | `(auth)/` | Guest-only (`GuestGuard`) | `/login`, `/register`, `/forgot-password` |
@@ -215,14 +216,27 @@ sync.**
   script restores the scheme before paint; signed-in users' choice syncs via the profile.
   Never hard-code amber in new UI: use `primary` / `--chart-line` tokens. The scheme ids in
   `firestore.rules` must match `SCHEME_IDS` (a test checks it).
+- **Fun bits (2.7.0):** the rolling GWA, the daily card line, "What if?" sliders
+  (`calculator/components/what-if/`, nothing saved), and a cheer when a term beats the one
+  before (`useCelebrations`, `gwaImprovement` / `termImprovement`). Confetti, fireworks, and
+  `buzz()` vibrations all turn off with reduced motion.
+- **Achievements:** `features/achievements/`. 16 badges judged from the user's data. Seen
+  state lives in localStorage (`gwa_badges_seen`, `gwa_badges_unseen`); the nav dot reads
+  only the count.
+- **GWA Wrapped:** `features/wrapped/`. A school year with 2+ saved semesters becomes six
+  story slides that export like share images. A banner from March to June
+  (`gwa_wrapped_banner_<year>` hides it).
 - **Share images:** `features/share/`. Post (1080×1350) and Story (1080×1920) images in 8
-  moods, each with 20 English and 20 Taglish captions per result (`content/captions/`) or the
-  user's own, rendered on the device (`modern-screenshot`, lazy) and
+  moods (plus 4 seasonal ones, `lib/seasons.ts`), each with 20 English and 20 Taglish captions
+  per result (`content/captions/`) or the user's own, in four styles (classic, receipt, trading
+  card, boarding pass), rendered on the device (`modern-screenshot`, lazy) and
   shared through the Web Share API, or downloaded. Defaults show only the GWA and honor;
   subjects, grades, name and school are opt-in, and "Exact GWA" off shows `1.**` on the image
   and in the shared text (`shareGwa`). `lib/share-layout.ts` budgets every block so nothing
   overflows. Images carry "Unofficial, just for fun", and
-  the legal pages describe them (Terms §2/§5, Privacy §2/§9).
+  the legal pages describe them (Terms §2/§5, Privacy §2/§9). The studio keeps the preview in
+  view with the options in tabs (Look, Mood, Caption, Show); swipe it for the next mood, or
+  🎲 Surprise me. See "Share images" in [docs/design-system.md](docs/design-system.md).
 
 ## Printable grade documents
 

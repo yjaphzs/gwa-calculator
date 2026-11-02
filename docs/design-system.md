@@ -69,6 +69,13 @@ keeping the name available to screen readers.
 Inline pixel styles, the GWA in mono with tabular figures, stickers only in the top band, and
 always the footer "GWA Calculator · host · Unofficial, just for fun".
 
+- **Studio layout:** the preview stays in view and the options sit in four tabs (Look, Mood,
+  Caption, Show), beside the preview on desktop and under it on phones, where only the open tab
+  scrolls and chip rows swipe sideways. Swipe the preview or use its arrows for the next mood;
+  🎲 Surprise me (`lib/surprise.ts`) changes the style, mood, colors and caption but keeps what's
+  shown and the user's own caption. A one-time tip (`gwa_share_tip_seen`) points at the tabs.
+  On phones the footer is one row (Share, Download, Copy caption) and the site links move to the
+  Caption tab.
 - **Captions:** one file per mood in `content/captions/`, each with English and Taglish lines
   in three groups: `honor` (shown only with an honor), `progress` (only without one), and
   `any`. Shuffle steps through the result's own lines, then the `any` ones: 20 per mood,
@@ -85,7 +92,25 @@ always the footer "GWA Calculator · host · Unofficial, just for fun".
   The GWA's size is capped by its length, since Martian Mono figures are wide.
 - **Exact GWA:** on by default. Off shows only the whole number (`1.**`), on the image and in
   the shared text, through `shareGwa` in `lib/share-text.ts`. Never format the shared GWA
-  another way.
+  another way. The boarding pass also hides its "0.04 to go" distance, which would give it away.
+- **Styles:** `classic` (`templates/classic-template.tsx`), `receipt`, `card` (a trading card
+  with up to three earned badges), and `pass` (a boarding pass to the next honor, from
+  `nextStop`). `share-template.tsx` picks one. The receipt has its own row budget
+  (`lib/style-layouts.ts`); the card and pass fit by design (a flexible art window, a caption
+  sized with `fitCaption`). Every style keeps the footer, and the receipt and pass also print
+  "Not an official record". They are playful formats, never a real store, airline, or school.
+- **Seasonal moods:** Pasko (Sept 1 to Jan 6), Valentine's (Feb 1–14), Recognition (Mar 1 to
+  Jun 30), Spooky (Oct 15 to Nov 2), from `lib/seasons.ts`. The picker shows them only in
+  season; they follow the same caption rules.
+
+## Achievements and Wrapped
+
+- **Badges:** an earned badge is the accent color with its icon on `bg-primary`; a locked one is
+  grey with a lock, its hint, and a progress bar ("15 of 21 units"). Keep names short and
+  hints in plain words.
+- **Wrapped slides:** dark backgrounds lit by one color, the user's scheme accent for the big
+  numbers, light Taglish copy, and the share footer on every slide. Term bars carry no
+  numbers, so they never reveal a GWA.
 
 ## Typography
 
@@ -108,13 +133,18 @@ on `<html>`, so `:root` can resolve them.
   `npx shadcn@latest add <name>`, and don't hand-edit generated files beyond small fixes.
   Check the imports after adding: CLI 4.23 rewrote `@/lib/utils` to a package named `cn`, so
   `drawer.tsx` was written by hand. Its header is left-aligned on purpose (shadcn centers it).
+  The CLI did the same for `slider.tsx` (and added the `cn` package); both were fixed by hand.
+  The slider also passes `aria-label` and `aria-valuetext` to its thumb.
 - For app-wide patterns, compose primitives in `src/components/shared/`.
 - **Layout width:** the main content is `max-w-3xl` (account uses `max-w-2xl`) with `px-4`.
   Content pages (legal, guides) use `content-page-layout` and its PROSE typography.
 - **Icons:** Lucide, at `size-4` inline and `size-5` in headers. An icon-only button needs an
   `aria-label`.
-- **Motion:** `motion` is used for small flourishes, and the fireworks run only on the
-  congratulations dialog. Respect `prefers-reduced-motion` in anything new.
+- **Motion:** `motion` is used for small flourishes: the rolling GWA (`AnimatedNumber`), the
+  fireworks on the congratulations dialog, and a one-shot `ConfettiBurst` for improvements.
+  All of them turn off with `prefers-reduced-motion`, and so do vibrations (`buzz` in
+  `src/lib/haptics.ts`, for saves, honors, badges, and improvements only). Respect it in
+  anything new.
 
 ## Overlays and the mobile shell
 

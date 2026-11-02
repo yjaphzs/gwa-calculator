@@ -19,15 +19,18 @@ src/
 │  ├─ (legal)/                /terms-and-conditions, /privacy-policy
 │  ├─ (auth)/                 /login, /register, /forgot-password   (GuestGuard)
 │  ├─ auth/action/            Firebase email-action links (verify email, reset password)
+│  ├─ achievements/           /achievements (public: badges from the user's own data)
 │  ├─ account/                /account      (AuthGuard)
 │  └─ leaderboard/            /leaderboard  (AuthGuard)
 ├─ features/
-│  ├─ calculator/             working subjects: view, GWA card, toolbar/, list, form, editor dialog
+│  ├─ calculator/             working subjects: view, GWA card, toolbar/, list, form, editor dialog, what-if/
 │  ├─ semesters/              saved semesters: list, card, form, editor dialog; lib/semesters.ts
 │  ├─ persistence/            useCalculatorData + guest/cloud stores, merge dialog
 │  ├─ transfer/               JSON import/export, QR transfer (codec in lib/qr-frames.ts)
 │  ├─ reports/                printable Semester Report / Academic Summary (lib/ builds HTML)
-│  ├─ share/                  share images: studio dialog, templates, moods/captions, render + share
+│  ├─ share/                  share images: studio, templates (classic, receipt, card, pass), moods + seasons, captions
+│  ├─ achievements/           badges: definitions (content/), rules, seen tracking, the page
+│  ├─ wrapped/                GWA Wrapped: year summary (lib/), story slides, viewer, banner
 │  ├─ appearance/             color schemes + mode: dialog, derivation, store, pre-paint script
 │  ├─ guide/                  the how-to-compute guide: content/ data + sections + try-it widget
 │  ├─ leaderboard/            boards, school picker, settings subscription
@@ -97,6 +100,23 @@ mood, what to show, subject filter), and renders the template to a PNG on the de
 phone's share sheet reaches Instagram, Facebook, X…); otherwise the image downloads. Site
 links (X, Threads, Facebook) carry the caption and app link only. The studio opens from the
 Congratulations dialog, the GWA card, the subjects menu, a semester's menu, and "Share overall".
+
+## Achievements
+
+`features/achievements` judges 16 badges (`content/badges.ts`) from the user's own subjects and
+saved semesters (`lib/badge-stats.ts`, `lib/evaluate-badges.ts`; GWA and honors only through
+`lib/academic.ts` and `lib/gwa-insights.ts`). `useBadges` runs on the calculator (a toast and a
+buzz for badges earned during a visit) and on `/achievements` (marks them seen). The nav's
+new-badge dot reads only a localStorage count (`lib/badge-seen.ts`), so other pages never load
+calculator data for it.
+
+## GWA Wrapped
+
+`features/wrapped` sums up a school year once it has two saved semesters (`lib/wrapped.ts`:
+`wrappedYears`, `buildWrapped`). The viewer shows six 1080×1920 slides, scaled with the share
+preview, and each slide exports through the same `renderShareImage` / `shareImage` path as
+share images. It opens from the Semesters tab, the achievements page, and a March–June banner
+on the Current tab (hidden per school year).
 
 ## Appearance
 
