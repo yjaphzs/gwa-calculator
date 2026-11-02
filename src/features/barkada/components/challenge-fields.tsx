@@ -75,7 +75,8 @@ export function ChallengeFields({ values, onChange }: ChallengeFieldsProps) {
           </Select>
         </div>
       </div>
-      <div className="flex flex-col gap-1.5">
+      {/* min-w-0: on phones the chips swipe sideways instead of widening the sheet. */}
+      <div className="flex min-w-0 flex-col gap-1.5">
         <OptionChips<BarkadaGoal>
           label="Goal"
           value={values.goal}

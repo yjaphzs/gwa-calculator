@@ -16,7 +16,7 @@ const GWA_OPTIONS: { value: GwaShown; label: string; hint: string }[] = [
 /** Hidden by default; the member chooses how much of their GWA the group sees. */
 export function GwaShownField({ value, onChange }: { value: GwaShown; onChange: (value: GwaShown) => void }) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex min-w-0 flex-col gap-1.5">
       <OptionChips<GwaShown>
         label="Show my GWA"
         value={value}
