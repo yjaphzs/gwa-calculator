@@ -134,3 +134,42 @@ export interface LeaderboardSettings {
     updatedAt?: Timestamp | FieldValue;
     lastPublishedAt?: Timestamp | FieldValue;
 }
+
+/** A barkada's goal: every member at this semester honor or better for the term. */
+export type BarkadaGoal = "deans-lister" | "college-scholar" | "university-scholar";
+
+/** How much of a member's GWA their barkada sees: none, the whole number ("1.**"), or all of it. */
+export type GwaShown = "hidden" | "masked" | "exact";
+
+/** graded: 12+ units saved for the term; short: under 12; waiting: no semester saved for it yet. */
+export type BarkadaMemberStatus = "graded" | "short" | "waiting";
+
+/** One member's entry in a barkada, worked out by Cloud Functions from their saved semester. */
+export interface BarkadaMember {
+    nickname: string;
+    status: BarkadaMemberStatus;
+    /** Semester honor band for the term, or null. */
+    honor: string | null;
+    gwaShown: GwaShown;
+    /** Null unless shown; only the whole number when masked. */
+    gwa: number | null;
+    /** Earned badges, as reported by the member's own app. */
+    badges: number;
+    joinedAt: Timestamp | null;
+}
+
+/**
+ * A friend group at `barkadas/{id}`: readable by its members only and written
+ * ONLY by Cloud Functions. Never holds subjects, grades, or email addresses.
+ */
+export interface BarkadaGroup {
+    id: string;
+    name: string;
+    /** Invite code for `/leaderboard/?join=CODE`. */
+    code: string;
+    ownerUid: string;
+    goal: BarkadaGoal;
+    term: { key: string; label: string };
+    memberUids: string[];
+    members: Record<string, BarkadaMember>;
+}

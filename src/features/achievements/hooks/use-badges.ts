@@ -4,8 +4,16 @@ import { useEffect, useMemo, useRef, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import { getUnseen, markSeen, readSeen, setUnseen, subscribeUnseen } from "@/features/achievements/lib/badge-seen";
+import {
+  getUnseen,
+  markSeen,
+  readSeen,
+  setEarnedCount,
+  setUnseen,
+  subscribeUnseen,
+} from "@/features/achievements/lib/badge-seen";
 import { evaluateBadges, type BadgeStatus } from "@/features/achievements/lib/evaluate-badges";
+import { useBarkadaBadgeSync } from "@/features/barkada/hooks/use-barkada-badge-sync";
 import { buzz } from "@/lib/haptics";
 import type { Semester, Subject } from "@/types";
 
@@ -19,9 +27,10 @@ interface Input {
 }
 
 /**
- * The user's badges. Also keeps the nav's new-badge dot up to date and cheers
- * badges earned during this visit (a toast and a buzz). Badges someone already
- * had when the page loaded never toast.
+ * The user's badges. Also keeps the nav's new-badge dot up to date, cheers
+ * badges earned during this visit (a toast and a buzz), and sends the count to
+ * the user's barkadas when it changes. Badges someone already had when the
+ * page loaded never toast.
  */
 export function useBadges({ subjects, semesters, ready, onPage = false }: Input): BadgeStatus[] {
   const router = useRouter();
@@ -32,6 +41,7 @@ export function useBadges({ subjects, semesters, ready, onPage = false }: Input)
   useEffect(() => {
     if (!ready) return;
     const ids = earnedKey ? earnedKey.split(",") : [];
+    setEarnedCount(ids.length);
     if (onPage) markSeen(ids);
     else setUnseen(ids.filter((id) => !readSeen().has(id)).length);
 
@@ -47,6 +57,7 @@ export function useBadges({ subjects, semesters, ready, onPage = false }: Input)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [earnedKey, ready, onPage, router]);
 
+  useBarkadaBadgeSync(earnedKey ? earnedKey.split(",").length : 0, ready);
   return statuses;
 }
 

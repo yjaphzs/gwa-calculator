@@ -4,6 +4,8 @@
 const SEEN_KEY = "gwa_badges_seen";
 const UNSEEN_KEY = "gwa_badges_unseen";
 const EVENT = "gwa-badges-unseen";
+// How many badges are earned, for pages without calculator data (joining a barkada).
+const EARNED_KEY = "gwa_badges_earned";
 
 export function readSeen(): Set<string> {
   try {
@@ -36,6 +38,22 @@ export function markSeen(ids: string[]): void {
 export function getUnseen(): number {
   try {
     return Number(localStorage.getItem(UNSEEN_KEY)) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+export function setEarnedCount(count: number): void {
+  try {
+    localStorage.setItem(EARNED_KEY, String(count));
+  } catch {
+    // Storage blocked: a barkada just starts from 0 until the next sync.
+  }
+}
+
+export function getEarnedCount(): number {
+  try {
+    return Number(localStorage.getItem(EARNED_KEY)) || 0;
   } catch {
     return 0;
   }

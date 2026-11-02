@@ -2,3 +2,4 @@
 export * from './profile';
 export * from './leaderboard';
 export * from './calculator';
+export * from './barkada';

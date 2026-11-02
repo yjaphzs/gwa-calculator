@@ -1,5 +1,6 @@
 import { httpsCallable } from 'firebase/functions';
 import { functions } from './client';
+import type { BarkadaGoal, GwaShown } from '@/types';
 
 /**
  * Permanently deletes the signed-in user's account: their Firestore profile +
@@ -75,3 +76,60 @@ export const ensureLeaderboardBoard = httpsCallable<
   { schoolId: string },
   { built: boolean }
 >(functions, 'ensureLeaderboardBoard');
+
+/** What every member sends about themselves when starting or joining a barkada. */
+export interface BarkadaEntryInput {
+  nickname: string;
+  gwaShown: GwaShown;
+  /** Earned badge count from this device (the server clamps it). */
+  badges: number;
+}
+
+/** Starts a barkada for a term and goal; the caller becomes its owner. */
+export const createBarkada = httpsCallable<
+  BarkadaEntryInput & { name: string; schoolYear: string; semester: string; goal: BarkadaGoal },
+  { groupId: string; code: string }
+>(functions, 'createBarkada');
+
+/** What an invite code leads to, before joining. */
+export interface BarkadaPreview {
+  groupId: string;
+  name: string;
+  ownerNickname: string | null;
+  termLabel: string;
+  goal: BarkadaGoal;
+  memberCount: number;
+  maxMembers: number;
+  isMember: boolean;
+}
+
+export const previewBarkada = httpsCallable<{ code: string }, BarkadaPreview>(functions, 'previewBarkada');
+
+/** Joins the barkada an invite code belongs to (a no-op when already in it). */
+export const joinBarkada = httpsCallable<BarkadaEntryInput & { code: string }, { groupId: string }>(
+  functions,
+  'joinBarkada',
+);
+
+/** Updates the caller's own entry: nickname and GWA shown in one group, badges in all of them. */
+export const updateBarkadaMember = httpsCallable<
+  { groupId?: string; nickname?: string; gwaShown?: GwaShown; badges?: number },
+  { ok: boolean }
+>(functions, 'updateBarkadaMember');
+
+/** Leaves a barkada (ownership passes on; the last one out deletes it). */
+export const leaveBarkada = httpsCallable<{ groupId: string }, { left: boolean }>(functions, 'leaveBarkada');
+
+/** The owner's tools. `new-code` returns the new invite code. */
+export type BarkadaAction =
+  | { action: 'rename'; name: string }
+  | { action: 'goal'; goal: BarkadaGoal }
+  | { action: 'term'; schoolYear: string; semester: string }
+  | { action: 'remove'; memberUid: string }
+  | { action: 'new-code' }
+  | { action: 'delete' };
+
+export const manageBarkada = httpsCallable<{ groupId: string } & BarkadaAction, { ok: boolean; code?: string }>(
+  functions,
+  'manageBarkada',
+);
