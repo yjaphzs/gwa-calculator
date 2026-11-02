@@ -4,6 +4,13 @@ import { useReducedMotion } from "motion/react";
 
 import { FireworksBackground } from "@/components/ui/shadcn-io/fireworks-background";
 
+// Module constants: these are effect dependencies in FireworksBackground, so
+// inline objects would restart the show on every re-render.
+const FIREWORK_SPEED = { min: 8, max: 16 };
+const FIREWORK_SIZE = { min: 4, max: 10 };
+const PARTICLE_SPEED = { min: 4, max: 14 };
+const PARTICLE_SIZE = { min: 2, max: 10 };
+
 /**
  * Full-viewport fireworks behind the congratulations dialog. Fixed so it covers
  * the screen wherever you've scrolled, click-through, and skipped entirely for
@@ -17,10 +24,10 @@ export function CelebrationFireworks({ active }: { active: boolean }) {
     <FireworksBackground
       aria-hidden
       className="pointer-events-none fixed inset-0 flex items-center justify-center"
-      fireworkSpeed={{ min: 8, max: 16 }}
-      fireworkSize={{ min: 4, max: 10 }}
-      particleSpeed={{ min: 4, max: 14 }}
-      particleSize={{ min: 2, max: 10 }}
+      fireworkSpeed={FIREWORK_SPEED}
+      fireworkSize={FIREWORK_SIZE}
+      particleSpeed={PARTICLE_SPEED}
+      particleSize={PARTICLE_SIZE}
     />
   );
 }

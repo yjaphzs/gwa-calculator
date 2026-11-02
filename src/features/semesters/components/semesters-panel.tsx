@@ -1,4 +1,4 @@
-import { ArchiveIcon, FilesIcon, Share2Icon } from "lucide-react";
+import { ArchiveIcon, FilesIcon, Share2Icon, SparklesIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +13,7 @@ import type { SemesterCardActions } from "@/features/semesters/components/semest
 import { SemesterList } from "@/features/semesters/components/semester-list";
 import { SemesterTrendChart } from "@/features/semesters/components/semester-trend-chart";
 import { TargetPlanner } from "@/features/semesters/components/target-planner";
+import { wrappedYears } from "@/features/wrapped/lib/wrapped";
 import type { Semester } from "@/types";
 
 interface SemestersPanelProps {
@@ -23,6 +24,8 @@ interface SemestersPanelProps {
   onAcademicSummary: () => void;
   /** Opens the share studio on the overall (cumulative) result. */
   onShareOverall: () => void;
+  /** Opens GWA Wrapped (offered once a school year has two saved semesters). */
+  onWrapped: () => void;
   /** Opens the save-semester form for the working subjects. */
   onSaveCurrent: () => void;
   hasCurrentSubjects: boolean;
@@ -36,6 +39,7 @@ export function SemestersPanel({
   actions,
   onAcademicSummary,
   onShareOverall,
+  onWrapped,
   onSaveCurrent,
   hasCurrentSubjects,
 }: SemestersPanelProps) {
@@ -67,7 +71,13 @@ export function SemestersPanel({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-end gap-2">
+      <div className="flex flex-wrap justify-end gap-2">
+        {wrappedYears(semesters).length > 0 && (
+          <Button variant="outline" size="sm" className="max-md:h-10" onClick={onWrapped}>
+            <SparklesIcon className="size-4" />
+            Wrapped
+          </Button>
+        )}
         <Button variant="outline" size="sm" className="max-md:h-10" onClick={onShareOverall}>
           <Share2Icon className="size-4" />
           Share overall

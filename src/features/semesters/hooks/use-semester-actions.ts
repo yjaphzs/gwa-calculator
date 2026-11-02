@@ -20,8 +20,9 @@ export function useSemesterActions({
   setSemesters,
   removeSubjects,
 }: Options) {
+  /** Returns the saved semester, so the caller can compare it with the term before. */
   const createSemester = useCallback(
-    (values: SemesterValues) => {
+    (values: SemesterValues): Semester => {
       const semester: Semester = {
         id: crypto.randomUUID(),
         semester: values.semester,
@@ -32,6 +33,7 @@ export function useSemesterActions({
       // both in one go (see removeSubjects in use-calculator-data).
       setSemesters((prev) => [...prev, semester]);
       removeSubjects();
+      return semester;
     },
     [subjects, setSemesters, removeSubjects],
   );

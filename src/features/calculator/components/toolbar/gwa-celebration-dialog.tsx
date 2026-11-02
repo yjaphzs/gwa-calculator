@@ -1,6 +1,6 @@
 "use client";
 
-import { HeartIcon, PartyPopper, Share2Icon } from "lucide-react";
+import { HeartIcon, PartyPopper, Share2Icon, TrendingUpIcon } from "lucide-react";
 
 import {
   AlertDialog,
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
+import { formatDelta, type Improvement } from "@/features/calculator/lib/improvement";
 import { HONOR_MIN_UNITS } from "@/lib/academic";
 
 interface GwaCelebrationDialogProps {
@@ -22,6 +23,8 @@ interface GwaCelebrationDialogProps {
   totalUnits: number;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Better than the latest saved term: celebrated even without an honor. */
+  improvement: Improvement | null;
   /** Share this moment: closes the dialog, then opens the share studio. */
   onShare?: () => void;
 }
@@ -30,7 +33,8 @@ const GWA_CODE = "relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono te
 
 /**
  * "Congratulate" when the working set earns an honor, otherwise "My GWA" once
- * there are enough units to count. Hidden until one of those applies.
+ * there are enough units to count. Hidden until one of those applies. Beating
+ * the latest saved term gets its own cheer ("Gumanda ng 0.18!").
  */
 export function GwaCelebrationDialog({
   gwa,
@@ -38,13 +42,16 @@ export function GwaCelebrationDialog({
   totalUnits,
   open,
   onOpenChange,
+  improvement,
   onShare,
 }: GwaCelebrationDialogProps) {
   const encourage = !honor && gwa !== null && gwa > 0 && totalUnits >= HONOR_MIN_UNITS;
   if (!honor && !encourage) return null;
 
-  const Icon = honor ? PartyPopper : HeartIcon;
+  const Icon = honor ? PartyPopper : improvement ? TrendingUpIcon : HeartIcon;
   const gwaText = <code className={GWA_CODE}>{gwa?.toFixed(3)}</code>;
+  const delta = improvement && formatDelta(improvement.delta);
+  const title = honor ? "Congratulations!" : delta ? `Gumanda ng ${delta}!` : "Keep Going!";
 
   return (
     // data-phone-row lets the toolbar keep this row visible on phones.
@@ -61,14 +68,18 @@ export function GwaCelebrationDialog({
             <div className="flex size-12 items-center justify-center rounded-xl bg-primary">
               <Icon className="size-6 text-primary-foreground" />
             </div>
-            <AlertDialogTitle className="text-2xl">
-              {honor ? "Congratulations!" : "Keep Going!"}
-            </AlertDialogTitle>
+            <AlertDialogTitle className="text-2xl">{title}</AlertDialogTitle>
             <AlertDialogDescription className="text-md text-center">
               {honor ? (
                 <>
                   You've achieved the academic honor of <strong>{honor}</strong> with a GWA of{" "}
-                  {gwaText}! Keep up the excellent work!
+                  {gwaText}!{" "}
+                  {improvement ? `That's ${delta} better than ${improvement.term}, too.` : "Keep up the excellent work!"}
+                </>
+              ) : improvement ? (
+                <>
+                  Your GWA is {gwaText}, {delta} better than {improvement.term}. Not on the honors list
+                  yet, but look at that climb. Tuloy lang!
                 </>
               ) : (
                 <>

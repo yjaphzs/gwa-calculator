@@ -51,6 +51,12 @@ export const GRADE_OPTIONS: readonly number[] = [
     1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 4.0, 5.0,
 ];
 
+/**
+ * The worst passing grade. 4.00 is conditional and 5.00 is failed, so a
+ * grade passes when it is 3.00 or better. Schools vary; this is the common scale.
+ */
+export const PASSING_GRADE_MAX = 3.0;
+
 /** Units offered by the subject form (imports may still carry decimals). */
 export const UNIT_OPTIONS: readonly number[] = Array.from({ length: 10 }, (_, i) => i + 1);
 

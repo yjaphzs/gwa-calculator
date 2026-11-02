@@ -16,6 +16,7 @@ function options(overrides: Partial<SubjectMenuOptions> = {}): SubjectMenuOption
       onAcademicSummary: vi.fn(),
       onSave: vi.fn(),
       onShare: vi.fn(),
+      onWhatIf: vi.fn(),
     },
     hasSemesters: true,
     autosave: true,
@@ -30,10 +31,11 @@ describe("buildSubjectMenuGroups", () => {
   it("lists the desktop menu without headings or Reset", () => {
     const groups = buildSubjectMenuGroups(options());
 
-    expect(groups.map((group) => group.id)).toEqual(["semester", "share", "transfer", "reports", "saving"]);
+    expect(groups.map((group) => group.id)).toEqual(["semester", "play", "share", "transfer", "reports", "saving"]);
     expect(groups.every((group) => group.label === undefined)).toBe(true);
     expect(ids(groups)).toEqual([
       "save-semester",
+      "what-if",
       "share",
       "import",
       "export",
@@ -50,7 +52,7 @@ describe("buildSubjectMenuGroups", () => {
     const groups = buildSubjectMenuGroups(options({ onRequestReset }));
     const last = groups.at(-1)!;
 
-    expect(groups.slice(0, 5).every((group) => typeof group.label === "string")).toBe(true);
+    expect(groups.slice(0, 6).every((group) => typeof group.label === "string")).toBe(true);
     expect(last.items).toEqual([expect.objectContaining({ id: "reset", destructive: true, onSelect: onRequestReset })]);
   });
 

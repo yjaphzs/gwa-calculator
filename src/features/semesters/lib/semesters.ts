@@ -25,6 +25,17 @@ export function sortNewestFirst(semesters: Semester[]): Semester[] {
   return [...semesters].sort((a, b) => compareChronologically(b, a));
 }
 
+/** The latest saved term by calendar (not by when it was saved), or null. */
+export function latestTerm(semesters: Semester[]): Semester | null {
+  return sortNewestFirst(semesters)[0] ?? null;
+}
+
+/** The saved term just before `semester` in calendar order, or null for the earliest. */
+export function previousTerm(semesters: Semester[], semester: Semester): Semester | null {
+  const ordered = sortOldestFirst([...semesters.filter((s) => s.id !== semester.id), semester]);
+  return ordered[ordered.indexOf(semester) - 1] ?? null;
+}
+
 /** e.g. "First Semester, S.Y. 2025-2026" */
 export function formatTermLabel(semester: Pick<Semester, "semester" | "schoolYear">): string {
   return `${semester.semester} Semester, S.Y. ${semester.schoolYear}`;

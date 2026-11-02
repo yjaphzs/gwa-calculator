@@ -5,6 +5,7 @@ import { GwaSummary } from "@/features/calculator/components/gwa-summary";
 import { SubjectsList } from "@/features/calculator/components/subjects-list";
 import {
   SubjectsToolbar,
+  type Celebration,
   type SubjectsToolbarActions,
 } from "@/features/calculator/components/toolbar/subjects-toolbar";
 import type { SubjectFilter } from "@/features/calculator/hooks/use-subject-filter";
@@ -16,7 +17,7 @@ interface CurrentPanelProps {
   gwa: number | null;
   honor: string | null;
   totalUnits: number;
-  celebration: { open: boolean; onOpenChange: (open: boolean) => void };
+  celebration: Celebration;
   actions: SubjectsToolbarActions;
   autosave: boolean;
   onAutosaveChange: (enabled: boolean) => void;
@@ -35,7 +36,9 @@ export function CurrentPanel({ subjects, gwa, honor, totalUnits, onEdit, onDelet
         gwa={gwa}
         honor={honor}
         totalUnits={totalUnits}
+        improvement={toolbar.celebration.improvement}
         onShare={() => toolbar.actions.onShare()}
+        onWhatIf={toolbar.actions.onWhatIf}
       />
       {/* Bottom padding on phones keeps the last row clear of the floating Add button. */}
       <div className="mt-8 flex flex-col gap-4 pb-16 md:pb-0">

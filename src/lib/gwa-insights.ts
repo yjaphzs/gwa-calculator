@@ -3,6 +3,7 @@
 import {
   ACADEMIC_HONOR_BANDS,
   HONOR_MIN_UNITS,
+  LATIN_HONOR_BANDS,
   computeGwa,
   getAcademicHonor,
   weightedSum,
@@ -43,6 +44,29 @@ export function honorProgress(subjects: GwaInput[]): HonorProgress {
   };
 }
 
+/**
+ * The next better honor band for a GWA, ignoring the unit gate: semester
+ * bands for a term, Latin bands for a cumulative result. Null when the GWA is
+ * already in the top band (or there's no GWA).
+ */
+export function nextStop(gwa: number | null, cumulative: boolean): NextBand | null {
+  if (gwa === null) return null;
+  const bands = cumulative ? LATIN_HONOR_BANDS : ACADEMIC_HONOR_BANDS;
+  const inBand = bands.findIndex((band) => gwa <= band.max);
+  if (inBand === 0) return null;
+  const target = bands[inBand === -1 ? bands.length - 1 : inBand - 1];
+  return { name: target.name, gap: round3(gwa - target.max) };
+}
+
+/** 3 stars for the top band down to 1 for the last, semester or Latin; 0 without an honor. */
+export function honorStars(honor: string | null): number {
+  for (const bands of [ACADEMIC_HONOR_BANDS, LATIN_HONOR_BANDS]) {
+    const index = bands.findIndex((band) => band.name === honor);
+    if (index !== -1) return bands.length - index;
+  }
+  return 0;
+}
+
 /** One sentence describing {@link honorProgress}, for the GWA card and the guide. */
 export function describeHonorProgress(progress: HonorProgress): string | null {
   switch (progress.kind) {
@@ -57,6 +81,25 @@ export function describeHonorProgress(progress: HonorProgress): string | null {
         ? `${progress.next.gap.toFixed(3)} away from ${progress.next.name}.`
         : "You're in the top honor band.";
   }
+}
+
+/**
+ * How much better `current` is than `previous` (a lower GWA is better), to 3
+ * decimals: positive means improved. Null when either GWA is missing.
+ */
+export function gwaImprovement(previous: number | null, current: number | null): number | null {
+  if (previous === null || current === null) return null;
+  return round3(previous - current);
+}
+
+/**
+ * A term's improvement over an earlier one, once it carries enough units to
+ * compare fairly (the same 12-unit gate as honors). Null otherwise.
+ */
+export function termImprovement(earlier: GwaInput[], later: GwaInput[]): number | null {
+  const now = computeGwa(later);
+  if (now.totalUnits < HONOR_MIN_UNITS) return null;
+  return gwaImprovement(computeGwa(earlier).gwa, now.gwa);
 }
 
 export type TermTarget =
