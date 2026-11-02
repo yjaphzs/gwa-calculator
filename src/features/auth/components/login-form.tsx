@@ -14,6 +14,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { AuthFormHeader } from "@/features/auth/components/shared/auth-form-header";
 import { FormRootError } from "@/features/auth/components/shared/form-root-error";
 import { GoogleSignInButton } from "@/features/auth/components/shared/google-sign-in-button";
+import { useRedirectParam } from "@/features/auth/hooks/use-redirect-param";
+import { withRedirect } from "@/features/auth/lib/redirect";
 import { signIn, signInWithGoogle } from "@/lib/firebase/auth";
 import { getAuthErrorMessage } from "@/lib/firebase/errors";
 
@@ -24,6 +26,7 @@ const loginSchema = z.object({
 type LoginSchema = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
+  const redirect = useRedirectParam();
   const [googleLoading, setGoogleLoading] = useState(false);
   const {
     register,
@@ -106,7 +109,7 @@ export function LoginForm() {
 
         <p className="text-center text-sm text-muted-foreground">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="underline underline-offset-4 hover:text-primary">
+          <Link href={withRedirect("/register", redirect)} className="underline underline-offset-4 hover:text-primary">
             Create one
           </Link>
         </p>
