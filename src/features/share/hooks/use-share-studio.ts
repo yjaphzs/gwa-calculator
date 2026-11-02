@@ -7,15 +7,18 @@ import { APP_NAME, APP_URL } from "@/config/app";
 import { useAuth } from "@/context/auth-provider";
 import { brightAccent } from "@/features/appearance/lib/favicon";
 import { useScheme } from "@/features/appearance/lib/scheme-store";
+import { evaluateBadges } from "@/features/achievements/lib/evaluate-badges";
 import { OWN_CAPTION_MAX, captionPool, wrapIndex } from "@/features/share/lib/captions";
-import { moodById, variantsFor } from "@/features/share/lib/moods";
+import { availableMoods, moodById, variantsFor } from "@/features/share/lib/moods";
 import { renderShareImage } from "@/features/share/lib/render-image";
 import { buildShareContent } from "@/features/share/lib/share-content";
 import { defaultOptions, type ShareOptions, type ShareShow } from "@/features/share/lib/share-options";
 import { shareImage } from "@/features/share/lib/share-targets";
+import { steppedMood, surpriseOptions } from "@/features/share/lib/surprise";
 import { buildShareText, imageFileName } from "@/features/share/lib/share-text";
 import { downloadBlob } from "@/features/transfer/lib/file-io";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { buzz } from "@/lib/haptics";
 import type { Semester, Subject } from "@/types";
 
 const OWN_CAPTION_KEY = "gwa_share_caption";
@@ -37,6 +40,8 @@ export function useShareStudio({ open, preset, subjects, semesters, templateRef 
   const [options, setOptions] = useState(() => defaultOptions(preset));
   const [busy, setBusy] = useState<"share" | "download" | null>(null);
   const [savedCaption, setSavedCaption] = useLocalStorage(OWN_CAPTION_KEY, "");
+  // Seasonal moods join the list during their season.
+  const [moods] = useState(() => availableMoods(new Date()));
   const presetRef = useRef(preset);
   useEffect(() => {
     presetRef.current = preset;
@@ -58,10 +63,22 @@ export function useShareStudio({ open, preset, subjects, semesters, templateRef 
   const text = content
     ? buildShareText(content, { appName: APP_NAME, appUrl: APP_URL, caption, showHonor: options.show.honor, exact: options.show.exact })
     : "";
-  const fileName = content ? imageFileName(content, options.mood) : "gwa-calculator.png";
+  const fileName = content ? imageFileName(content, options.mood, options.style) : "gwa-calculator.png";
+  // The trading card's moves: the three hardest badges earned (they're listed easiest first).
+  const badges = useMemo(
+    () => evaluateBadges(subjects, semesters).filter((s) => s.earned).map((s) => s.badge).slice(-3).reverse(),
+    [subjects, semesters],
+  );
 
   const update = (patch: Partial<ShareOptions>) => setOptions((prev) => ({ ...prev, ...patch }));
   const toggle = (key: keyof ShareShow) => setOptions((prev) => ({ ...prev, show: { ...prev.show, [key]: !prev.show[key] } }));
+  // A new mood starts on its first colors and caption, the same as tapping its chip.
+  const chooseMood = (mood: ShareOptions["mood"]) => update({ mood, variant: 0, captionIndex: 0 });
+  const stepMood = (delta: number) => chooseMood(steppedMood(moods, options.mood, delta).id);
+  const surprise = () => {
+    update(surpriseOptions(options, moods));
+    buzz("tap");
+  };
   // The last caption the user wrote is kept on this device for next time.
   const startOwnCaption = () => update({ ownCaption: savedCaption });
   const writeOwnCaption = (value: string) => {
@@ -107,12 +124,17 @@ export function useShareStudio({ open, preset, subjects, semesters, templateRef 
     options,
     update,
     toggle,
+    moods,
+    chooseMood,
+    stepMood,
+    surprise,
     content,
     mood,
     variants,
     variant,
     caption,
     captionNumber,
+    badges,
     captionCount: pool.length,
     startOwnCaption,
     writeOwnCaption,

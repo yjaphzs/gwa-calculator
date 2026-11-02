@@ -24,8 +24,9 @@ const TOGGLES: Toggle[] = [
   },
   { key: "honor", label: "Honor" },
   { key: "units", label: "Units" },
-  { key: "trend", label: "Semester trend", when: (s) => (s.content?.trend.length ?? 0) >= 2 },
-  { key: "subjects", label: "Subjects" },
+  // The trend and the subject list only fit the classic layout (subjects also print on the receipt).
+  { key: "trend", label: "Semester trend", when: (s) => s.options.style === "classic" && (s.content?.trend.length ?? 0) >= 2 },
+  { key: "subjects", label: "Subjects", when: (s) => s.options.style === "classic" || s.options.style === "receipt" },
   { key: "name", label: "My name", hint: "From your profile", when: (s) => !!s.identity.name },
   { key: "school", label: "My school", hint: "From your profile", when: (s) => !!s.identity.school },
 ];
@@ -61,7 +62,7 @@ export function ContentControls({ studio }: { studio: ShareStudio }) {
         ))}
       </fieldset>
 
-      {options.show.subjects && (
+      {options.show.subjects && (options.style === "classic" || options.style === "receipt") && (
         <div className="flex flex-col gap-4">
           <OptionChips<SubjectFilter>
             label="Which subjects"

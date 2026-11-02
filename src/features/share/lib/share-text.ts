@@ -46,8 +46,8 @@ export function shareLink(site: ShareSite, text: string, appUrl: string): string
   }
 }
 
-/** "gwa-calculator-my-gwa-proud.png" */
-export function imageFileName(content: ShareContent, mood: string): string {
+/** "gwa-calculator-my-gwa-proud.png", or "…-proud-receipt.png" for the other styles. */
+export function imageFileName(content: ShareContent, mood: string, style = "classic"): string {
   const slug = content.heading.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  return `gwa-calculator-${slug}-${mood}.png`;
+  return `gwa-calculator-${slug}-${mood}${style === "classic" ? "" : `-${style}`}.png`;
 }

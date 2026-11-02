@@ -1,0 +1,73 @@
+import type { MoodCaptions } from "@/features/share/lib/captions";
+
+/** Recognition: medals, the stage, and the end of a school year. */
+export const RECOGNITION: MoodCaptions = {
+  en: {
+    honor: [
+      "Walking up that stage proud.",
+      "Medal on, smile on.",
+      "Recognized, finally.",
+      "Ribbon earned, not given.",
+      "Honor roll, front row.",
+      "Proud parents, prouder me.",
+    ],
+    progress: [
+      "Not on stage yet, but close.",
+      "Clapping now, walking next.",
+      "Next year, my name gets called.",
+      "Still in the race.",
+      "Cheering for me too.",
+      "Every step to that stage counts.",
+    ],
+    any: [
+      "Recognition Day feels.",
+      "Toga ready, heart full.",
+      "Pictures with the family later.",
+      "Another school year done.",
+      "Closing the year strong.",
+      "For everyone who waited outside.",
+      "Mom brought the camera.",
+      "Proud of this school year.",
+      "Year-end glow up.",
+      "The long year paid off.",
+      "Done with this school year.",
+      "Flowers for the grind.",
+      "A year of effort, seen.",
+      "Ready for summer.",
+    ],
+  },
+  tl: {
+    honor: [
+      "Aakyat ako sa stage, Ma!",
+      "May medalya na ako, Ma!",
+      "Ribbon para sa pamilya.",
+      "Recognition na, sa wakas!",
+      "Sabitan na ng medalya!",
+      "Proud na proud ang pamilya.",
+    ],
+    progress: [
+      "Hindi pa sa stage, pero malapit na.",
+      "Palakpak muna, next year ako naman.",
+      "Tuloy lang, aabot din sa stage.",
+      "Next year, tatawagin din ang pangalan ko.",
+      "Kasama pa rin sa laban.",
+      "Konting kembot pa sa grades.",
+    ],
+    any: [
+      "Recognition Day feels!",
+      "Toga at puso, ready na.",
+      "Picture-picture mamaya.",
+      "Tapos na ang school year!",
+      "Malakas na pagtatapos ng taon.",
+      "Para sa mga naghintay sa labas.",
+      "Dala ni Mama ang camera.",
+      "Proud sa school year na 'to.",
+      "Bakasyon na, sa wakas!",
+      "Sulit ang buong taon.",
+      "Bulaklak para sa pagod.",
+      "Isang taon ng sipag, nakita.",
+      "Year-end glow up!",
+      "Summer, here I come!",
+    ],
+  },
+};

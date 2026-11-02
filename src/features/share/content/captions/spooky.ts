@@ -1,0 +1,73 @@
+import type { MoodCaptions } from "@/features/share/lib/captions";
+
+/** Spooky: Halloween through Undas, horror-movie sems, and all-nighters. */
+export const SPOOKY: MoodCaptions = {
+  en: {
+    honor: [
+      "Scary good grades.",
+      "Boo! Honors.",
+      "Spooked the honor roll.",
+      "Witchcraft? No, studying.",
+      "Haunting the honor list.",
+      "Grades so good it's spooky.",
+    ],
+    progress: [
+      "Survived the horror sem.",
+      "Spooky sem, still alive.",
+      "Not scared of next sem.",
+      "Ghosted by honors, for now.",
+      "Back from the dead, passing.",
+      "Still haunting, still trying.",
+    ],
+    any: [
+      "Trick or treat? Grades.",
+      "This sem was a horror movie.",
+      "Zombie mode during finals.",
+      "Ghost of all-nighters past.",
+      "Pumpkin spice and passing.",
+      "Monster mash of a semester.",
+      "My GWA rose from the grave.",
+      "Boo-k smart.",
+      "Witching hour study club.",
+      "Candy for the brain.",
+      "The scariest part: finals.",
+      "Spooky season, steady grades.",
+      "Bats, cats, and passing marks.",
+      "Creepy, crawly, but done.",
+    ],
+  },
+  tl: {
+    honor: [
+      "Nakakatakot sa galing: honors!",
+      "Boo! May honor ako.",
+      "Multo ng puyat, ginantimpalaan.",
+      "Sinapian ng sipag, honors!",
+      "Kakatakot ang galing ko, charot.",
+      "Ang lakas maka-horror ng honors.",
+    ],
+    progress: [
+      "Nakaligtas sa horror na sem.",
+      "Buhay pa kahit nakakatakot ang sem.",
+      "Hindi ako takot sa next sem.",
+      "Na-ghost ako ng honors, for now.",
+      "Bumangon mula sa hukay, pasado!",
+      "Multo pa rin ng puyat, pero tuloy.",
+    ],
+    any: [
+      "Trick or treat? Grades muna.",
+      "Horror movie ang sem na 'to.",
+      "Zombie mode sa finals.",
+      "Multo ng mga puyat ko.",
+      "Undas break, deserve ko.",
+      "Kandila para sa mga quiz.",
+      "Bumalik ang GWA ko mula sa hukay.",
+      "Sinapian ng sipag.",
+      "Pang-horror ang finals, nakaraos!",
+      "Kendi para sa utak.",
+      "Spooky season, steady grades.",
+      "Bat, pusa, at pasado.",
+      "Gising buong gabi, parang aswang.",
+      "Takot ako sa finals, pero kinaya.",
+    ],
+  },
+};

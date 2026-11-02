@@ -3,7 +3,8 @@ import { describe, expect, it } from "vitest";
 import type { Semester, Subject } from "@/types";
 import { captionLines } from "./caption-lines";
 import { CAPTIONS, captionFor, captionPool } from "./captions";
-import { MOODS, variantsFor } from "./moods";
+import { MOODS, availableMoods, variantsFor } from "./moods";
+import { inSeason } from "./seasons";
 import { availableScopes, buildShareContent } from "./share-content";
 import { templateLayout } from "./share-layout";
 import { chosenSubjects, defaultOptions } from "./share-options";
@@ -205,5 +206,36 @@ describe("share text and links", () => {
     expect(shareLink("x", "a b&c", "u")).toBe("https://x.com/intent/tweet?text=a%20b%26c");
     expect(shareLink("facebook", "ignored", "https://gwa.example/")).toContain("u=https%3A%2F%2Fgwa.example%2F");
     expect(imageFileName(content, "proud")).toBe("gwa-calculator-my-gwa-proud.png");
+    expect(imageFileName(content, "fun", "receipt")).toBe("gwa-calculator-my-gwa-fun-receipt.png");
+  });
+});
+
+describe("seasons", () => {
+  const day = (month: number, date: number) => new Date(2026, month - 1, date, 12);
+
+  it("opens each window on its first day and closes after its last", () => {
+    expect(inSeason("spooky", day(10, 14))).toBe(false);
+    expect(inSeason("spooky", day(10, 15))).toBe(true);
+    expect(inSeason("spooky", day(11, 2))).toBe(true);
+    expect(inSeason("spooky", day(11, 3))).toBe(false);
+    expect(inSeason("valentines", day(2, 14))).toBe(true);
+    expect(inSeason("recognition", day(6, 30))).toBe(true);
+    expect(inSeason("recognition", day(7, 1))).toBe(false);
+  });
+
+  it("runs Pasko across New Year", () => {
+    expect(inSeason("pasko", day(8, 31))).toBe(false);
+    expect(inSeason("pasko", day(9, 1))).toBe(true);
+    expect(inSeason("pasko", day(12, 25))).toBe(true);
+    expect(inSeason("pasko", day(1, 6))).toBe(true);
+    expect(inSeason("pasko", day(1, 7))).toBe(false);
+  });
+
+  it("offers seasonal moods only in season", () => {
+    const ids = (date: Date) => availableMoods(date).map((m) => m.id);
+    expect(ids(day(7, 15))).not.toEqual(expect.arrayContaining(["pasko"]));
+    expect(ids(day(7, 15))).toHaveLength(8);
+    expect(ids(day(11, 2))).toEqual(expect.arrayContaining(["pasko", "spooky"]));
+    expect(ids(day(2, 10))).toContain("valentines");
   });
 });

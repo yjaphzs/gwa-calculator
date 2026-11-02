@@ -1,0 +1,73 @@
+import type { MoodCaptions } from "@/features/share/lib/captions";
+
+/** Pasko: the ber months, Noche Buena, and a well-earned break. */
+export const PASKO: MoodCaptions = {
+  en: {
+    honor: [
+      "Christmas came early: honors!",
+      "Santa saw my grades. Nice list.",
+      "Best gift this year: honors.",
+      "Jingle all the way to honors.",
+      "Merry and on the honor roll.",
+      "Unwrapped: an honor.",
+    ],
+    progress: [
+      "Still on the nice list.",
+      "Merry, tired, and passing.",
+      "Next year's wish: more unos.",
+      "Festive and still trying.",
+      "Gift to self: a passing sem.",
+      "Holidays first, then I bounce back.",
+    ],
+    any: [
+      "Grades wrapped and ready.",
+      "Noche Buena, earned.",
+      "All I want for Christmas is uno.",
+      "Sem's done. Pass the ham.",
+      "Tis the season to be proud.",
+      "Parol bright, grades right.",
+      "Simbang Gabi plus finals: survived.",
+      "Merry GWA to all.",
+      "Christmas break unlocked.",
+      "Ho ho hold on, the grades are in.",
+      "Brighter than the Christmas lights.",
+      "Holiday mode: on.",
+      "A gift for Mom and Dad.",
+      "Countdown to rest: started.",
+    ],
+  },
+  tl: {
+    honor: [
+      "Pasko na, honor pa!",
+      "Regalo ko sa sarili: honors.",
+      "Nasa nice list ni Santa ang grades ko.",
+      "Ma, Pa, ito ang regalo ko!",
+      "Maagang Pasko: may honor!",
+      "Simbang Gabi, sinagot ang dasal.",
+    ],
+    progress: [
+      "Pasko na, pasado pa!",
+      "Hindi perfect, pero masaya ang Pasko.",
+      "Wish ko next sem: mas mataas pa.",
+      "Pahinga muna, babawi sa Enero.",
+      "Basta pasado, Noche Buena na!",
+      "Kaya pa, after ng holidays.",
+    ],
+    any: [
+      "Tapos na ang sem, hamon na!",
+      "Noche Buena, deserve ko 'to.",
+      "Simbang Gabi at finals, nakaraos!",
+      "Parol sa bintana, grades sa ref.",
+      "Christmas break na, sa wakas!",
+      "Puto bumbong at pasado.",
+      "Merry Christmas sa GWA ko!",
+      "Kumikinang parang Christmas lights.",
+      "Bakasyon mode: on.",
+      "Regalo para kay Mama at Papa.",
+      "Pasko ng puyat, Pasko ng pahinga.",
+      "Hamon, keso de bola, at grades.",
+      "Ber months, ber good grades.",
+      "Tara, kain na tayo, tapos na sem!",
+    ],
+  },
+};
