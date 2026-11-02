@@ -3,6 +3,7 @@ import { HttpsError, onCall } from "firebase-functions/v2/https";
 
 import { callableOptions } from "../../config";
 import { enforceRateLimit } from "../../lib/rate-limit";
+import { requireUid, toHttpsError } from "../../lib/barkada/callable";
 import { memberResult } from "../../lib/barkada/entry";
 import { barkadas, groupsOf, semestersOf, uniqueCode } from "../../lib/barkada/store";
 import { MAX_GROUPS, type BarkadaDoc } from "../../lib/barkada/types";
@@ -13,8 +14,6 @@ import {
   parseName,
   parseNickname,
   parseTerm,
-  requireUid,
-  toHttpsError,
 } from "../../lib/barkada/validate";
 
 /**
@@ -23,17 +22,18 @@ import {
  */
 export const createBarkada = onCall(callableOptions, async (request) => {
   const uid = requireUid(request);
-  const data = (request.data ?? {}) as Record<string, unknown>;
-  const name = parseName(data.name);
-  const term = parseTerm(data.schoolYear, data.semester);
-  const goal = parseGoal(data.goal);
-  const nickname = parseNickname(data.nickname);
-  const gwaShown = parseGwaShown(data.gwaShown);
-  const badges = parseBadges(data.badges);
-
-  await enforceRateLimit({ key: `bk_create_${uid}`, max: 5, windowSec: 3600 });
 
   try {
+    const data = (request.data ?? {}) as Record<string, unknown>;
+    const name = parseName(data.name);
+    const term = parseTerm(data.schoolYear, data.semester);
+    const goal = parseGoal(data.goal);
+    const nickname = parseNickname(data.nickname);
+    const gwaShown = parseGwaShown(data.gwaShown);
+    const badges = parseBadges(data.badges);
+
+    await enforceRateLimit({ key: `bk_create_${uid}`, max: 5, windowSec: 3600 });
+
     if ((await groupsOf(uid)).length >= MAX_GROUPS) {
       throw new HttpsError("failed-precondition", `You're already in ${MAX_GROUPS} barkadas. Leave one to start another.`);
     }

@@ -5,10 +5,10 @@ import {
   getFirestore,
   type DocumentSnapshot,
   type QueryDocumentSnapshot,
-  type Timestamp,
 } from "firebase-admin/firestore";
 import { HttpsError } from "firebase-functions/v2/https";
 
+import { nextOwner } from "./owner";
 import type { BarkadaDoc, StoredSemester } from "./types";
 import { CODE_ALPHABET, CODE_LENGTH } from "./validate";
 
@@ -47,20 +47,6 @@ export async function semestersOf(uid: string): Promise<StoredSemester[]> {
   const snap = await getFirestore().doc(`users/${uid}/calculator/state`).get();
   const semesters = snap.data()?.semesters;
   return Array.isArray(semesters) ? semesters : [];
-}
-
-const joinedMillis = (group: BarkadaDoc, uid: string) =>
-  (group.members?.[uid]?.joinedAt as Timestamp | undefined)?.toMillis?.() ?? 0;
-
-/**
- * Who owns the group after `leaving` goes: the same owner, or (when the owner
- * leaves) the member who joined earliest. Null when nobody is left.
- */
-export function nextOwner(group: BarkadaDoc, leaving: string): string | null {
-  const rest = group.memberUids.filter((uid) => uid !== leaving);
-  if (!rest.length) return null;
-  if (group.ownerUid !== leaving) return group.ownerUid;
-  return [...rest].sort((a, b) => joinedMillis(group, a) - joinedMillis(group, b))[0];
 }
 
 /** Takes a member out of a group, handing it on or deleting it when they were the last one. */

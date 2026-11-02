@@ -23,8 +23,11 @@ functions/src/
                                  leaveBarkada, manageBarkada (owner only)
   trigger/                       onCalculatorStateWritten — republishes leaderboard entries and
                                  recomputes barkada entries (only when saved semesters change)
-  lib/barkada/                   types, input checks, member entries (pure, tested by the root
-                                 npm test), store helpers, sync
+  lib/barkada/                   pure and tested by the root npm test: validate.ts (input checks,
+                                 throw InputError), entry.ts (member entries), owner.ts.
+                                 Firebase-bound: callable.ts (requireUid, toHttpsError), store.ts,
+                                 sync.ts. CI doesn't install functions deps for tests, so tested
+                                 files may only `import type` from firebase-*
   lib/academic.ts                server copy of GWA/honor rules (keep in sync with src/lib/academic.ts)
   lib/leaderboard.ts, term.ts    leaderboard publishing, handles, term keys
   lib/leaderboard-board.ts       per-school board doc (leaderboardBoards/{schoolId}); rebuild it

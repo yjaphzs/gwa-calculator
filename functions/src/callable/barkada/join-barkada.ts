@@ -3,6 +3,7 @@ import { HttpsError, onCall } from "firebase-functions/v2/https";
 
 import { callableOptions } from "../../config";
 import { enforceRateLimit } from "../../lib/rate-limit";
+import { requireUid, toHttpsError } from "../../lib/barkada/callable";
 import { memberResult } from "../../lib/barkada/entry";
 import { findByCode, groupsOf, semestersOf } from "../../lib/barkada/store";
 import { MAX_GROUPS, MAX_MEMBERS, type BarkadaDoc, type BarkadaMember } from "../../lib/barkada/types";
@@ -11,22 +12,21 @@ import {
   parseCode,
   parseGwaShown,
   parseNickname,
-  requireUid,
-  toHttpsError,
 } from "../../lib/barkada/validate";
 
 /** Joins the barkada an invite code belongs to. Joining one you're already in just returns it. */
 export const joinBarkada = onCall(callableOptions, async (request) => {
   const uid = requireUid(request);
-  const data = (request.data ?? {}) as Record<string, unknown>;
-  const code = parseCode(data.code);
-  const nickname = parseNickname(data.nickname);
-  const gwaShown = parseGwaShown(data.gwaShown);
-  const badges = parseBadges(data.badges);
-
-  await enforceRateLimit({ key: `bk_join_${uid}`, max: 10, windowSec: 3600 });
 
   try {
+    const data = (request.data ?? {}) as Record<string, unknown>;
+    const code = parseCode(data.code);
+    const nickname = parseNickname(data.nickname);
+    const gwaShown = parseGwaShown(data.gwaShown);
+    const badges = parseBadges(data.badges);
+
+    await enforceRateLimit({ key: `bk_join_${uid}`, max: 10, windowSec: 3600 });
+
     const snap = await findByCode(code);
     if (!snap) throw new HttpsError("not-found", "That invite isn't valid anymore. Ask your friend for a new link.");
     const [mine, semesters] = await Promise.all([groupsOf(uid), semestersOf(uid)]);

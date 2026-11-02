@@ -204,7 +204,10 @@ sync.**
 - **Trigger:** `onCalculatorStateWritten` republishes leaderboard entries and recomputes the
   user's barkada entries, only when saved semesters change.
 - **Tests:** pure helpers (`lib/barkada/*.test.ts`) run with the root `npm test`;
-  `functions/tsconfig.json` leaves test files out of the build.
+  `functions/tsconfig.json` leaves test files out of the build. CI installs only the root
+  packages, so a tested module must not import `firebase-admin` or `firebase-functions` at
+  runtime (`import type` is fine). Keep Firebase code in separate files, like
+  `lib/barkada/callable.ts` beside the pure `validate.ts`.
 - **Email HTML** compiles from `.hbs` templates into the committed `generated-templates.ts`.
   **Edit the `.hbs` source and regenerate; don't hand-edit the generated file.**
 

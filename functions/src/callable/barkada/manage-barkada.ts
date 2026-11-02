@@ -3,6 +3,7 @@ import { HttpsError, onCall } from "firebase-functions/v2/https";
 
 import { callableOptions } from "../../config";
 import { enforceRateLimit } from "../../lib/rate-limit";
+import { requireUid, toHttpsError } from "../../lib/barkada/callable";
 import { memberResult } from "../../lib/barkada/entry";
 import { memberGroup, removeMember, semestersOf, uniqueCode } from "../../lib/barkada/store";
 import { resultFields } from "../../lib/barkada/sync";
@@ -12,8 +13,6 @@ import {
   parseGroupId,
   parseName,
   parseTerm,
-  requireUid,
-  toHttpsError,
 } from "../../lib/barkada/validate";
 
 type Action = "rename" | "goal" | "term" | "remove" | "new-code" | "delete";
@@ -26,14 +25,15 @@ const ACTIONS: readonly Action[] = ["rename", "goal", "term", "remove", "new-cod
  */
 export const manageBarkada = onCall(callableOptions, async (request) => {
   const uid = requireUid(request);
-  const data = (request.data ?? {}) as Record<string, unknown>;
-  const groupId = parseGroupId(data.groupId);
-  const action = data.action as Action;
-  if (!ACTIONS.includes(action)) throw new HttpsError("invalid-argument", "Unknown action.");
-
-  await enforceRateLimit({ key: `bk_manage_${uid}`, max: 30, windowSec: 3600 });
 
   try {
+    const data = (request.data ?? {}) as Record<string, unknown>;
+    const groupId = parseGroupId(data.groupId);
+    const action = data.action as Action;
+    if (!ACTIONS.includes(action)) throw new HttpsError("invalid-argument", "Unknown action.");
+
+    await enforceRateLimit({ key: `bk_manage_${uid}`, max: 30, windowSec: 3600 });
+
     const snap = await memberGroup(groupId, uid);
     const group = snap.data() as BarkadaDoc;
     if (group.ownerUid !== uid) throw new HttpsError("permission-denied", "Only the barkada's owner can do that.");

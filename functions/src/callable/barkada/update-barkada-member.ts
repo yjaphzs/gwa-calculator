@@ -3,6 +3,7 @@ import { onCall } from "firebase-functions/v2/https";
 
 import { callableOptions } from "../../config";
 import { enforceRateLimit } from "../../lib/rate-limit";
+import { requireUid, toHttpsError } from "../../lib/barkada/callable";
 import { memberResult } from "../../lib/barkada/entry";
 import { groupsOf, memberGroup, semestersOf } from "../../lib/barkada/store";
 import { resultFields } from "../../lib/barkada/sync";
@@ -12,8 +13,6 @@ import {
   parseGroupId,
   parseGwaShown,
   parseNickname,
-  requireUid,
-  toHttpsError,
 } from "../../lib/barkada/validate";
 
 /**
@@ -22,15 +21,16 @@ import {
  */
 export const updateBarkadaMember = onCall(callableOptions, async (request) => {
   const uid = requireUid(request);
-  const data = (request.data ?? {}) as Record<string, unknown>;
-  const groupId = data.groupId === undefined ? null : parseGroupId(data.groupId);
-  const nickname = data.nickname === undefined ? null : parseNickname(data.nickname);
-  const gwaShown = data.gwaShown === undefined ? null : parseGwaShown(data.gwaShown);
-  const badges = data.badges === undefined ? null : parseBadges(data.badges);
-
-  await enforceRateLimit({ key: `bk_update_${uid}`, max: 60, windowSec: 3600 });
 
   try {
+    const data = (request.data ?? {}) as Record<string, unknown>;
+    const groupId = data.groupId === undefined ? null : parseGroupId(data.groupId);
+    const nickname = data.nickname === undefined ? null : parseNickname(data.nickname);
+    const gwaShown = data.gwaShown === undefined ? null : parseGwaShown(data.gwaShown);
+    const badges = data.badges === undefined ? null : parseBadges(data.badges);
+
+    await enforceRateLimit({ key: `bk_update_${uid}`, max: 60, windowSec: 3600 });
+
     if (badges !== null) {
       const groups = await groupsOf(uid);
       await Promise.all(

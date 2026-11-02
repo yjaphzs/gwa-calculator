@@ -1,6 +1,3 @@
-import { logger } from "firebase-functions/v2";
-import { HttpsError, type CallableRequest } from "firebase-functions/v2/https";
-
 import { normalizeTerm, type NormalizedTerm } from "../term";
 import {
   BARKADA_GOALS,
@@ -16,7 +13,14 @@ export const CODE_LENGTH = 8;
 const CODE_PATTERN = new RegExp(`^[${CODE_ALPHABET}]{${CODE_LENGTH}}$`);
 const GROUP_ID_PATTERN = /^[A-Za-z0-9]{1,40}$/;
 
-const invalid = (message: string) => new HttpsError("invalid-argument", message);
+/**
+ * Bad input from the app, worded for the user. The callables turn it into an
+ * `invalid-argument` error (`toHttpsError`). A plain Error keeps this file free of
+ * Firebase imports, so the root `npm test` can run it without functions/node_modules.
+ */
+export class InputError extends Error {}
+
+const invalid = (message: string) => new InputError(message);
 
 /** Trimmed text with control characters removed and runs of spaces collapsed. */
 function cleanText(value: unknown): string {
@@ -70,18 +74,4 @@ export function parseTerm(schoolYear: unknown, semester: unknown): NormalizedTer
   const year = boundedText(schoolYear, 4, 20, "The school year");
   const term = boundedText(semester, 1, 20, "The semester");
   return normalizeTerm(year, term);
-}
-
-/** The caller's uid; every barkada callable needs a signed-in user (a verified email isn't required). */
-export function requireUid(request: CallableRequest<unknown>): string {
-  const uid = request.auth?.uid;
-  if (!uid) throw new HttpsError("unauthenticated", "You must be signed in.");
-  return uid;
-}
-
-/** Lets intended errors through; anything else is logged and replaced with a friendly message. */
-export function toHttpsError(err: unknown, where: string, uid: string, message: string): HttpsError {
-  if (err instanceof HttpsError) return err;
-  logger.error(`[${where}] failed`, { uid, err: err instanceof Error ? err.message : String(err) });
-  return new HttpsError("internal", message);
 }

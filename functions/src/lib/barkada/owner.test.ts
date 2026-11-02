@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { nextOwner } from "./store";
+import { nextOwner } from "./owner";
 import type { BarkadaDoc } from "./types";
 
 const at = (millis: number) => ({ toMillis: () => millis });
