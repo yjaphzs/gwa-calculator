@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import {
   ResponsiveDialog,
@@ -11,6 +11,7 @@ import {
   ResponsiveDialogTitle,
 } from "@/components/shared/responsive-dialog";
 import { displayHost } from "@/features/reports/lib/format";
+import { FullscreenPreview } from "@/features/share/components/fullscreen-preview";
 import { PreviewStage } from "@/features/share/components/preview-stage";
 import { ShareActions } from "@/features/share/components/share-actions";
 import { StudioTabs } from "@/features/share/components/studio-tabs";
@@ -44,8 +45,8 @@ function previewHeight(mobile: boolean, viewportHeight: number): number {
 
 /**
  * Make a share image: the live preview stays in view (swipe it for another
- * mood, or Surprise me), and the options sit in tabs beside or below it. The
- * image is made on this device; nothing is uploaded.
+ * mood, Surprise me, or tap it to see it full screen), and the options sit in
+ * tabs beside or below it. The image is made on this device; nothing is uploaded.
  */
 export default function ShareStudio({ open, onOpenChange, preset, subjects, semesters }: ShareStudioProps) {
   const templateRef = useRef<HTMLDivElement>(null);
@@ -56,6 +57,22 @@ export default function ShareStudio({ open, onOpenChange, preset, subjects, seme
   const viewport = useViewportSize();
   const maxHeight = previewHeight(mobile, viewport.height);
   const host = displayHost(APP_URL || "gwa-calculator.yjaphzs.xyz");
+  const [fullscreen, setFullscreen] = useState(false);
+  const expand = () => {
+    setFullscreen(true);
+    dismissTip();
+  };
+  // The same props for the captured template and the full-screen copy.
+  const template = studio.content && {
+    content: studio.content,
+    options: studio.options,
+    mood: studio.mood,
+    variant: studio.variant,
+    caption: studio.caption,
+    identity: studio.identity,
+    badges: studio.badges,
+    host,
+  };
 
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
@@ -68,19 +85,9 @@ export default function ShareStudio({ open, onOpenChange, preset, subjects, seme
         </ResponsiveDialogHeader>
         <ResponsiveDialogBody className="flex flex-col gap-3 overflow-hidden md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] md:gap-6 md:overflow-visible">
           <div className="shrink-0 md:sticky md:top-0 md:self-start">
-            {studio.content ? (
-              <PreviewStage studio={studio} maxHeight={maxHeight} onPlay={dismissTip}>
-                <ShareTemplate
-                  ref={templateRef}
-                  content={studio.content}
-                  options={studio.options}
-                  mood={studio.mood}
-                  variant={studio.variant}
-                  caption={studio.caption}
-                  identity={studio.identity}
-                  badges={studio.badges}
-                  host={host}
-                />
+            {template ? (
+              <PreviewStage studio={studio} maxHeight={maxHeight} onPlay={dismissTip} onExpand={expand}>
+                <ShareTemplate ref={templateRef} {...template} />
               </PreviewStage>
             ) : (
               <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
@@ -91,6 +98,11 @@ export default function ShareStudio({ open, onOpenChange, preset, subjects, seme
           <StudioTabs studio={studio} scopes={scopes} showTip={showTip} onTabChange={dismissTip} />
         </ResponsiveDialogBody>
         <ShareActions studio={studio} />
+        {template && (
+          <FullscreenPreview open={fullscreen} onOpenChange={setFullscreen} studio={studio}>
+            <ShareTemplate {...template} />
+          </FullscreenPreview>
+        )}
       </ResponsiveDialogContent>
     </ResponsiveDialog>
   );

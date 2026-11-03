@@ -32,6 +32,8 @@ export const CHANGELOG: ChangelogEntry[] = [
       { type: "new", text: "A friendly ranking by honor and badges. Friends see your honor band, and your GWA only if you choose to show it." },
       { type: "improved", text: "The Leaderboard page now has two tabs: My school and Barkada." },
       { type: "improved", text: "Signing in from a link brings you right back to the page it was for." },
+      { type: "improved", text: "See your share image full screen: tap the preview, then swipe for another mood." },
+      { type: "improved", text: "GWA Wrapped now fills your phone's screen, with its buttons in easy reach." },
       { type: "fixed", text: "Sign-in links only ever send you to pages on this site." },
     ],
   },

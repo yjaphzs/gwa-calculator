@@ -76,6 +76,12 @@ always the footer "GWA Calculator · host · Unofficial, just for fun".
   shown and the user's own caption. A one-time tip (`gwa_share_tip_seen`) points at the tabs.
   On phones the footer is one row (Share, Download, Copy caption) and the site links move to the
   Caption tab.
+- **Full-screen view:** a tap on the preview (or its expand button) opens `FullscreenPreview`, built
+  on `components/fullscreen-stage.tsx`. The stage shows an image as big as the screen allows,
+  Instagram Stories style: edge to edge on phones with the controls (mood or progress, and close)
+  over the image's top edge and one row of actions within thumb reach, padded for the safe
+  areas; a centered card on bigger screens. Swipes and the arrow keys step; GWA Wrapped uses the
+  same stage with tap zones (left third back, the rest forward).
 - **Captions:** one file per mood in `content/captions/`, each with English and Taglish lines
   in three groups: `honor` (shown only with an honor), `progress` (only without one), and
   `any`. Shuffle steps through the result's own lines, then the `any` ones: 20 per mood,
@@ -108,7 +114,8 @@ always the footer "GWA Calculator · host · Unofficial, just for fun".
 - **Badges:** an earned badge is the accent color with its icon on `bg-primary`; a locked one is
   grey with a lock, its hint, and a progress bar ("15 of 21 units"). Keep names short and
   hints in plain words.
-- **Wrapped slides:** dark backgrounds lit by one color, the user's scheme accent for the big
+- **Wrapped slides:** shown on the full-screen stage (see "Full-screen view" above). Dark
+  backgrounds lit by one color, the user's scheme accent for the big
   numbers, light Taglish copy, and the share footer on every slide. Term bars carry no
   numbers, so they never reveal a GWA.
 - **Barkada:** the goal card on top (a progress bar in the accent, confetti once when everyone

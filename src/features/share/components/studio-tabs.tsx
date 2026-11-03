@@ -42,7 +42,7 @@ export function StudioTabs({ studio, scopes, showTip, onTabChange }: StudioTabsP
       {showTip && (
         <p className="mt-2 flex items-center gap-1.5 text-xs font-medium">
           <SparklesIcon className="size-3.5 shrink-0 text-chart-line" />
-          Make it yours: pick a tab, or swipe the image.
+          Make it yours: pick a tab, swipe the image, or tap it to see it big.
         </p>
       )}
       <TabsContent value="look" className={PANEL}>
