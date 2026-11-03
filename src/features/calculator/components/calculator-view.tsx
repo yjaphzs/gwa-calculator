@@ -10,11 +10,15 @@ import { CalculatorSkeleton } from "@/features/calculator/components/calculator-
 import { CelebrationFireworks } from "@/features/calculator/components/celebration-fireworks";
 import { CurrentPanel } from "@/features/calculator/components/current-panel";
 import { SubjectEditorDialog } from "@/features/calculator/components/subject-editor-dialog";
+import { WhatIfDialog } from "@/features/calculator/components/what-if/what-if-dialog";
+import { useBadges } from "@/features/achievements/hooks/use-badges";
+import { useCelebrations } from "@/features/calculator/hooks/use-celebrations";
 import { useSubjectActions } from "@/features/calculator/hooks/use-subject-actions";
 import { useSubjectFilter } from "@/features/calculator/hooks/use-subject-filter";
 import { MergeDialog } from "@/features/persistence/components/merge-dialog";
 import { useCalculatorData } from "@/features/persistence/hooks/use-calculator-data";
 import { useReportActions } from "@/features/reports/hooks/use-report-actions";
+import { ImprovementDialog } from "@/features/semesters/components/improvement-dialog";
 import { SemesterEditorDialog } from "@/features/semesters/components/semester-editor-dialog";
 import { SemestersPanel } from "@/features/semesters/components/semesters-panel";
 import { useShareDialog } from "@/features/share/hooks/use-share-dialog";
@@ -23,6 +27,8 @@ import { useSemesterActions } from "@/features/semesters/hooks/use-semester-acti
 import { formatTermLabel } from "@/features/semesters/lib/semesters";
 import { QrTransferDialog } from "@/features/transfer/components/qr-transfer/qr-transfer-dialog";
 import { useFileTransfer } from "@/features/transfer/hooks/use-file-transfer";
+import { WrappedBanner } from "@/features/wrapped/components/wrapped-banner";
+import { useWrappedDialog } from "@/features/wrapped/hooks/use-wrapped-dialog";
 import { useEditorDialog } from "@/hooks/use-editor-dialog";
 import { useFocusShortcut } from "@/hooks/use-focus-shortcut";
 import { computeGwa, getHonorFor } from "@/lib/academic";
@@ -30,6 +36,7 @@ import type { Semester, Subject } from "@/types";
 
 // The share studio (templates, image rendering) loads the first time Share is used.
 const ShareStudio = dynamic(() => import("@/features/share/components/share-studio"), { ssr: false });
+const WrappedViewer = dynamic(() => import("@/features/wrapped/components/wrapped-viewer"), { ssr: false });
 
 /** The calculator page: Current and Semesters tabs, plus the dialogs they open. */
 export function CalculatorView() {
@@ -39,8 +46,8 @@ export function CalculatorView() {
   const { subjects, semesters, autosave } = data;
 
   const [tab, setTab] = useState("current");
-  const [celebrating, setCelebrating] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
+  const [whatIfOpen, setWhatIfOpen] = useState(false);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const { gwa, totalUnits } = useMemo(() => computeGwa(subjects), [subjects]);
@@ -56,6 +63,10 @@ export function CalculatorView() {
   const transfer = useFileTransfer({ state: { subjects, semesters, autosave }, replaceAll: data.replaceAll });
   const reports = useReportActions(subjects, semesters);
   const share = useShareDialog();
+  const wrapped = useWrappedDialog();
+  const celebrations = useCelebrations({ subjects, semesters, honor, loading: data.loading });
+  // Toasts for badges earned while using the calculator, and the nav's new-badge dot.
+  useBadges({ subjects, semesters, ready: !data.loading });
 
   const toggleSemester = useCallback(
     (id: string) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] })),
@@ -75,13 +86,14 @@ export function CalculatorView() {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="current">
+                <WrappedBanner semesters={semesters} onOpen={wrapped.openWrapped} />
                 <CurrentPanel
                   subjects={subjects}
                   hasSemesters={semesters.length > 0}
                   gwa={gwa}
                   honor={honor}
                   totalUnits={totalUnits}
-                  celebration={{ open: celebrating, onOpenChange: setCelebrating }}
+                  celebration={celebrations.celebration}
                   autosave={autosave}
                   onAutosaveChange={data.setAutosave}
                   filter={filter}
@@ -99,6 +111,7 @@ export function CalculatorView() {
                     onAcademicSummary: reports.printSummary,
                     onSave: subjectActions.saveNow,
                     onShare: (preset) => share.openShare({ ...preset, scope: { kind: "current" } }),
+                    onWhatIf: () => setWhatIfOpen(true),
                   }}
                 />
               </TabsContent>
@@ -109,6 +122,7 @@ export function CalculatorView() {
                   onToggle={toggleSemester}
                   onAcademicSummary={reports.printSummary}
                   onShareOverall={() => share.openShare({ scope: { kind: "overall" } })}
+                  onWrapped={wrapped.openWrapped}
                   onSaveCurrent={semesterEditor.openCreate}
                   hasCurrentSubjects={subjects.length > 0}
                   actions={{
@@ -123,7 +137,7 @@ export function CalculatorView() {
             </Tabs>
           )}
 
-      <CelebrationFireworks active={celebrating} />
+      <CelebrationFireworks active={celebrations.celebration.open} />
 
       <SubjectEditorDialog
         editor={subjectEditor}
@@ -135,7 +149,10 @@ export function CalculatorView() {
         editor={semesterEditor}
         semesters={semesters}
         subjects={subjects}
-        onCreate={semesterActions.createSemester}
+        onCreate={(values) => {
+          const saved = semesterActions.createSemester(values);
+          celebrations.onSemesterSaved([...semesters, saved], saved);
+        }}
         onUpdate={semesterActions.updateSemester}
       />
       <SubjectEditorDialog
@@ -150,6 +167,7 @@ export function CalculatorView() {
             : undefined
         }
       />
+      <WhatIfDialog open={whatIfOpen} onOpenChange={setWhatIfOpen} subjects={subjects} />
       <QrTransferDialog
         open={qrOpen}
         onOpenChange={setQrOpen}
@@ -167,6 +185,12 @@ export function CalculatorView() {
           semesters={semesters}
         />
       )}
+      {wrapped.used && <WrappedViewer open={wrapped.open} onOpenChange={wrapped.setOpen} semesters={semesters} />}
+      <ImprovementDialog
+        saved={celebrations.saved}
+        onClose={celebrations.closeSaved}
+        onShare={(semester) => share.openShare({ scope: { kind: "semester", id: semester.id }, mood: "fun" })}
+      />
       <MergeDialog conflict={data.pendingMerge} onResolve={data.resolveMerge} />
     </AppShell>
   );

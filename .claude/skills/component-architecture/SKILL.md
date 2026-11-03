@@ -34,8 +34,8 @@ src/lib/                  Cross-feature pure logic: academic.ts (GWA/honors), ut
 src/config/ context/ types/
 ```
 
-Features: `calculator`, `semesters`, `persistence`, `transfer`, `reports`, `share`, `appearance`, `leaderboard`,
-`account`, `auth`, `changelog`, `guide`. A feature may import from `components/`, `hooks/`,
+Features: `calculator`, `semesters`, `persistence`, `transfer`, `reports`, `share`, `appearance`,
+`achievements`, `wrapped`, `barkada`, `leaderboard`, `account`, `auth`, `changelog`, `guide`. A feature may import from `components/`, `hooks/`,
 `lib/`, `config/`, `types/`, and another feature's files by path. Never import from `src/app/`.
 
 ## Split recipes (pick the first that applies)

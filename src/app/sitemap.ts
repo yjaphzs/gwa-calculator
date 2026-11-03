@@ -9,6 +9,7 @@ export const dynamic = "force-static";
 const PAGES: Array<{ path: string; priority: number; changeFrequency: "monthly" | "yearly" }> = [
   { path: "/", priority: 1, changeFrequency: "monthly" },
   { path: "/how-to-compute-gwa/", priority: 0.9, changeFrequency: "monthly" },
+  { path: "/achievements/", priority: 0.6, changeFrequency: "monthly" },
   { path: "/terms-and-conditions/", priority: 0.2, changeFrequency: "yearly" },
   { path: "/privacy-policy/", priority: 0.2, changeFrequency: "yearly" },
 ];

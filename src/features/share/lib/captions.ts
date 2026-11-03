@@ -2,10 +2,14 @@ import { CHILL } from "@/features/share/content/captions/chill";
 import { CUTE } from "@/features/share/content/captions/cute";
 import { FUN } from "@/features/share/content/captions/fun";
 import { MINIMAL } from "@/features/share/content/captions/minimal";
+import { PASKO } from "@/features/share/content/captions/pasko";
 import { PROUD } from "@/features/share/content/captions/proud";
+import { RECOGNITION } from "@/features/share/content/captions/recognition";
 import { RETRO } from "@/features/share/content/captions/retro";
 import { ROCK } from "@/features/share/content/captions/rock";
 import { SAD } from "@/features/share/content/captions/sad";
+import { SPOOKY } from "@/features/share/content/captions/spooky";
+import { VALENTINES } from "@/features/share/content/captions/valentines";
 import type { MoodId } from "@/features/share/lib/moods";
 import type { CaptionLanguage } from "@/features/share/lib/share-options";
 
@@ -33,6 +37,10 @@ export const CAPTIONS: Record<MoodId, MoodCaptions> = {
   cute: CUTE,
   retro: RETRO,
   minimal: MINIMAL,
+  pasko: PASKO,
+  valentines: VALENTINES,
+  recognition: RECOGNITION,
+  spooky: SPOOKY,
 };
 
 /** The longest caption a user can write; long ones are set smaller to fit. */

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { describeHonorProgress, honorProgress, requiredTermGwa } from "@/lib/gwa-insights";
+import { describeHonorProgress, honorProgress, honorStars, nextStop, requiredTermGwa } from "@/lib/gwa-insights";
 
 const s = (grade: number, units: number) => ({ grade, units });
 
@@ -50,5 +50,26 @@ describe("requiredTermGwa", () => {
   it("reports the best possible cumulative when the target is out of reach", () => {
     // Even all 1.00s: (2.5×60 + 1×20) / 80 = 2.125
     expect(requiredTermGwa([s(2.5, 60)], 1.45, 20)).toEqual({ kind: "out-of-reach", bestCumulative: 2.125 });
+  });
+});
+
+describe("nextStop", () => {
+  it("points to the band just above, semester or Latin", () => {
+    expect(nextStop(1.6, false)).toEqual({ name: "University Scholar", gap: 0.1 });
+    expect(nextStop(2.3, false)).toEqual({ name: "Dean's Lister", gap: 0.3 });
+    expect(nextStop(1.4, false)).toBeNull();
+    expect(nextStop(1.5, true)).toEqual({ name: "Magna Cum Laude", gap: 0.05 });
+    expect(nextStop(1.9, true)).toEqual({ name: "Cum Laude", gap: 0.15 });
+    expect(nextStop(1.1, true)).toBeNull();
+    expect(nextStop(null, false)).toBeNull();
+  });
+});
+
+describe("honorStars", () => {
+  it("ranks semester and Latin honors", () => {
+    expect(honorStars("University Scholar")).toBe(3);
+    expect(honorStars("Dean's Lister")).toBe(1);
+    expect(honorStars("Magna Cum Laude")).toBe(2);
+    expect(honorStars(null)).toBe(0);
   });
 });

@@ -23,6 +23,35 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "2.8.0",
+    date: "November 2, 2026",
+    title: "Barkada challenge",
+    changes: [
+      { type: "new", text: "Barkada: start a group with up to 10 friends, share the invite link, and take on the term together." },
+      { type: "new", text: "Pick a shared goal, like everyone Dean's Lister or better, and see who has made it so far." },
+      { type: "new", text: "A friendly ranking by honor and badges. Friends see your honor band, and your GWA only if you choose to show it." },
+      { type: "improved", text: "The Leaderboard page now has two tabs: My school and Barkada." },
+      { type: "improved", text: "Signing in from a link brings you right back to the page it was for." },
+      { type: "fixed", text: "Sign-in links only ever send you to pages on this site." },
+    ],
+  },
+  {
+    version: "2.7.0",
+    date: "November 2, 2026",
+    title: "Badges, Wrapped, and more fun",
+    changes: [
+      { type: "new", text: "Earn badges like Uno!, Comeback, and Scholar Streak on the new Achievements page." },
+      { type: "new", text: "GWA Wrapped: your school year as a six-slide story you can share, featured from March to June." },
+      { type: "new", text: "New share styles: a receipt, a trading card with your badges, and a boarding pass to your next honor." },
+      { type: "new", text: "Seasonal moods for your share images: Pasko, Valentine's, Recognition, and Spooky, each in its season." },
+      { type: "new", text: "What if? Slide your grades around to see your GWA and honor change, without saving anything." },
+      { type: "new", text: "Beat your last semester and the app cheers with confetti: \"Gumanda ng 0.18!\"" },
+      { type: "improved", text: "Making a share image is easier on phones: the preview stays on screen, options sit in tabs, and you can swipe moods or tap 🎲 Surprise me." },
+      { type: "improved", text: "Your GWA rolls into place, and the GWA card has a new playful line each day." },
+      { type: "improved", text: "On Android, a short buzz when you save a semester or earn an honor or a badge." },
+    ],
+  },
+  {
     version: "2.6.0",
     date: "October 31, 2026",
     title: "Share and make it yours",

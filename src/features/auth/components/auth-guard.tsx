@@ -4,11 +4,13 @@ import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-provider';
 import { LoadingScreen } from '@/components/layout/loading-screen';
+import { withRedirect } from '@/features/auth/lib/redirect';
 
 /**
- * Wraps auth-only routes (/account).
+ * Wraps auth-only routes (/account, /leaderboard).
  * - Shows a loader while auth state resolves.
- * - Redirects to /login (with ?redirect=) when signed out.
+ * - Redirects to /login (with ?redirect=) when signed out. The query string
+ *   comes along, so an invite link (/leaderboard/?join=…) survives sign-in.
  */
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -17,7 +19,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
+      router.replace(withRedirect('/login', pathname + window.location.search));
     }
   }, [user, loading, router, pathname]);
 

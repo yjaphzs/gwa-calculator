@@ -276,8 +276,10 @@ function FireworksBackground({
         ),
       );
       const timeout = rand(300, 800) / population;
-      setTimeout(launchFirework, timeout);
+      // Local fix: keep the handle so cleanup can stop the launch chain.
+      launchTimer = setTimeout(launchFirework, timeout);
     };
+    let launchTimer: ReturnType<typeof setTimeout> | undefined;
  
     launchFirework();
  
@@ -337,6 +339,7 @@ function FireworksBackground({
       window.removeEventListener('resize', setCanvasSize);
       container.removeEventListener('click', handleClick);
       cancelAnimationFrame(animationFrameId);
+      clearTimeout(launchTimer);
     };
   }, [
     population,

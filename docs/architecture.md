@@ -19,15 +19,19 @@ src/
 │  ├─ (legal)/                /terms-and-conditions, /privacy-policy
 │  ├─ (auth)/                 /login, /register, /forgot-password   (GuestGuard)
 │  ├─ auth/action/            Firebase email-action links (verify email, reset password)
+│  ├─ achievements/           /achievements (public: badges from the user's own data)
 │  ├─ account/                /account      (AuthGuard)
-│  └─ leaderboard/            /leaderboard  (AuthGuard)
+│  └─ leaderboard/            /leaderboard  (AuthGuard; My school and Barkada tabs)
 ├─ features/
-│  ├─ calculator/             working subjects: view, GWA card, toolbar/, list, form, editor dialog
+│  ├─ calculator/             working subjects: view, GWA card, toolbar/, list, form, editor dialog, what-if/
 │  ├─ semesters/              saved semesters: list, card, form, editor dialog; lib/semesters.ts
 │  ├─ persistence/            useCalculatorData + guest/cloud stores, merge dialog
 │  ├─ transfer/               JSON import/export, QR transfer (codec in lib/qr-frames.ts)
 │  ├─ reports/                printable Semester Report / Academic Summary (lib/ builds HTML)
-│  ├─ share/                  share images: studio dialog, templates, moods/captions, render + share
+│  ├─ share/                  share images: studio, templates (classic, receipt, card, pass), moods + seasons, captions
+│  ├─ achievements/           badges: definitions (content/), rules, seen tracking, the page
+│  ├─ wrapped/                GWA Wrapped: year summary (lib/), story slides, viewer, banner
+│  ├─ barkada/                barkada challenges: board, goal, ranking, invites, dialogs
 │  ├─ appearance/             color schemes + mode: dialog, derivation, store, pre-paint script
 │  ├─ guide/                  the how-to-compute guide: content/ data + sections + try-it widget
 │  ├─ leaderboard/            boards, school picker, settings subscription
@@ -98,6 +102,41 @@ phone's share sheet reaches Instagram, Facebook, X…); otherwise the image down
 links (X, Threads, Facebook) carry the caption and app link only. The studio opens from the
 Congratulations dialog, the GWA card, the subjects menu, a semester's menu, and "Share overall".
 
+## Achievements
+
+`features/achievements` judges 16 badges (`content/badges.ts`) from the user's own subjects and
+saved semesters (`lib/badge-stats.ts`, `lib/evaluate-badges.ts`; GWA and honors only through
+`lib/academic.ts` and `lib/gwa-insights.ts`). `useBadges` runs on the calculator (a toast and a
+buzz for badges earned during a visit) and on `/achievements` (marks them seen). The nav's
+new-badge dot reads only a localStorage count (`lib/badge-seen.ts`), so other pages never load
+calculator data for it.
+
+## GWA Wrapped
+
+`features/wrapped` sums up a school year once it has two saved semesters (`lib/wrapped.ts`:
+`wrappedYears`, `buildWrapped`). The viewer shows six 1080×1920 slides, scaled with the share
+preview, and each slide exports through the same `renderShareImage` / `shareImage` path as
+share images. It opens from the Semesters tab, the achievements page, and a March–June banner
+on the Current tab (hidden per school year).
+
+## Barkada challenges
+
+`features/barkada` is the Leaderboard page's Barkada tab. A barkada is one Firestore doc,
+`barkadas/{groupId}`, readable only by its members (`memberUids`) and written only by Cloud
+Functions (`functions/src/callable/barkada/`, logic in `functions/src/lib/barkada/`):
+
+- **Entries** come from each member's saved semester for the group's term, matched through
+  `normalizeTerm`. The server stores the status (graded, under 12 units, waiting), the semester
+  honor, and the GWA only as the member chooses: none, the whole number, or all of it.
+- **Updates:** `onCalculatorStateWritten` recomputes a member's entries when their saved
+  semesters change; changing the term recomputes everyone. The badge count is reported by the
+  member's app (`useBarkadaBadgeSync`, only for users known to be in a barkada).
+- **Client:** `subscribeMyBarkadas` is one `array-contains` query (at most 5 reads to open).
+  `lib/barkada-rank.ts` ranks by honor band, then badges (never GWA), and works out the goal.
+- **Invites:** `/leaderboard/?join=CODE` (`useLeaderboardTab`). `AuthGuard` sends the query
+  string through sign-in, and `safeRedirect` (`features/auth/lib/redirect.ts`) only follows
+  same-site paths.
+
 ## Appearance
 
 `features/appearance` keeps the color scheme in a small store (`lib/scheme-store.ts`): it sets
@@ -110,9 +149,9 @@ have none. Firestore rules validate the field (scheme list, hex accent, mode).
 
 | Piece | Where |
 |---|---|
-| Client SDK helpers | `src/lib/firebase/`. Firestore is split into `firestore/{profile,leaderboard,calculator}.ts` behind `firestore/index.ts` |
+| Client SDK helpers | `src/lib/firebase/`. Firestore is split into `firestore/{profile,leaderboard,calculator,barkada}.ts` behind `firestore/index.ts`. `NEXT_PUBLIC_FIREBASE_EMULATORS=true` points them at the local emulators |
 | Rules | `firestore.rules` (deny by default; users touch only their own `users/{uid}` subtree), `storage.rules` |
-| Functions | `functions/`, a separate package (Node 24, `asia-southeast1`). Callables: `deleteAccount`, `sendVerificationEmail`, `sendPasswordResetEmail`, `setLeaderboardParticipation`, `setLeaderboardHandle`, `refreshLeaderboardStanding`, `ensureLeaderboardBoard`. Trigger: `onCalculatorStateWritten` (republishes leaderboard entries). Every change to a school's entries rebuilds its `leaderboardBoards/{schoolId}` doc (`lib/leaderboard-board.ts`) |
+| Functions | `functions/`, a separate package (Node 24, `asia-southeast1`). Callables: `deleteAccount`, `sendVerificationEmail`, `sendPasswordResetEmail`, `setLeaderboardParticipation`, `setLeaderboardHandle`, `refreshLeaderboardStanding`, `ensureLeaderboardBoard`, and the barkada ones (`createBarkada`, `previewBarkada`, `joinBarkada`, `updateBarkadaMember`, `leaveBarkada`, `manageBarkada`). Trigger: `onCalculatorStateWritten` (republishes leaderboard entries and recomputes barkada entries). Every change to a school's entries rebuilds its `leaderboardBoards/{schoolId}` doc (`lib/leaderboard-board.ts`) |
 | Emails | Handlebars `.hbs` templates, compiled into `generated-templates.ts` with `npm run generate:emails`, sent via Resend. When Resend's quota is used up, the client falls back to Firebase Auth's built-in emails (`src/lib/firebase/email-delivery.ts`) |
 
 ## Build, test, deploy

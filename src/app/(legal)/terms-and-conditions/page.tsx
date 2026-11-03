@@ -11,7 +11,7 @@ export default function TermsPage() {
     <>
       <h1>Terms and Conditions</h1>
       <p>
-        <strong>Last updated: October 31, 2026</strong>
+        <strong>Last updated: November 2, 2026</strong>
       </p>
 
       <p>
@@ -65,6 +65,14 @@ export default function TermsPage() {
         record. Once you share it, it is subject to the terms of the platform or
         app you share it on.
       </p>
+      <p>
+        Some share images use playful designs, like a receipt, a trading card,
+        or a boarding pass, and <strong>GWA Wrapped</strong> turns a school year
+        into a set of story images. These are fun formats for your own numbers:
+        they are not real receipts, tickets, or certificates, and the same rules
+        apply. Badges on the Achievements page are earned from the figures you
+        enter, are just for fun, and are not awards from any school.
+      </p>
 
       <h2>3. Accounts</h2>
       <p>
@@ -109,7 +117,8 @@ export default function TermsPage() {
         </li>
         <li>
           Submit false information to, impersonate another person on, or
-          otherwise manipulate the leaderboard.
+          otherwise manipulate the leaderboard or a barkada, or use an abusive
+          or impersonating nickname or barkada name.
         </li>
         <li>
           Reverse engineer or misuse the Service in ways that harm us or other
@@ -117,7 +126,7 @@ export default function TermsPage() {
         </li>
       </ul>
 
-      <h2>6. Leaderboards (optional)</h2>
+      <h2>6. Leaderboards and barkadas (optional)</h2>
       <p>
         The leaderboard is an <strong>optional, opt-in</strong> feature. We do
         not publish any of your information to it unless you explicitly choose to
@@ -133,6 +142,17 @@ export default function TermsPage() {
         an accurate ranking. We may remove any entry that is abusive,
         impersonating, or otherwise violates these Terms. See our{" "}
         <a href="/privacy-policy">Privacy Policy</a> for how this data is handled.
+      </p>
+      <p>
+        A <strong>barkada</strong> is a private group of up to 10 people that you
+        start or join with an invite link or code. Its members see your
+        nickname, your honor band for the group&apos;s term, your badge count,
+        and your GWA only if you choose to show it, never your subjects or
+        grades. The barkada&apos;s owner can rename it, change its term and goal,
+        make a new invite link, remove members, or delete it, and you can leave
+        whenever you like. Barkada goals and rankings are a friendly game based
+        on figures you enter yourself, <strong>not an official ranking</strong>.
+        Please be kind to your barkada.
       </p>
 
       <h2>7. Availability and changes</h2>

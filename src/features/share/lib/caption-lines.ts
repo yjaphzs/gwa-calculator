@@ -26,21 +26,21 @@ const charEm = (ch: string, font: CaptionFont) => (EMOJI.test(ch) ? EMOJI_EM : W
  * wider than a line breaks anywhere (the template sets `overflow-wrap: anywhere`).
  * Errs high, so the layout never budgets too little.
  */
-export function captionLines(text: string, font: CaptionFont, size: number): number {
-  const max = CAPTION_WIDTH * SLACK;
+export function captionLines(text: string, font: CaptionFont, size: number, width = CAPTION_WIDTH): number {
+  const max = width * SLACK;
   const space = SPACE_EM[font] * size;
   let lines = 1;
   let used = 0;
   for (const word of text.trim().split(/\s+/)) {
-    const width = [...word].reduce((sum, ch) => sum + charEm(ch, font), 0) * size;
-    if (used > 0 && used + space + width <= max) {
-      used += space + width;
+    const wordWidth = [...word].reduce((sum, ch) => sum + charEm(ch, font), 0) * size;
+    if (used > 0 && used + space + wordWidth <= max) {
+      used += space + wordWidth;
       continue;
     }
     if (used > 0) lines++;
-    const extra = Math.max(0, Math.ceil(width / max) - 1);
+    const extra = Math.max(0, Math.ceil(wordWidth / max) - 1);
     lines += extra;
-    used = width - extra * max;
+    used = wordWidth - extra * max;
   }
   return lines;
 }

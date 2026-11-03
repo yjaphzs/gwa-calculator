@@ -23,3 +23,15 @@ export async function shareImage(blob: Blob, fileName: string, text: string): Pr
     throw err;
   }
 }
+
+/** Opens the share sheet with a link (an invite, say), or returns "unsupported" so the caller can copy it. */
+export async function shareUrl(url: string, text: string): Promise<ShareOutcome> {
+  if (typeof navigator === "undefined" || !navigator.share) return "unsupported";
+  try {
+    await navigator.share({ url, text });
+    return "shared";
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") return "cancelled";
+    return "unsupported";
+  }
+}

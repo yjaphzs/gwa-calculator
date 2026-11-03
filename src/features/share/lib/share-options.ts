@@ -10,6 +10,9 @@ export const FORMAT_SIZE: Record<ShareFormat, { width: number; height: number }>
 };
 
 export type SubjectFilter = "all" | "best3" | "best5" | "choose";
+/** The image's layout: the classic card, or a playful receipt, trading card, or boarding pass. */
+export type ShareStyle = "classic" | "receipt" | "card" | "pass";
+export const SHARE_STYLES: readonly ShareStyle[] = ["classic", "receipt", "card", "pass"];
 export type CaptionLanguage = "en" | "tl";
 
 /** What appears on the image. Personal details and individual grades are opt-in. */
@@ -30,6 +33,7 @@ export interface ShareShow {
 export interface ShareOptions {
   scope: ShareScope;
   format: ShareFormat;
+  style: ShareStyle;
   mood: MoodId;
   /** Index into the mood's color variants. */
   variant: number;
@@ -61,6 +65,7 @@ export function defaultOptions(preset: Partial<ShareOptions> = {}): ShareOptions
   return {
     scope: { kind: "current" },
     format: "post",
+    style: "classic",
     mood: "proud",
     variant: 0,
     language: "en",

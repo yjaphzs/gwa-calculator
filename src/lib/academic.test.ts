@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  GRADE_OPTIONS,
   HONOR_MIN_UNITS,
+  PASSING_GRADE_MAX,
   computeGwa,
   countsTowardGwa,
   getAcademicHonor,
@@ -112,5 +114,13 @@ describe("getLatinHonorFor", () => {
     ];
     // (9 + 6) / 12 = 1.25
     expect(getLatinHonorFor(subjects)).toBe("Magna Cum Laude");
+  });
+});
+
+describe("PASSING_GRADE_MAX", () => {
+  it("passes 3.00 and better, not 4.00 or 5.00", () => {
+    const passing = GRADE_OPTIONS.filter((g) => g <= PASSING_GRADE_MAX);
+    expect(passing.at(-1)).toBe(3.0);
+    expect(GRADE_OPTIONS.filter((g) => g > PASSING_GRADE_MAX)).toEqual([4.0, 5.0]);
   });
 });

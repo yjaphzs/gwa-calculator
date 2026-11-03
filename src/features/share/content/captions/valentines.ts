@@ -1,0 +1,73 @@
+import type { MoodCaptions } from "@/features/share/lib/captions";
+
+/** Valentine's: self-love, kilig, and a GWA that loves you back. */
+export const VALENTINES: MoodCaptions = {
+  en: {
+    honor: [
+      "Love my GWA. It loves me back.",
+      "Honors, my true love.",
+      "Roses are red, I made honors.",
+      "Date night with my honor roll.",
+      "Heart eyes for these grades.",
+      "My GWA and I: a perfect match.",
+    ],
+    progress: [
+      "Self-love counts too.",
+      "Not perfect, still lovable.",
+      "Loving the progress.",
+      "Be my Valentine, next sem's GWA.",
+      "Heart full, grades growing.",
+      "Falling for progress.",
+    ],
+    any: [
+      "Love letters to my grades.",
+      "Single, but my GWA is taken.",
+      "No date, just grades.",
+      "In a relationship with studying.",
+      "Sweet like these results.",
+      "Cupid hit my report card.",
+      "Chocolates and good news.",
+      "Valentine's plan: rest.",
+      "My heart belongs to uno.",
+      "Swipe right on this GWA.",
+      "Self-date after a good sem.",
+      "Love yourself, love your grades.",
+      "Hearts, flowers, and finals.",
+      "Roses are red, my books are too.",
+    ],
+  },
+  tl: {
+    honor: [
+      "Love ko ang GWA ko!",
+      "Honor ang jowa ko ngayong sem.",
+      "Kilig sa honors, grabe!",
+      "Ang tamis ng honor, parang choco.",
+      "Pasok sa honors, pasok sa puso.",
+      "Forever na kami ng honor roll.",
+    ],
+    progress: [
+      "Self-love muna, bes.",
+      "Hindi perfect, pero mahal ko pa rin.",
+      "Kilig pa rin kahit hindi honors.",
+      "Next sem, liligawan ko ang uno.",
+      "Unti-unti, mamahalin din ako ng grades.",
+      "Love ko pa rin ang sarili ko.",
+    ],
+    any: [
+      "Walang jowa, may grades.",
+      "Single pero may GWA.",
+      "Kilig sa grades, hindi sa crush.",
+      "Valentine ko ang tulog.",
+      "Ang tamis, parang tsokolate.",
+      "Mahal ko ang sarili ko, promise.",
+      "Jowa goals: magandang GWA.",
+      "Puso ko, puno ng uno.",
+      "Date with myself, at sulit.",
+      "Bulaklak at pasado.",
+      "Swipe right sa GWA ko.",
+      "Pa-chocolates naman diyan.",
+      "Crush ko ang uno.",
+      "Love letter para sa grades ko.",
+    ],
+  },
+};

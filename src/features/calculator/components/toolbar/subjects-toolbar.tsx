@@ -12,7 +12,15 @@ import { SubjectsEmptyState } from "@/features/calculator/components/toolbar/sub
 import { SubjectsMoreMenu } from "@/features/calculator/components/toolbar/subjects-more-menu";
 import { SubjectsSearchBar } from "@/features/calculator/components/toolbar/subjects-search-bar";
 import type { SubjectFilter } from "@/features/calculator/hooks/use-subject-filter";
+import type { Improvement } from "@/features/calculator/lib/improvement";
 import { HONOR_MIN_UNITS } from "@/lib/academic";
+
+/** The Congratulate dialog's state, and how the working set compares with the latest term. */
+export interface Celebration {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  improvement: Improvement | null;
+}
 
 export interface SubjectsToolbarActions {
   onAdd: () => void;
@@ -26,6 +34,8 @@ export interface SubjectsToolbarActions {
   onSave: () => void;
   /** Opens the share studio; the celebration presets a mood. */
   onShare: (preset?: Partial<ShareOptions>) => void;
+  /** Opens "What if?": try other grades without saving them. */
+  onWhatIf: () => void;
 }
 
 interface SubjectsToolbarProps {
@@ -34,7 +44,7 @@ interface SubjectsToolbarProps {
   gwa: number | null;
   honor: string | null;
   totalUnits: number;
-  celebration: { open: boolean; onOpenChange: (open: boolean) => void };
+  celebration: Celebration;
   actions: SubjectsToolbarActions;
   autosave: boolean;
   onAutosaveChange: (enabled: boolean) => void;
@@ -90,7 +100,8 @@ export function SubjectsToolbar({
           totalUnits={totalUnits}
           open={celebration.open}
           onOpenChange={celebration.onOpenChange}
-          onShare={() => actions.onShare({ mood: honor ? "proud" : "chill" })}
+          improvement={celebration.improvement}
+          onShare={() => actions.onShare({ mood: honor ? "proud" : celebration.improvement ? "fun" : "chill" })}
         />
         <ButtonGroup className="hidden md:flex">
           {totalUnits >= HONOR_MIN_UNITS && (

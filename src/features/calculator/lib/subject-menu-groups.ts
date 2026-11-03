@@ -9,6 +9,7 @@ import {
   SaveAllIcon,
   SaveIcon,
   Share2Icon,
+  SlidersHorizontalIcon,
 } from "lucide-react";
 
 import type { MenuGroup, MenuItem } from "@/components/shared/menu-types";
@@ -59,6 +60,11 @@ export function buildSubjectMenuGroups({
       items: [
         { kind: "action", id: "save-semester", label: "Save as semester", icon: ArchiveIcon, onSelect: actions.onSaveSemester },
       ],
+    },
+    {
+      id: "play",
+      label: heading("Play around"),
+      items: [{ kind: "action", id: "what-if", label: "What if?", icon: SlidersHorizontalIcon, onSelect: actions.onWhatIf }],
     },
     {
       id: "share",

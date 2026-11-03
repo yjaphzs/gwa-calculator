@@ -5,73 +5,62 @@ import { CopyIcon, DownloadIcon, LoaderCircleIcon, Share2Icon } from "lucide-rea
 
 import { ResponsiveDialogFooter, useResponsiveDialogIsDrawer } from "@/components/shared/responsive-dialog";
 import { Button } from "@/components/ui/button";
-import { APP_URL } from "@/config/app";
+import { ShareSiteLinks } from "@/features/share/components/share-site-links";
 import type { ShareStudio } from "@/features/share/hooks/use-share-studio";
 import { canShareImages } from "@/features/share/lib/share-targets";
-import { shareLink, type ShareSite } from "@/features/share/lib/share-text";
-
-const SITES: { site: ShareSite; label: string }[] = [
-  { site: "x", label: "X" },
-  { site: "threads", label: "Threads" },
-  { site: "facebook", label: "Facebook" },
-];
 
 /**
  * Share (the phone's share sheet: Instagram, Facebook, Messenger, X…),
- * Download, and Copy caption. Site links carry the caption and app link only;
- * no site accepts an image from a link.
+ * Download, and Copy caption. On a phone they fit one row, so the preview and
+ * the options keep the room; the site links move to the Caption tab there.
  */
 export function ShareActions({ studio }: { studio: ShareStudio }) {
   const drawer = useResponsiveDialogIsDrawer();
   const [sheet, setSheet] = useState(false);
   useEffect(() => setSheet(canShareImages()), []);
   const { busy, content } = studio;
-  const size = drawer ? "h-11" : undefined;
+  const idle = !content || busy !== null;
   const spinner = <LoaderCircleIcon className="size-4 animate-spin" />;
 
   const share = (
-    <Button className={size} disabled={!content || busy !== null} onClick={sheet ? studio.share : studio.download}>
+    <Button className={drawer ? "h-11 flex-1" : undefined} disabled={idle} onClick={sheet ? studio.share : studio.download}>
       {busy ? spinner : sheet ? <Share2Icon className="size-4" /> : <DownloadIcon className="size-4" />}
       {sheet ? "Share image" : "Download image"}
     </Button>
   );
 
+  if (drawer) {
+    return (
+      <ResponsiveDialogFooter className="flex-row gap-2">
+        {share}
+        {sheet && (
+          <Button variant="outline" size="icon" className="size-11" disabled={idle} onClick={studio.download} aria-label="Download image" title="Download image">
+            <DownloadIcon className="size-4" />
+          </Button>
+        )}
+        <Button variant="outline" size="icon" className="size-11" disabled={!content} onClick={studio.copyCaption} aria-label="Copy caption" title="Copy caption">
+          <CopyIcon className="size-4" />
+        </Button>
+      </ResponsiveDialogFooter>
+    );
+  }
+
   return (
     <ResponsiveDialogFooter className="flex-col items-stretch gap-3 sm:flex-col sm:items-stretch sm:justify-start">
-      {/* Sheet: the main action full width, the others side by side to save height. */}
-      {drawer && share}
-      <div className={drawer ? "grid grid-cols-2 gap-2" : "flex flex-wrap justify-end gap-2"}>
+      <div className="flex flex-wrap justify-end gap-2">
         {sheet && (
-          <Button variant="outline" className={size} disabled={!content || busy !== null} onClick={studio.download}>
+          <Button variant="outline" disabled={idle} onClick={studio.download}>
             <DownloadIcon className="size-4" />
             Download
           </Button>
         )}
-        <Button
-          variant="outline"
-          className={`${size ?? ""} ${drawer && !sheet ? "col-span-2" : ""}`}
-          disabled={!content}
-          onClick={studio.copyCaption}
-        >
+        <Button variant="outline" disabled={!content} onClick={studio.copyCaption}>
           <CopyIcon className="size-4" />
           Copy caption
         </Button>
-        {!drawer && share}
+        {share}
       </div>
-      <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-muted-foreground sm:justify-end">
-        <span>Share the link and caption on</span>
-        {SITES.map(({ site, label }) => (
-          <a
-            key={site}
-            href={shareLink(site, studio.text, APP_URL)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-foreground underline-offset-4 hover:underline"
-          >
-            {label}
-          </a>
-        ))}
-      </div>
+      <ShareSiteLinks text={studio.text} className="justify-end" />
     </ResponsiveDialogFooter>
   );
 }
