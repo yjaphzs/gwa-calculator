@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { CopyIcon, DownloadIcon, LoaderCircleIcon, Share2Icon } from "lucide-react";
 
 import { ResponsiveDialogFooter, useResponsiveDialogIsDrawer } from "@/components/shared/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import { ShareSiteLinks } from "@/features/share/components/share-site-links";
+import { useCanShareImages } from "@/features/share/hooks/use-can-share-images";
 import type { ShareStudio } from "@/features/share/hooks/use-share-studio";
-import { canShareImages } from "@/features/share/lib/share-targets";
 
 /**
  * Share (the phone's share sheet: Instagram, Facebook, Messenger, X…),
@@ -16,8 +15,7 @@ import { canShareImages } from "@/features/share/lib/share-targets";
  */
 export function ShareActions({ studio }: { studio: ShareStudio }) {
   const drawer = useResponsiveDialogIsDrawer();
-  const [sheet, setSheet] = useState(false);
-  useEffect(() => setSheet(canShareImages()), []);
+  const sheet = useCanShareImages();
   const { busy, content } = studio;
   const idle = !content || busy !== null;
   const spinner = <LoaderCircleIcon className="size-4 animate-spin" />;

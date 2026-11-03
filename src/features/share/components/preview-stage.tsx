@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, Maximize2Icon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { SharePreview } from "@/features/share/components/share-preview";
@@ -14,6 +14,8 @@ interface PreviewStageProps {
   maxHeight: number;
   /** Called on any swipe, arrow, or Surprise (it ends the first-time tip). */
   onPlay: () => void;
+  /** Opens the image full screen (a tap on it, or the expand button). */
+  onExpand: () => void;
   /** The full-size template. */
   children: ReactNode;
 }
@@ -22,16 +24,27 @@ const ARROW = "shrink-0 rounded-full text-muted-foreground max-md:size-10";
 
 /**
  * The live preview, with the quick ways to play: swipe it (or use the arrows)
- * for the next mood, and Surprise me for a whole new look.
+ * for the next mood, Surprise me for a whole new look, and a tap to see it
+ * full screen.
  */
-export function PreviewStage({ studio, maxHeight, onPlay, children }: PreviewStageProps) {
+export function PreviewStage({ studio, maxHeight, onPlay, onExpand, children }: PreviewStageProps) {
   const { moods, mood } = studio;
   const at = Math.max(0, moods.findIndex((m) => m.id === mood.id));
   const step = (delta: number) => {
     studio.stepMood(delta);
     onPlay();
   };
-  const swipe = useSwipe((direction) => step(direction === "left" ? 1 : -1));
+  const swipe = useSwipe((direction) => step(direction === "left" ? 1 : -1), { onTap: onExpand });
+  const expand = (
+    <button
+      type="button"
+      onClick={onExpand}
+      aria-label="View full screen"
+      className="absolute top-2 right-2 flex size-9 items-center justify-center rounded-full bg-black/50 text-white shadow-md backdrop-blur-sm after:absolute after:-inset-1 hover:bg-black/65 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+    >
+      <Maximize2Icon className="size-4" />
+    </button>
+  );
 
   return (
     <div className="flex flex-col gap-2">
@@ -40,8 +53,8 @@ export function PreviewStage({ studio, maxHeight, onPlay, children }: PreviewSta
           <ChevronLeftIcon className="size-5" />
         </Button>
         {/* data-vaul-no-drag: a sideways swipe here changes the mood instead of dragging the sheet. */}
-        <div data-vaul-no-drag className="min-w-0 flex-1 cursor-grab select-none active:cursor-grabbing" {...swipe}>
-          <SharePreview format={studio.options.format} maxHeight={maxHeight}>
+        <div data-vaul-no-drag className="min-w-0 flex-1 cursor-pointer select-none" {...swipe}>
+          <SharePreview format={studio.options.format} maxHeight={maxHeight} overlay={expand}>
             {children}
           </SharePreview>
         </div>
