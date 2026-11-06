@@ -1,11 +1,18 @@
 "use client";
 
 import { useCallback, type Dispatch, type SetStateAction } from "react";
+import { toast } from "sonner";
 
 import type { SubjectFormValues } from "@/features/calculator/components/subject-form";
 import { buildSubject } from "@/features/calculator/lib/subject-status";
 import type { SemesterValues } from "@/features/semesters/components/semester-form";
-import { replaceSemesterSubject } from "@/features/semesters/lib/semesters";
+import {
+  addSemesterSubject as withAddedSubject,
+  removeSemesterSubject as withoutSubject,
+  replaceSemesterSubject,
+  restoreSemesterSubject,
+  shortTermLabel,
+} from "@/features/semesters/lib/semesters";
 import type { Semester, Subject } from "@/types";
 
 interface Options {
@@ -14,7 +21,7 @@ interface Options {
   removeSubjects: () => void;
 }
 
-/** Archive the working subjects as a semester, rename or delete one, edit its subjects. */
+/** Archive the working subjects as a semester, rename or delete one, and add, edit, or remove its subjects. */
 export function useSemesterActions({
   subjects,
   setSemesters,
@@ -64,5 +71,29 @@ export function useSemesterActions({
     [setSemesters],
   );
 
-  return { createSemester, updateSemester, deleteSemester, updateSemesterSubject };
+  // Add a subject to a saved semester (a late grade, or one that was missed).
+  const addSemesterSubject = useCallback(
+    (semesterId: string, values: SubjectFormValues) => {
+      setSemesters((prev) => withAddedSubject(prev, semesterId, buildSubject(crypto.randomUUID(), values)));
+    },
+    [setSemesters],
+  );
+
+  // Remove one, with Undo, like working subjects. A semester keeps at least one subject.
+  const removeSemesterSubject = useCallback(
+    (semester: Semester, subject: Subject) => {
+      // Read when Undo is clicked, by which point the updater below has run.
+      let index = -1;
+      setSemesters((prev) => {
+        index = prev.find((s) => s.id === semester.id)?.subjects.findIndex((s) => s.id === subject.id) ?? -1;
+        return withoutSubject(prev, semester.id, subject.id);
+      });
+      toast(`Removed ${subject.code} from ${shortTermLabel(semester)}`, {
+        action: { label: "Undo", onClick: () => setSemesters((prev) => restoreSemesterSubject(prev, semester.id, subject, index)) },
+      });
+    },
+    [setSemesters],
+  );
+
+  return { createSemester, updateSemester, deleteSemester, updateSemesterSubject, addSemesterSubject, removeSemesterSubject };
 }

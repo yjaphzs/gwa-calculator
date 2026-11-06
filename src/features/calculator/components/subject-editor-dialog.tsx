@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, type ReactNode } from "react";
 
 import { FormDialog } from "@/components/shared/form-dialog";
 import { SubjectForm, type SubjectFormValues } from "@/features/calculator/components/subject-form";
@@ -16,10 +16,22 @@ interface SubjectEditorDialogProps {
   onUpdate: (id: string, values: SubjectFormValues) => void;
   /** Overrides the default edit-mode description. */
   editDescription?: string;
+  /** Overrides the default add-mode description. */
+  createDescription?: string;
+  /** Extra content under the form, such as a remove button. */
+  footer?: ReactNode;
 }
 
 /** Add or edit a subject in a modal form. */
-export function SubjectEditorDialog({ editor, subjects, onCreate, onUpdate, editDescription }: SubjectEditorDialogProps) {
+export function SubjectEditorDialog({
+  editor,
+  subjects,
+  onCreate,
+  onUpdate,
+  editDescription,
+  createDescription,
+  footer,
+}: SubjectEditorDialogProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const { onOpenChange, editing } = editor;
   const close = useCallback(() => onOpenChange(false), [onOpenChange]);
@@ -33,7 +45,7 @@ export function SubjectEditorDialog({ editor, subjects, onCreate, onUpdate, edit
       description={
         editing
           ? (editDescription ?? "Update the form below to edit your subject. Click update when you're done.")
-          : "Fill out the form below to add your subject. Click save when you're done."
+          : (createDescription ?? "Fill out the form below to add your subject. Click save when you're done.")
       }
       submitLabel={editing ? "Update" : "Save"}
       onSubmit={() => formRef.current?.requestSubmit()}
@@ -51,6 +63,7 @@ export function SubjectEditorDialog({ editor, subjects, onCreate, onUpdate, edit
           submit.run(() => (editing ? onUpdate(editing.id, values) : onCreate?.(values)))
         }
       />
+      {footer}
     </FormDialog>
   );
 }

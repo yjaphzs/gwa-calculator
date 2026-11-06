@@ -9,8 +9,10 @@ export interface SemesterCardActions {
   onShare: (semester: Semester) => void;
   onEdit: (semester: Semester) => void;
   onDelete: (semester: Semester) => void;
-  /** Edit one subject of this saved semester (grade, status, units). */
+  /** Edit one subject of this saved semester (grade, status, units), or remove it. */
   onEditSubject: (semester: Semester, subject: Subject) => void;
+  /** Add a subject to this saved semester. */
+  onAddSubject: (semester: Semester) => void;
 }
 
 interface SemesterCardProps {
@@ -38,6 +40,7 @@ export function SemesterCard({ semester, expanded, onToggle, actions }: Semester
             onShare={actions.onShare}
             onEdit={actions.onEdit}
             onDelete={actions.onDelete}
+            onAddSubject={actions.onAddSubject}
           />
         </ItemTitle>
         <div className="mt-4">
@@ -47,6 +50,7 @@ export function SemesterCard({ semester, expanded, onToggle, actions }: Semester
             open={expanded}
             onOpenChange={() => onToggle(semester.id)}
             onEditSubject={(subject) => actions.onEditSubject(semester, subject)}
+            onAddSubject={() => actions.onAddSubject(semester)}
             className="mt-4 flex flex-col gap-2"
             heading={
               <>

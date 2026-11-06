@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { ChevronsUpDown, Pencil } from "lucide-react";
+import { ChevronsUpDown, Pencil, PlusIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -69,6 +69,8 @@ interface ArchivedSubjectsProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onEditSubject?: (subject: Subject) => void;
+  /** Saved semesters only; the save-semester preview stays read-only. */
+  onAddSubject?: () => void;
   className?: string;
 }
 
@@ -79,6 +81,7 @@ export function ArchivedSubjects({
   open,
   onOpenChange,
   onEditSubject,
+  onAddSubject,
   className = "flex flex-col gap-2",
 }: ArchivedSubjectsProps) {
   const [first, ...rest] = subjects;
@@ -102,6 +105,12 @@ export function ArchivedSubjects({
           <ArchivedSubjectRow key={subject.id} subject={subject} onEdit={onEditSubject} />
         ))}
       </CollapsibleContent>
+      {onAddSubject && (
+        <Button variant="ghost" size="sm" className="self-start text-muted-foreground max-md:h-10" onClick={onAddSubject}>
+          <PlusIcon className="size-4" />
+          Add subject
+        </Button>
+      )}
     </Collapsible>
   );
 }

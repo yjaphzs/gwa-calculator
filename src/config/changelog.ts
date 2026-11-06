@@ -30,6 +30,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       { type: "new", text: "Barkada: start a group with up to 10 friends, share the invite link, and take on the term together." },
       { type: "new", text: "Pick a shared goal, like everyone Dean's Lister or better, and see who has made it so far." },
       { type: "new", text: "A friendly ranking by honor and badges. Friends see your honor band, and your GWA only if you choose to show it." },
+      { type: "new", text: "Add or remove subjects in a saved semester, for a late grade or a subject you missed." },
       { type: "improved", text: "The Leaderboard page now has two tabs: My school and Barkada." },
       { type: "improved", text: "Signing in from a link brings you right back to the page it was for." },
       { type: "improved", text: "See your share image full screen: tap the preview, then swipe for another mood." },

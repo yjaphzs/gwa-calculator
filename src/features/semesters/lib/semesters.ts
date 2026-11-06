@@ -72,6 +72,35 @@ export function replaceSemesterSubject(
   );
 }
 
+/** Change one semester's subject list; everything else is untouched. */
+function withSubjects(semesters: Semester[], semesterId: string, change: (subjects: Subject[]) => Subject[]): Semester[] {
+  return semesters.map((semester) => (semester.id === semesterId ? { ...semester, subjects: change(semester.subjects) } : semester));
+}
+
+/** Add a subject to the end of one saved semester (a late grade, or one that was missed). */
+export function addSemesterSubject(semesters: Semester[], semesterId: string, subject: Subject): Semester[] {
+  return withSubjects(semesters, semesterId, (subjects) => [...subjects, subject]);
+}
+
+/**
+ * Remove one subject from a saved semester. A semester keeps at least one
+ * subject (delete the semester instead), so removing the last one changes nothing.
+ */
+export function removeSemesterSubject(semesters: Semester[], semesterId: string, subjectId: string): Semester[] {
+  return withSubjects(semesters, semesterId, (subjects) =>
+    subjects.length > 1 ? subjects.filter((s) => s.id !== subjectId) : subjects,
+  );
+}
+
+/** Put a removed subject back where it was (Undo), unless it's already there. */
+export function restoreSemesterSubject(semesters: Semester[], semesterId: string, subject: Subject, index: number): Semester[] {
+  return withSubjects(semesters, semesterId, (subjects) => {
+    if (subjects.some((s) => s.id === subject.id)) return subjects;
+    const at = index < 0 || index > subjects.length ? subjects.length : index;
+    return [...subjects.slice(0, at), subject, ...subjects.slice(at)];
+  });
+}
+
 /** Whether another semester already uses this term + school year. */
 export function isDuplicateTerm(
   semesters: Semester[],

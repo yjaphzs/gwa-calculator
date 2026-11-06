@@ -1,10 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  addSemesterSubject,
   formatTermLabel,
   generateSchoolYears,
   isDuplicateTerm,
+  removeSemesterSubject,
   replaceSemesterSubject,
+  restoreSemesterSubject,
   sortNewestFirst,
   sortOldestFirst,
 } from "@/features/semesters/lib/semesters";
@@ -69,6 +72,36 @@ describe("replaceSemesterSubject", () => {
     expect(next[0].subjects).toEqual([graded]);
     expect(next[1].subjects).toEqual([subject]);
     expect(list[0].subjects).toEqual([subject]);
+  });
+});
+
+describe("adding and removing subjects in a saved semester", () => {
+  const subj = (id: string) => ({ id, code: id.toUpperCase(), title: `Subject ${id}`, grade: 1.5, units: 3 });
+  const list = () => [
+    { ...sem("a", "First", "2025-2026"), subjects: [subj("x"), subj("y"), subj("z")] },
+    { ...sem("b", "Second", "2025-2026"), subjects: [subj("w")] },
+  ];
+
+  it("adds to the end of one semester only", () => {
+    const before = list();
+    const next = addSemesterSubject(before, "a", subj("new"));
+    expect(next[0].subjects.map((s) => s.id)).toEqual(["x", "y", "z", "new"]);
+    expect(next[1]).toBe(before[1]);
+    expect(before[0].subjects).toHaveLength(3);
+  });
+
+  it("removes one subject, but never a semester's last", () => {
+    const next = removeSemesterSubject(list(), "a", "y");
+    expect(next[0].subjects.map((s) => s.id)).toEqual(["x", "z"]);
+    expect(removeSemesterSubject(list(), "b", "w")[1].subjects.map((s) => s.id)).toEqual(["w"]);
+  });
+
+  it("restores a removed subject at its old place, once", () => {
+    const removed = removeSemesterSubject(list(), "a", "y");
+    const restored = restoreSemesterSubject(removed, "a", subj("y"), 1);
+    expect(restored[0].subjects.map((s) => s.id)).toEqual(["x", "y", "z"]);
+    expect(restoreSemesterSubject(restored, "a", subj("y"), 1)[0].subjects).toHaveLength(3);
+    expect(restoreSemesterSubject(removed, "a", subj("y"), 99)[0].subjects.map((s) => s.id)).toEqual(["x", "z", "y"]);
   });
 });
 
