@@ -24,7 +24,7 @@ src/
 │  └─ leaderboard/            /leaderboard  (AuthGuard; My school and Barkada tabs)
 ├─ features/
 │  ├─ calculator/             working subjects: view, GWA card, toolbar/, list, form, editor dialog, what-if/
-│  ├─ semesters/              saved semesters: list, card, form, editor dialog; lib/semesters.ts
+│  ├─ semesters/              saved semesters: list, card, form, editor dialog, add/edit/remove their subjects; lib/semesters.ts
 │  ├─ persistence/            useCalculatorData + guest/cloud stores, merge dialog
 │  ├─ transfer/               JSON import/export, QR transfer (codec in lib/qr-frames.ts)
 │  ├─ reports/                printable Semester Report / Academic Summary (lib/ builds HTML)

@@ -22,9 +22,9 @@ import { ImprovementDialog } from "@/features/semesters/components/improvement-d
 import { SemesterEditorDialog } from "@/features/semesters/components/semester-editor-dialog";
 import { SemestersPanel } from "@/features/semesters/components/semesters-panel";
 import { useShareDialog } from "@/features/share/hooks/use-share-dialog";
+import { SavedSubjectDialog } from "@/features/semesters/components/saved-subject-dialog";
 import { useSavedSubjectEditor } from "@/features/semesters/hooks/use-saved-subject-editor";
 import { useSemesterActions } from "@/features/semesters/hooks/use-semester-actions";
-import { formatTermLabel } from "@/features/semesters/lib/semesters";
 import { QrTransferDialog } from "@/features/transfer/components/qr-transfer/qr-transfer-dialog";
 import { useFileTransfer } from "@/features/transfer/hooks/use-file-transfer";
 import { WrappedBanner } from "@/features/wrapped/components/wrapped-banner";
@@ -131,6 +131,7 @@ export function CalculatorView() {
                     onEdit: semesterEditor.openEdit,
                     onDelete: semesterActions.deleteSemester,
                     onEditSubject: savedSubject.openEdit,
+                    onAddSubject: savedSubject.openCreate,
                   }}
                 />
               </TabsContent>
@@ -155,18 +156,7 @@ export function CalculatorView() {
         }}
         onUpdate={semesterActions.updateSemester}
       />
-      <SubjectEditorDialog
-        editor={savedSubject.editor}
-        subjects={savedSubject.semester?.subjects ?? []}
-        onUpdate={(id, values) =>
-          savedSubject.semester && semesterActions.updateSemesterSubject(savedSubject.semester.id, id, values)
-        }
-        editDescription={
-          savedSubject.semester
-            ? `Saved in ${formatTermLabel(savedSubject.semester)}. Changes update that semester's GWA.`
-            : undefined
-        }
-      />
+      <SavedSubjectDialog saved={savedSubject} actions={semesterActions} />
       <WhatIfDialog open={whatIfOpen} onOpenChange={setWhatIfOpen} subjects={subjects} />
       <QrTransferDialog
         open={qrOpen}
